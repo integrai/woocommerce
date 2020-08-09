@@ -1,0 +1,15 @@
+=== Integrai ===
+Contributors: Eric do Carmo Barbosa, Bruno Oliveira, Adriano Lucas
+Tags: ecommerce, woocommerce, checkout, freight, paypal, pagseguro, pagar.me, intelipost, frenet
+Requires at least: 4.6
+Tested up to: 5.4
+Stable tag: 4.1.6
+License: GPLv2 or later
+
+== Description ==
+
+Integração com os principais meios de pagamento e cálculo de frete para a sua plataforma de e-commerce WP WooCommerce.
+
+== Installation ==
+
+Suba o plugin no seu Wordpress Woocommerce, ative e pronto. Agora é só configurar e usar.
