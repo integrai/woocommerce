@@ -24,7 +24,7 @@
 include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
 
 class Integrai_Uninstall {
-  public static function init() {
+  public static function uninstall() {
     self::delete_events_table();
     self::delete_config_table();
   }

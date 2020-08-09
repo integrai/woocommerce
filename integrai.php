@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Rename this for your plugin and update it as you release new versions.
  */
 define( 'PLUGIN_NAME_VERSION', '1.0.0' );
-define( 'INTEGRAI__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'INTEGRAI__PLUGIN_DIR' ) ) define( 'INTEGRAI__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 /**
  * The code that runs during plugin activation.

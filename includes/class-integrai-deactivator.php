@@ -22,13 +22,10 @@
  */
 
 include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
+include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-uninstall.php';
 
 class Integrai_Deactivator {
-  public static function init() {
-
-  }
-
   public static function deactivate() {
-
+    Integrai_Uninstall::uninstall();
   }
 }

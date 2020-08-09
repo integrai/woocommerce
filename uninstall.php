@@ -30,6 +30,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-uninstall.php';
-
-register_uninstall_hook('uninstall.php', array('Integrai_Uninstall', 'init'));
+Integrai_Uninstall::uninstall();
