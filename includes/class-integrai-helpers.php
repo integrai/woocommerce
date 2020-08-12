@@ -64,12 +64,12 @@ class Integrai_Helper {
   }
 
   public static function log($log, $prefix = '') {
-        if (WP_DEBUG === true) {
-            if (is_array($log) || is_object($log)) {
-                error_log($prefix . print_r($log, true));
-            } else {
-                error_log($prefix . $log);
-            }
-        }
-    }
+    $file_path = INTEGRAI__PLUGIN_DIR . 'debug.log';
+
+    $error = (is_array($log) || is_object($log))
+        ? print_r($log, true)
+        : $log;
+
+      error_log($prefix . $error . " \n", 3, $file_path);
+  }
 }

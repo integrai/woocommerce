@@ -26,7 +26,7 @@
  */
 
 /** GERAL
- * 1. Banco Dados
+ * 1. Banco Dados [OK]
  * 2. Logs
  * 3. Requests com API
  * 4. Injeção de configs
