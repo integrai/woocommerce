@@ -1,155 +1,128 @@
 <?php
 include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
+include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-helper.php';
 
-class Integrai_Model_Config {
-  static public function create() {
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+class Integrai_Model_Config extends Integrai_Model_Helper {
+  public function __construct() {
+    parent::__construct('integrai_config');
+  }
 
-    global $wpdb;
+  public function setup() {
+    $created = $this->create_table();
 
-    $collate = '';
+    $data = $this->get_default_config();
 
-    if ( $wpdb->has_cap( 'collation' ) ) {
-      $collate = $wpdb->get_charset_collate();
-    }
+    $action = $this->config_exists() ? 'update_many' : 'insert_many';
 
+    $ids = $this->{$action}($data);
+
+    return $ids;
+  }
+
+  public function create_table() {
     $sql = "
-      CREATE TABLE `{$wpdb->prefix}integrai_config` (
+      CREATE TABLE IF NOT EXISTS `{$this->prefix}integrai_config` (
         id int(10) unsigned NOT NULL AUTO_INCREMENT,
         name text NOT NULL,
         `values` text NOT NULL,
         created_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
         updated_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
         PRIMARY KEY (id)
-      ) $collate;
-
-      CREATE TABLE `{$wpdb->prefix}integrai_events` (
-        id int(10) unsigned NOT NULL AUTO_INCREMENT,
-        event text NOT NULL,
-        payload text NOT NULL,
-        created_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-        PRIMARY KEY (id)
-      ) $collate;
+      ) $this->collate;
     ";
 
-    global $wpdb;
-
-    // $wpdb->hide_errors();
-    Integrai_Helper::log('CREATED TABLE');
-
-    return dbDelta( $sql );
+    return $this->run_query( $sql );
   }
 
-  static public function insert($data = array()) {
-    global $wpdb;
-    $table = $wpdb->prefix . 'integrai_config';
+  public function check_if_exists($name = '') {
+    $row = $this->get_by_name($name);
 
-    return $wpdb->insert($table, $data);
+    return !is_null( $row );
   }
 
-  static public function insert_many($data = array()) {
-    Integrai_Helper::log('INSERT_MANY');
+  public function config_exists() {
+    $table_exists = $this->table_exists();
 
-    if ( $data ) {
-      $ids = array();
+    if ( $this->table_exists() ) {
+      $configs = array(
+        'EVENTS_ENABLED',
+        'SHIPPING',
+        'GLOBAL',
+      );
 
-      foreach($data as $item) {
-        $inserted_id = self::insert( array(
-          'name' => $item->name,
-          'values' => json_encode( $item->values ),
-        ) );
-
-        array_push($ids, $inserted_id);
+      $count = 0;
+      foreach( $configs as $item ) {
+        if (self::check_if_exists($item)) {
+          $count++;
+        }
       }
 
-      return !empty($ids) ? $ids : false;
+      return count( $configs ) === $count;
     }
 
     return false;
   }
 
-  static public function get($where = '') {
-    global $wpdb;
-    $table = $wpdb->prefix . 'integrai_config';
+  public function get_default_config() {
+    return array(
+      array(
+        'name' => 'EVENTS_ENABLED',
+        'values' => '[
+          "NEW_CUSTOMER",
+          "CUSTOMER_BIRTHDAY",
+          "NEWSLETTER_SUBSCRIBER",
+          "ADD_PRODUCT_CART",
+          "ABANDONED_CART",
+          "NEW_ORDER",
+          "SAVE_ORDER",
+          "CANCEL_ORDER",
+          "FINALIZE_CHECKOUT"
+        ]',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+      ),
+      array(
+        'name' => 'GLOBAL',
+        'values' => '{
+          "minutes_abandoned_cart_lifetime": 60,
+          "api_url": "https://api.integrai.com.br/v1",
+          "api_timeout_seconds": 3
+        }',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+      ),
+      array(
+        'name' => 'SHIPPING',
+        'values' => '{
+          "attribute_width": "width",
+          "attribute_height": "height",
+          "attribute_length": "length",
+          "width_default": 11,
+          "height_default": 2,
+          "length_default": 16
+        }',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+      ),
+    );
+  }
 
-    $select = "SELECT * FROM {$table}";
-    $query = $select . ' ' . $where;
+  public function get_fom_remote() {
+    $response = wp_remote_get('http://host.docker.internal:3000/v1/config', array(
+      'method' => 'GET',
+      'headers' => array(
+        'Content-Type' => 'application/json'
+        )
+      )
+    );
 
-    if ( !self::table_exists() ) {
-      return false;
+    $responseBody = wp_remote_retrieve_body( $response );
+    $result = json_decode( $responseBody );
+
+    if( is_wp_error( $response ) ) {
+      return Integrai_Helper::log($response->get_error_message(), 'ERROR GETTING FROM REMOTE: ');
     }
 
-    return $wpdb->get_row($query);
-  }
-
-  static public function get_all() {
-    return self::get();
-  }
-
-  static public function get_by_name($name) {
-    return self::get("WHERE name = '$name'");
-  }
-
-  static public function update($data = array(), $where = array(), $format = null, $where_format = null) {
-    global $wpdb;
-    $table = $wpdb->prefix . 'integrai_config';
-
-    $wpdb->update($table, $data, $where, $format, $where_format);
-
-    return $wpdb->insert_id;
-  }
-
-  static public function update_many($data = array()) {
-    Integrai_Helper::log('UPDATE_MANY');
-
-    if ( $data ) {
-      $ids = array();
-
-      foreach($data as $item) {
-        $row = array(
-          'name' => $item->name,
-          'values' => json_encode( $item->values ),
-        );
-
-        $where = array( 'name' => $item->name );
-
-        $updated_id = self::update( $row, $where );
-
-        array_push($ids, $updated_id);
-      }
-
-      return !empty($ids) ? $ids : false;
-    }
-
-    return false;
-  }
-
-  static public function update_by_name($name, $data) {
-    return self::update($data, "WHERE name = '$name'");
-  }
-
-  static public function delete($where, $where_format = null) {
-    global $wpdb;
-    $table = $wpdb->prefix . 'integrai_config';
-
-    return $wpdb->delete($table, $where, $where_format);
-  }
-
-  static public function delete_by_name($name) {
-    return self::delete("WHERE name = '$name'");
-  }
-
-  static public function delete_all() {
-    return self::delete();
-  }
-
-  static public function table_exists() {
-    global $wpdb;
-    $table = $wpdb->prefix . 'integrai_config';
-    $result = $wpdb->query("SHOW TABLES LIKE '$table'");
-
-    Integrai_Helper::log($result, 'result: ');
-
-    return $wpdb->query("SHOW TABLES LIKE '$table'") === 1;
+    return $result;
   }
 }

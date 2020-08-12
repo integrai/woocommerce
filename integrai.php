@@ -25,6 +25,17 @@
  * Domain Path:       /languages
  */
 
+/** GERAL
+ * 1. Banco Dados
+ * 2. Logs
+ * 3. Requests com API
+ * 4. Injeção de configs
+ * 5. Retentativa (Backup) de Eventos
+ * 6. Events
+ * 7. Shipping (Verificar como o woocommerce chama)
+ * 8. Checkout
+ */
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
