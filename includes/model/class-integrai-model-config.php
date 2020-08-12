@@ -34,6 +34,25 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return $this->run_query( $sql );
   }
 
+  public function get_events() {
+    return $this->get_by_name('EVENTS_ENABLED');
+  }
+
+  public function get_global() {
+    return $this->get_by_name('GLOBAL');
+  }
+
+  public function get_global_config($name = '') {
+    $configs = $this->get_global('GLOBAL');
+    $key = array_search( $name, $configs );
+
+    return ( $key && $configs[$key] ) ? $configs[$key] : false;
+  }
+
+  public function get_shipping() {
+    return $this->get_by_name('SHIPPING');
+  }
+
   public function check_if_exists($name = '') {
     $row = $this->get_by_name($name);
 
@@ -107,7 +126,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     );
   }
 
-  public function get_fom_remote() {
+  public function get_from_remote() {
     $response = wp_remote_get('http://host.docker.internal:3000/v1/config', array(
       'method' => 'GET',
       'headers' => array(

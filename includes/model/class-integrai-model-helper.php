@@ -78,18 +78,6 @@ class Integrai_Model_Helper {
     return $this->get("WHERE name = '$name'");
   }
 
-  public function get_events() {
-    return $this->get_by_name('EVENTS_ENABLED');
-  }
-
-  public function get_global() {
-    return $this->get_by_name('GLOBAL');
-  }
-
-  public function get_shipping() {
-    return $this->get_by_name('SHIPPING');
-  }
-
   public function update(
     $data = array(),
     $where = array(),

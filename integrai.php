@@ -27,7 +27,7 @@
 
 /** GERAL
  * 1. Banco Dados [OK]
- * 2. Logs
+ * 2. Logs [OK]
  * 3. Requests com API
  * 4. Injeção de configs
  * 5. Retentativa (Backup) de Eventos
