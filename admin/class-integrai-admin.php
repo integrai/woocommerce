@@ -100,4 +100,11 @@ class Integrai_Admin {
 
 	}
 
+	public function woocommerce_integrations( $integrations ) {
+		require_once INTEGRAI__PLUGIN_DIR . 'admin/wc-config/class-wc-integration-integrai-settings-integration.php';
+
+		array_unshift($integrations, 'WC_Integration_Integrai_Settings_Integration');
+
+		return $integrations;
+	}
 }

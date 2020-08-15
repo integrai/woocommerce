@@ -19,6 +19,16 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return $ids;
   }
 
+  public function update_config($data) {
+    if ( !$data || empty( $data ) ) return false;
+
+    $table_exists = $this->table_exists();
+    $config_exists = $this->config_exists();
+    $action = $config_exists ? 'update_many' : 'insert_many';
+
+    return $table_exists ? $this->{$action}($data) : false;
+  }
+
   public function create_table() {
     $sql = "
       CREATE TABLE IF NOT EXISTS `{$this->prefix}integrai_config` (
@@ -35,18 +45,29 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   }
 
   public function get_events() {
-    return $this->get_by_name('EVENTS_ENABLED');
+    return $this->get_by_name('events_enabled');
   }
 
   public function get_global() {
-    return $this->get_by_name('GLOBAL');
+    return $this->get_by_name('global');
   }
 
-  public function get_global_config($name = '') {
-    $configs = $this->get_global('GLOBAL');
-    $key = array_search( $name, $configs );
+  public function get_api_url() {
+    $configs = $this->get_global();
 
-    return ( $key && $configs[$key] ) ? $configs[$key] : false;
+    return $configs['api_url'] ? $configs['api_url'] : false;
+  }
+
+  public function get_api_timeout_seconds() {
+    $configs = $this->get_global();
+
+    return $configs['api_timeout_seconds'] ? $configs['api_timeout_seconds'] : false;
+  }
+
+  public function get_global_config() {
+    $configs = $this->get_global();
+
+    return $configs[$name] ? $configs[$name] : false;
   }
 
   public function get_shipping() {
@@ -104,7 +125,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         'name' => 'GLOBAL',
         'values' => '{
           "minutes_abandoned_cart_lifetime": 60,
-          "api_url": "https://api.integrai.com.br/v1",
+          "api_url": "http://host.docker.internal:3000/v1",
           "api_timeout_seconds": 3
         }',
         'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),

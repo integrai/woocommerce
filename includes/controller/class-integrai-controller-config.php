@@ -1,5 +1,6 @@
 <?php
 
+include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-api.php';
 include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
 include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.php';
 
@@ -12,7 +13,27 @@ include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.
  */
 
 class Integrai_Controller_Config {
-  static public function create_table() {
+  static public function index() {
+    try {
+      $api = new Integrai_API();
+      $response = $api->request('/config');
+      $configs = json_decode( $response['body'] );
 
+      $integrai_config = new Integrai_Model_Config();
+      $integrai_config->update_config( $configs );
+
+      // Create the response object
+      $response = new WP_REST_Response( array( "ok" => true ) );
+      $response->set_status( 201 );
+      $response->header( 'Content-type', 'application/json' );
+
+      return $response;
+
+    } catch (Exception $e) {
+
+      Integrai_Helper::log('Error ao atualizar configs', $e->getMessage());
+
+      // Redirect para "/"
+    }
   }
 }

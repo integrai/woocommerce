@@ -46,7 +46,7 @@ class Integrai_Model_Helper {
         $inserted_id = $this->insert(
           array(
             'name' => $item['name'],
-            'values' => json_encode( $item['values'] ),
+            'values' => $item['values'],
           )
         );
 
@@ -75,7 +75,16 @@ class Integrai_Model_Helper {
   }
 
   public function get_by_name($name) {
-    return $this->get("WHERE name = '$name'");
+    $lower_name = strtolower( $name );
+    $raw_data = $this->get("WHERE name = '$lower_name'");
+
+    try {
+
+      return json_decode( $raw_data->values, 2 );
+
+    } catch (Exception $e) {
+      Integrai_Helper::log( $e.getMessage() );
+    }
   }
 
   public function update(
@@ -90,15 +99,13 @@ class Integrai_Model_Helper {
   }
 
   public function update_many($data = array()) {
-    Integrai_Helper::log('UPDATE_MANY');
-
     if ( $data && !empty( $data ) ) {
       $ids = array();
 
       foreach( $data as $item ) {
         $row = array(
           'name' => $item->name,
-          'values' => json_encode( $item->values ),
+          'values' => $item->values,
         );
 
         $where = array( 'name' => $item->name );

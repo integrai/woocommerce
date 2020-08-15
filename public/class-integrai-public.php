@@ -100,4 +100,13 @@ class Integrai_Public {
 
 	}
 
+	public function register_rest_route($config_controller) {
+		require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-config.php';
+
+		register_rest_route( 'integrai/v1', '/config', array(
+			'methods' => 'GET',
+			'callback' => array('Integrai_Controller_Config', 'index'),
+		) );
+	}
+
 }
