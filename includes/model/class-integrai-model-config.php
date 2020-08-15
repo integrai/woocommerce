@@ -58,6 +58,18 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return $configs['api_url'] ? $configs['api_url'] : false;
   }
 
+  public function get_api_key() {
+    $configs = $this->get_global();
+
+    return $configs['api_key'] ? $configs['api_key'] : false;
+  }
+
+  public function get_secret_key() {
+    $configs = $this->get_global();
+
+    return $configs['secret_key'] ? $configs['secret_key'] : false;
+  }
+
   public function get_api_timeout_seconds() {
     $configs = $this->get_global();
 

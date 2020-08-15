@@ -10,8 +10,10 @@
 
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+  exit; // Exit if accessed directly.
 }
+
+// TODO: Arrumar os imports para serem dinamicos. Assim é muito arriscado, caso o diretorio do plugin mude.
 
 if ( ! class_exists('WC_Settings_API' )) {
     require_once ABSPATH . 'wp-content/plugins/woocommerce/includes/abstracts/abstract-wc-settings-api.php';
@@ -44,7 +46,48 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
     // Actions.
     add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
 
+    // Filters.
+    add_filter( 'woocommerce_settings_api_sanitized_fields_' . $this->id, array( $this, 'sanitize_settings' ) );
 
+  }
+
+  public function sanitize_settings( $fields ) {
+    // We're just going to make the api key all upper case characters since that's how our imaginary API works
+    if ( isset( $settings ) && isset( $settings['api_key'] ) ) {
+      $settings['api_key'] = strtoupper( $settings['api_key'] );
+    }
+
+    return $settings;
+  }
+
+  /**
+   * Validate the API key
+   * @see validate_settings_fields()
+   */
+  public function validate_api_key_field( $key ) {
+    // get the posted value
+    $value = $_POST[ $this->plugin_id . $this->id . '_' . $key ];
+
+    // check if the API key is longer than 20 characters. Our imaginary API doesn't create keys that large so something must be wrong. Throw an error which will prevent the user from saving.
+    if ( isset( $value ) && 20 < strlen( $value ) ) {
+      $this->errors[] = $key;
+    }
+
+    return $value;
+  }
+
+  /**
+   * Display errors by overriding the display_errors() method
+   * @see display_errors()
+   */
+  public function display_errors( ) {
+    foreach ( $this->errors as $key => $value ) {
+      ?>
+      <div class="error">
+        <p><?php _e( 'Looks like you made a mistake with the ' . $value . ' field. Make sure it isn&apos;t longer than 20 characters', 'woocommerce-integration-demo' ); ?></p>
+      </div>
+      <?php
+    }
   }
 
 	/**

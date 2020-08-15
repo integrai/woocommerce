@@ -4,6 +4,9 @@ include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
 include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.php';
 
 class Integrai_API {
+  private $api_key;
+  private $secret_key;
+
   protected $config_model;
   protected $api_url;
   protected $timeout;
@@ -12,6 +15,8 @@ class Integrai_API {
     $this->config_model = new Integrai_Model_Config();
     $this->api_url = $this->get_api_url();
     $this->timeout = $this->get_api_timeout();
+    $this->api_key = $this->config_model->get_api_key();
+    $this->secret_key = $this->config_model->get_secret_key();
   }
 
   public function get_api_url() {
@@ -26,6 +31,7 @@ class Integrai_API {
     $api_url = $this->get_api_url();
     $timeout = $this->get_api_timeout();
     $headers = $this->get_headers();
+
     $options = array(
       'method' => $method,
       'headers' => $headers,
@@ -46,5 +52,21 @@ class Integrai_API {
     return $response;
   }
 
-  private function get_headers() {}
+  private function get_headers() {
+    global $wp_version, $woocommerce;
+
+    $wc_version = $woocommerce->version;
+    $plugin_version = INTEGRAI_VERSION;
+    $token = base64_encode("{$this->api_key}:{$this->secret_key}");
+
+    return array(
+        "Content-Type: application/json",
+        "Accept: application/json",
+        "Authorization: Bearer {$token}",
+        "x-integrai-plaform: wordpress",
+        "x-integrai-plaform-version: {$wp_version}",
+        "x-integrai-plaform-framework: woocommerce {$wc_version}",
+        "x-integrai-module-version: {$plugin_version}",
+    );
+  }
 }
