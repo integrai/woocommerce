@@ -52,25 +52,26 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
   }
 
   public function sanitize_settings( $fields ) {
-    // We're just going to make the api key all upper case characters since that's how our imaginary API works
-    if ( isset( $settings ) && isset( $settings['api_key'] ) ) {
-      $settings['api_key'] = strtoupper( $settings['api_key'] );
-    }
-
-    return $settings;
+    return $fields;
   }
 
-  /**
-   * Validate the API key
-   * @see validate_settings_fields()
-   */
-  public function validate_api_key_field( $key ) {
-    // get the posted value
-    $value = $_POST[ $this->plugin_id . $this->id . '_' . $key ];
+  public function validate_api_key_field( $key, $value ) {
+    if ( strlen( $value ) < 10 ) {
+      WC_Admin_Settings::add_error( esc_html__(
+        'Chave da API incorreta. Verifique e tente novamente.',
+        'woocommerce-integration-settings',
+      ) );
+    }
 
-    // check if the API key is longer than 20 characters. Our imaginary API doesn't create keys that large so something must be wrong. Throw an error which will prevent the user from saving.
-    if ( isset( $value ) && 20 < strlen( $value ) ) {
-      $this->errors[] = $key;
+    return $value;
+  }
+
+  public function validate_secret_key_field( $key, $value ) {
+    if ( strlen( $value ) < 10 ) {
+      WC_Admin_Settings::add_error( esc_html__(
+        'Segredo da chave incorreto. Verifique e tente novamente.',
+        'woocommerce-integration-settings',
+      ) );
     }
 
     return $value;
@@ -123,7 +124,7 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
       ),
       'secret_key' => array(
         'title'             => __( 'Segredo da Chave', 'woocommerce-integrai-settings' ),
-        'type'              => 'text',
+        'type'              => 'password',
         'description'       => __( 'Seu Segredo da Chave criado no painel da IntegrAi', 'woocommerce-integrai-settings' ),
         'desc_tip'          => true,
         'default'           => '',

@@ -12,10 +12,13 @@ class Integrai_API {
   protected $timeout;
 
   public function __construct() {
+    $options = get_option('woocommerce_integrai-settings_settings');
+
     $this->config_model = new Integrai_Model_Config();
     $this->api_url = $this->get_api_url();
     $this->timeout = $this->get_api_timeout();
-    $this->api_key = $this->config_model->get_api_key();
+    $this->api_key = $options['api_key'];
+    $this->secret_key = $options['secret_key'];
     $this->secret_key = $this->config_model->get_secret_key();
   }
 
