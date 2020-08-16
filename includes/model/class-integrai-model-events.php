@@ -26,14 +26,8 @@ class Integrai_Model_Events extends Integrai_Model_Helper {
     return $this->run_query( $sql );
   }
 
-  public function event_is_enabled($name = '') {
-    if ( !$name ) {
-      return false;
-    }
-
-    $events = $this->get_events();
-
-    return in_array( $name, $events );
+  public function get_pending_events() {
+    return $this->get_all();
   }
 
   public function get_fom_remote() {

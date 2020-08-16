@@ -33,7 +33,6 @@ class Integrai_Uninstall {
     global $wpdb;
     $table_name = $wpdb->prefix . 'integrai_events';
 
-    // drop the table from the database.
     Integrai_Helper::log("Dropping $table_name");
     $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
   }
@@ -42,7 +41,6 @@ class Integrai_Uninstall {
     global $wpdb;
     $table_name = $wpdb->prefix . 'integrai_config';
 
-    // drop the table from the database.
     Integrai_Helper::log("Dropping $table_name");
     $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
   }

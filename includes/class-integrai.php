@@ -178,8 +178,14 @@ class Integrai {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-		// REST API
+		// REST APIx
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_rest_route' );
+
+		// WOOCOMMERCE - Events
+		// $this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'woocommerce_created_customer' );
+		$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
+		// $this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
+		// $this->loader->add_action( 'woocommerce_checkout_order_processed', $plugin_public, 'woocommerce_checkout_order_processed' );
 
 	}
 

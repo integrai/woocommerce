@@ -44,8 +44,18 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return $this->run_query( $sql );
   }
 
-  public function get_events() {
+  public function get_enabled_events() {
     return $this->get_by_name('events_enabled');
+  }
+
+  public function event_is_enabled($name = '') {
+    if ( !$name ) {
+      return false;
+    }
+
+    $events = $this->get_enabled_events();
+
+    return in_array( $name, $events );
   }
 
   public function get_global() {
@@ -55,19 +65,19 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   public function get_api_url() {
     $configs = $this->get_global();
 
-    return $configs['api_url'] ? $configs['api_url'] : false;
+    return isset( $configs['api_url'] ) ? $configs['api_url'] : false;
   }
 
   public function get_api_key() {
     $configs = $this->get_global();
 
-    return $configs['api_key'] ? $configs['api_key'] : false;
+    return isset( $configs['api_key'] ) ? $configs['api_key'] : false;
   }
 
   public function get_secret_key() {
     $configs = $this->get_global();
 
-    return $configs['secret_key'] ? $configs['secret_key'] : false;
+    return isset( $configs['secret_key'] ) ? $configs['secret_key'] : false;
   }
 
   public function get_api_timeout_seconds() {

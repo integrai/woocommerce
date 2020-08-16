@@ -38,7 +38,6 @@ class Integrai_Model_Helper {
   }
 
   public function insert_many($data = array()) {
-
     if ( $data && !empty( $data ) ) {
       $ids = array();
 

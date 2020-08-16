@@ -28,8 +28,8 @@
 /** GERAL
  * 1. Banco Dados [OK]
  * 2. Logs [OK]
- * 3. Requests com API
- * 4. Injeção de configs
+ * 3. Requests com API [OK]
+ * 4. Injeção de configs [OK]
  * 5. Retentativa (Backup) de Eventos
  * 6. Events
  * 7. Shipping (Verificar como o woocommerce chama)

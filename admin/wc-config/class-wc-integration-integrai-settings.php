@@ -15,7 +15,6 @@ class WC_Integration_Integrai_Settings {
 	* Initialize the plugin.
 	*/
 	public function init() {
-		Integrai_Helper::log('WC :: INTEGRATIONS :: SETTINGS :: INIT: ' );
 		// Checks if WooCommerce is installed.
 		if ( class_exists( 'WC_Integration' ) ) {
 			// Include our integration class.
