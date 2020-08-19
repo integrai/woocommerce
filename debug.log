@@ -1,0 +1,884 @@
+CRON :: PENDING EVENT: Array
+(
+    [0] => stdClass Object
+        (
+            [id] => 1
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:10:33
+        )
+
+    [1] => stdClass Object
+        (
+            [id] => 2
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:10:33
+        )
+
+    [2] => stdClass Object
+        (
+            [id] => 3
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:11:39
+        )
+
+    [3] => stdClass Object
+        (
+            [id] => 4
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:23:47
+        )
+
+    [4] => stdClass Object
+        (
+            [id] => 5
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:29:05
+        )
+
+    [5] => stdClass Object
+        (
+            [id] => 6
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:29:08
+        )
+
+    [6] => stdClass Object
+        (
+            [id] => 7
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [7] => stdClass Object
+        (
+            [id] => 8
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [8] => stdClass Object
+        (
+            [id] => 9
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [9] => stdClass Object
+        (
+            [id] => 10
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [10] => stdClass Object
+        (
+            [id] => 11
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [11] => stdClass Object
+        (
+            [id] => 12
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+)
+ 
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 1
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:10:33
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 2
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:10:33
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 3
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:11:39
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 4
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:23:47
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 5
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:29:05
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 6
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:29:08
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 7
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:52:08
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 8
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:52:08
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 9
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:52:08
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 10
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:52:08
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 11
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:52:08
+)
+ 
+CRON :: DELETE_PENDING:  
+HOOKS :: SEND_EVENT: Array
+(
+    [event_name] => ADD_PRODUCT_CART
+    [payload] => Array
+        (
+            [customer] => Array
+                (
+                    [ID] => 1
+                    [user_login] => ericcbarbosa
+                    [user_pass] => $P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.
+                    [user_nicename] => ericcbarbosa
+                    [user_email] => ericcarmobarbosa@gmail.com
+                    [user_url] => http://localhost:81
+                    [user_registered] => 2020-08-05 11:53:14
+                    [user_activation_key] => 
+                    [user_status] => 0
+                    [display_name] => ericcbarbosa
+                )
+
+            [item] => Array
+                (
+                    [cart_item_key] => 37693cfc748049e45d87b8c7d8b9aacd
+                    [product] => Array
+                        (
+                            [name] => Album
+                            [slug] => album
+                            [sku] => woo-album
+                            [description] => Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.
+                            [price] => 15
+                        )
+
+                    [quantity] => 1
+                    [variation_id] => 0
+                    [variation] => Array
+                        (
+                        )
+
+                    [cart_item_data] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
+ 
+HOOKS :: SUCCESS: ADD_PRODUCT_CART 
+CRON :: EVENT: stdClass Object
+(
+    [id] => 12
+    [event] => ADD_PRODUCT_CART
+    [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+    [created_at] => 2020-08-19 12:52:08
+)
+ 
+CRON :: DELETE_PENDING:  
+CRON :: RESENDED: Array
+(
+    [0] => stdClass Object
+        (
+            [id] => 1
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:10:33
+        )
+
+    [1] => stdClass Object
+        (
+            [id] => 2
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:10:33
+        )
+
+    [2] => stdClass Object
+        (
+            [id] => 3
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:11:39
+        )
+
+    [3] => stdClass Object
+        (
+            [id] => 4
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:23:47
+        )
+
+    [4] => stdClass Object
+        (
+            [id] => 5
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:29:05
+        )
+
+    [5] => stdClass Object
+        (
+            [id] => 6
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:29:08
+        )
+
+    [6] => stdClass Object
+        (
+            [id] => 7
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [7] => stdClass Object
+        (
+            [id] => 8
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [8] => stdClass Object
+        (
+            [id] => 9
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [9] => stdClass Object
+        (
+            [id] => 10
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [10] => stdClass Object
+        (
+            [id] => 11
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+    [11] => stdClass Object
+        (
+            [id] => 12
+            [event] => ADD_PRODUCT_CART
+            [payload] => {"customer":{"ID":"1","user_login":"ericcbarbosa","user_pass":"$P$B1StFYEI.FCJIXIS4EUg60ovqr64p1.","user_nicename":"ericcbarbosa","user_email":"ericcarmobarbosa@gmail.com","user_url":"http:\/\/localhost:81","user_registered":"2020-08-05 11:53:14","user_activation_key":"","user_status":"0","display_name":"ericcbarbosa"},"item":{"cart_item_key":"37693cfc748049e45d87b8c7d8b9aacd","product":{"name":"Album","slug":"album","sku":"woo-album","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis orci ac odio dictum tincidunt. Donec ut metus leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed luctus, dui eu sagittis sodales, nulla nibh sagittis augue, vel porttitor diam enim non metus. Vestibulum aliquam augue neque. Phasellus tincidunt odio eget ullamcorper efficitur. Cras placerat ut turpis pellentesque vulputate. Nam sed consequat tortor. Curabitur finibus sapien dolor. Ut eleifend tellus nec erat pulvinar dignissim. Nam non arcu purus. Vivamus et massa massa.","price":"15"},"quantity":1,"variation_id":0,"variation":[],"cart_item_data":[]}}
+            [created_at] => 2020-08-19 12:52:08
+        )
+
+)
+ 

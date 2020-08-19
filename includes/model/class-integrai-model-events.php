@@ -29,23 +29,4 @@ class Integrai_Model_Events extends Integrai_Model_Helper {
   public function get_pending_events() {
     return $this->get_all();
   }
-
-  public function get_fom_remote() {
-    $response = wp_remote_get('http://host.docker.internal:3000/v1/config', array(
-      'method' => 'GET',
-      'headers' => array(
-        'Content-Type' => 'application/json'
-        )
-      )
-    );
-
-    $responseBody = wp_remote_retrieve_body( $response );
-    $result = json_decode( $responseBody );
-
-    if( is_wp_error( $response ) ) {
-      return Integrai_Helper::log($response->get_error_message(), 'ERROR GETTING FROM REMOTE: ');
-    }
-
-    return $result;
-  }
 }

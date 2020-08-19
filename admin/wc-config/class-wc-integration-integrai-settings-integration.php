@@ -105,7 +105,7 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
    */
   public function init_form_fields() {
     $this->form_fields = array(
-      'enable_integration' => array(
+      'enabled' => array(
         'title'             => __( 'Habilitar', 'woocommerce-integrai-settings' ),
         'type'              => 'select',
         'description'       => __( 'Habilitar integração com IntegrAi.', 'woocommerce-integrai-settings' ),

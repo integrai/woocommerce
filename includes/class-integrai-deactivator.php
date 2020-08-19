@@ -26,6 +26,11 @@ include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-uninstall.php';
 
 class Integrai_Deactivator {
   public static function deactivate() {
-    Integrai_Uninstall::uninstall();
+    // Integrai_Uninstall::uninstall();
+
+    Integrai_Helper::log('DEACTIVATOR');
+
+    // Desativa o CRON
+    do_action( 'integrai_cron_resend_events_deactivation' );
   }
 }

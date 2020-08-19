@@ -163,6 +163,7 @@ class Integrai {
 
 		// WOOCOMMERCE
 		$this->loader->add_action( 'woocommerce_integrations', $plugin_admin, 'woocommerce_integrations' );
+
 	}
 
 	/**
@@ -175,10 +176,13 @@ class Integrai {
 	private function define_public_hooks() {
 		$plugin_public = new Integrai_Public( $this->Integrai(), $this->get_version() );
 
+		// FILTERS
+		$this->loader->add_filter( 'cron_schedules', $plugin_public, 'integrai_custom_cron_schedules' );
+
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-		// REST APIx
+		// REST API
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_rest_route' );
 
 		// WOOCOMMERCE - Events
@@ -187,6 +191,10 @@ class Integrai {
 		// $this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
 		// $this->loader->add_action( 'woocommerce_checkout_order_processed', $plugin_public, 'woocommerce_checkout_order_processed' );
 
+		// CRON
+		$this->loader->add_action( 'integrai_cron_resend_events_activation', $plugin_public, 'integrai_cron_resend_events_activation' );
+		$this->loader->add_action( 'integrai_cron_resend_events_deactivation', $plugin_public, 'integrai_cron_resend_events_deactivation' );
+		$this->loader->add_action( 'integrai_cron_resend_events', $plugin_public, 'integrai_cron_resend_events' );
 	}
 
 	/**

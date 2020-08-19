@@ -42,6 +42,7 @@ class Integrai_Public {
 
 	private $api;
 	private $config;
+	private $events;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -57,9 +58,18 @@ class Integrai_Public {
 
 		$this->load_dependencies();
 
-		$this->api = new Integrai_API();
-		$this->config = new Integrai_Model_Config();
+	}
 
+	private function get_api_helper() {
+		return new Integrai_API();
+	}
+
+	private function get_config_helper() {
+		return new Integrai_Model_Config();
+	}
+
+	private function get_events_helper() {
+		return new Integrai_Model_Events();
 	}
 
 	private function load_dependencies() {
@@ -160,7 +170,7 @@ class Integrai_Public {
 	// Adicionar ao carrinho
 	public function woocommerce_add_to_cart( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
 
-		if ( is_user_logged_in() && $this->config->event_is_enabled(self::ADD_PRODUCT_CART) ) {
+		if ( is_user_logged_in() && $this->get_config_helper()->event_is_enabled(self::ADD_PRODUCT_CART) ) {
 			$user_id = get_current_user_id();
 			$user_data = get_userdata($user_id);
 			$customer = $user_data->data;
@@ -188,7 +198,7 @@ class Integrai_Public {
 				'item' => $cart,
 			);
 
-			return $this->api->send_event(self::ADD_PRODUCT_CART, $data);
+			return $this->get_api_helper()->send_event(self::ADD_PRODUCT_CART, $data);
 		}
 	}
 
@@ -211,6 +221,65 @@ class Integrai_Public {
 		);
 
 		Integrai_Helper::log($customer, 'HOOKS :: CHECKOUT_ODER_PROCESSED: ');
+	}
+
+	// CRON - EVENTS:
+	public function integrai_custom_cron_schedules( $schedules ) {
+		$schedules[ 'integrai_every_5_minutes' ] = array(
+			'interval' => (5 * MINUTE_IN_SECONDS),
+			'display' => __( 'Every 5 minutes' ),
+		);
+
+		$schedules[ 'integrai_every_minute' ] = array(
+			'interval' => MINUTE_IN_SECONDS,
+			'display' => __( 'Every minute' ),
+		);
+
+		return $schedules;
+	}
+	public function integrai_cron_resend_events_activation() {
+		if ( ! wp_next_scheduled( 'integrai_cron_resend_events' ) ) {
+			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_resend_events' );
+			Integrai_Helper::log('CRON :: ACTIVATE: ');
+		}
+	}
+
+	public function integrai_cron_resend_events_deactivation() {
+		$timestamp = wp_next_scheduled( 'integrai_cron_resend_events' );
+		wp_unschedule_event ($timestamp, 'integrai_cron_resend_events');
+		Integrai_Helper::log('CRON :: DEACTIVATE: ');
+	}
+
+	public function integrai_cron_resend_events() {
+		$options = get_option('woocommerce_integrai-settings_settings');
+		$is_enabled = $options['enable_integration'];
+
+		$pending_events = $this->get_events_helper()->get_pending_events();
+		Integrai_helper::log($pending_events, 'CRON :: PENDING EVENT: ');
+
+		if ( $is_enabled && count( $pending_events ) > 0 ) {
+			foreach( $pending_events as $event ) {
+				try {
+					$event_id = $event->event_id;
+					$event_name = $event->event;
+					$payload = json_decode($event->payload, true);
+
+					$response = $this->get_api_helper()->send_event($event_name, $payload);
+
+					Integrai_helper::log($event, 'CRON :: EVENT: ');
+
+					Integrai_helper::log($event_id, 'CRON :: DELETE_PENDING: ');
+					$this->get_events_helper()->delete_by_id( $event_id );
+
+				} catch (Exception $e) {
+
+					Integrai_helper::log('Error ao reenviar o evento', $event_name);
+
+				}
+			}
+
+			Integrai_helper::log($pending_events, 'CRON :: RESENDED: ');
+		}
 	}
 
 }

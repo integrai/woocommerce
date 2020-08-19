@@ -58,19 +58,20 @@ class Integrai_Model_Helper {
     return false;
   }
 
-  public function get($where = '') {
+  public function get($where = '', $all = false) {
     $select = "SELECT * FROM {$this->table}";
     $query = $select . ' ' . $where;
+    $action = $all ? 'get_results' : 'get_row';
 
     if ( !$this->table_exists() ) {
       return false;
     }
 
-    return $this->wpdb->get_row($query);
+    return $this->wpdb->{$action}($query);
   }
 
   public function get_all() {
-    return $this->get();
+    return $this->get('', true);
   }
 
   public function get_by_name($name) {
@@ -103,11 +104,11 @@ class Integrai_Model_Helper {
 
       foreach( $data as $item ) {
         $row = array(
-          'name' => $item->name,
-          'values' => $item->values,
+          'name' => $item['name'],
+          'values' => $item['values'],
         );
 
-        $where = array( 'name' => $item->name );
+        $where = array( 'name' => $item['name'] );
 
         $updated_id = $this->update( $row, $where );
 
@@ -126,6 +127,10 @@ class Integrai_Model_Helper {
 
   public function delete($where, $where_format = null) {
     return $this->wpdb->delete($this->table, $where, $where_format);
+  }
+
+  public function delete_by_id($id) {
+    return $this->wpdb->delete($this->table, "HERE id = '$id'");
   }
 
   public function delete_by_name($name) {
