@@ -219,8 +219,6 @@ class Integrai_Public {
 			'order' => $order,
 			'posted_data' => $posted_data,
 		);
-
-		Integrai_Helper::log($customer, 'HOOKS :: CHECKOUT_ODER_PROCESSED: ');
 	}
 
 	// CRON - EVENTS:
@@ -240,14 +238,12 @@ class Integrai_Public {
 	public function integrai_cron_resend_events_activation() {
 		if ( ! wp_next_scheduled( 'integrai_cron_resend_events' ) ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_resend_events' );
-			Integrai_Helper::log('CRON :: ACTIVATE: ');
 		}
 	}
 
 	public function integrai_cron_resend_events_deactivation() {
 		$timestamp = wp_next_scheduled( 'integrai_cron_resend_events' );
 		wp_unschedule_event ($timestamp, 'integrai_cron_resend_events');
-		Integrai_Helper::log('CRON :: DEACTIVATE: ');
 	}
 
 	public function integrai_cron_resend_events() {
@@ -255,31 +251,22 @@ class Integrai_Public {
 		$is_enabled = $options['enable_integration'];
 
 		$pending_events = $this->get_events_helper()->get_pending_events();
-		Integrai_helper::log($pending_events, 'CRON :: PENDING EVENT: ');
 
 		if ( $is_enabled && count( $pending_events ) > 0 ) {
 			foreach( $pending_events as $event ) {
 				try {
-					$event_id = $event->event_id;
+					$event_id = $event->id;
 					$event_name = $event->event;
 					$payload = json_decode($event->payload, true);
 
 					$response = $this->get_api_helper()->send_event($event_name, $payload);
 
-					Integrai_helper::log($event, 'CRON :: EVENT: ');
-
-					Integrai_helper::log($event_id, 'CRON :: DELETE_PENDING: ');
 					$this->get_events_helper()->delete_by_id( $event_id );
 
 				} catch (Exception $e) {
-
 					Integrai_helper::log('Error ao reenviar o evento', $event_name);
-
 				}
 			}
-
-			Integrai_helper::log($pending_events, 'CRON :: RESENDED: ');
 		}
 	}
-
 }

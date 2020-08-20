@@ -59,8 +59,6 @@ class Integrai_API {
     $response = wp_remote_request($api_url . $endpoint, $options);
 
     if ( is_wp_error( $response ) ) {
-      Integrai_Helper::log($response, 'API REQUEST :: ERROR: ');
-
       throw new Exception( $response->get_error_message() );
     }
 
@@ -82,8 +80,6 @@ class Integrai_API {
         'event' => $event_name,
         'payload' => $payload,
       ));
-
-      Integrai_Helper::log($event_name, 'HOOKS :: SUCCESS: ');
 
       return $response;
 
