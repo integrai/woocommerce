@@ -60,10 +60,10 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
     public function quote($order) {
       /***
-       * 1. Verificar se a Integrai está ativa
-       * 2. Verificar se os metodos de entrega estão ativos
-       * 3. Pegar os dados do produto e o CEP para fazer a cotação
-       * 4. Preparar os parametros para enviar para a API /shipping/quote
+       * 1. [ok] Verificar se a Integrai está ativa
+       * 2. [ok] Verificar se os metodos de entrega estão ativos
+       * 3. [ok] Pegar os dados do produto e o CEP para fazer a cotação
+       * 4. [ok] Preparar os parametros para enviar para a API /shipping/quote
        * 5. Transformar o retorno da API para exibir no resultado da cotação
        * 6. Tratar erro
       */
@@ -74,13 +74,30 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
           $quote_order = $this->transform_order($order);
 
           $response = $this->get_api_helper()->request('/shipping/quote', 'POST', $quote_order);
-          Integrai_Helper::log($response, 'QUOTE :: RESPONSE: ');
+
+          return $this->transform_response($response);
 
         } catch(Exception $e) {
           Integrai_Helper::log($e, 'QUOTE :: ERROR: ');
         }
-      }
+        }
 
+    }
+
+    private function transform_response($response) {
+      $body = json_decode( $response['body'] );
+
+      return array(
+        'id' => $body['carrierCode'],
+        'label' => $body['methodTitle'],
+        'cost' => $body['cost'],
+        'calc_tax' => $body['price'],
+        'meta_data' => array(
+          'code' => $body['methodCode'],
+          'description' => $body['methodDescription'],
+          'carrier_title' => $body['carrierTitle'],
+         )
+      );
     }
 
     private function transform_order($order) {

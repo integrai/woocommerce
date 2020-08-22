@@ -49,19 +49,13 @@ if ( ! class_exists( 'Integrai_Shipping_Methods' ) ) :
      * @return void
      */
     public function calculate_shipping( $package = array() ) {
-      Integrai_Helper::log($package, 'QUOTE :: PACKAGE: ');
 
       $shipping_helper = $this->get_shipping_helper();
 
-      $quote = $shipping_helper->quote($package);
+      $rate = $shipping_helper->quote($package);
 
-      $rate = array(
-        'label' => $this->title,
-        'cost' => '10.99',
-        'calc_tax' => 'per_item'
-      );
+      Integrai_Helper::log($rate, '$rate: ');
 
-      // Register the rate
       $this->add_rate( $rate );
     }
   }
