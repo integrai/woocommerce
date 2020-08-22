@@ -57,11 +57,6 @@ class Integrai_API {
       'body' => json_encode($body),
     );
 
-    $action_method = $method === 'GET' ? 'get' : 'post';
-    $action = "wp_remote_$action_method";
-
-    Integrai_Helper::log( $options, 'request :: $options: ' );
-
     $response = wp_remote_request($api_url . $endpoint, $options);
 
     if ( is_wp_error( $response ) ) {
@@ -116,13 +111,14 @@ class Integrai_API {
     $token = base64_encode("{$this->api_key}:{$this->secret_key}");
 
     return array(
-        "Content-Type: application/json",
-        "Accept: application/json",
-        "Authorization: Bearer {$token}",
-        "x-integrai-plaform: wordpress",
-        "x-integrai-plaform-version: {$wp_version}",
-        "x-integrai-plaform-framework: woocommerce {$wc_version}",
-        "x-integrai-module-version: {$plugin_version}",
+      "Content-Type" => "application/json; charset=utf-8",
+      "Accept" => "application/json",
+      "data_format" => "body",
+      "Authorization" => "Bearer {$token}",
+      "x-integrai-plaform" => "wordpress",
+      "x-integrai-plaform-version" => "{$wp_version}",
+      "x-integrai-plaform-framework" => "woocommerce {$wc_version}",
+      "x-integrai-module-version" => "{$plugin_version}",
     );
   }
 }
