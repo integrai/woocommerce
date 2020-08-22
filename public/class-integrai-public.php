@@ -51,6 +51,16 @@ class Integrai_Public {
 	 * @param      string    $integrai       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
+
+	const SAVE_CUSTOMER = 'SAVE_CUSTOMER'; // OK
+	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
+	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
+	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART'; // OK
+	const ABANDONED_CART = 'ABANDONED_CART';
+	const NEW_ORDER = 'NEW_ORDER'; // OK
+	const SAVE_ORDER = 'SAVE_ORDER'; // OK
+	const CANCEL_ORDER = 'CANCEL_ORDER';
+
 	public function __construct( $integrai, $version ) {
 
 		$this->integrai = $integrai;
@@ -147,15 +157,6 @@ class Integrai_Public {
 		) );
 	}
 
-	const SAVE_CUSTOMER = 'SAVE_CUSTOMER'; // OK
-	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
-	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
-	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART'; // OK
-	const ABANDONED_CART = 'ABANDONED_CART';
-	const NEW_ORDER = 'NEW_ORDER'; // OK
-	const SAVE_ORDER = 'SAVE_ORDER'; // OK
-	const CANCEL_ORDER = 'CANCEL_ORDER';
-
 	// Usuário cadastrado?
 	public function woocommerce_created_customer( $customer_id, $new_customer_data, $password_generated ) {
 		$customer = array(
@@ -235,6 +236,7 @@ class Integrai_Public {
 
 		return $schedules;
 	}
+
 	public function integrai_cron_resend_events_activation() {
 		if ( ! wp_next_scheduled( 'integrai_cron_resend_events' ) ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_resend_events' );
@@ -269,4 +271,23 @@ class Integrai_Public {
 			}
 		}
 	}
+
+	/** QUOTE */
+	// SHIPPING METHODS
+	public function woocommerce_shipping_methods($methods) {
+		$methods['integrai_shipping_method'] = 'Integrai_Shipping_Methods';
+
+		return $methods;
+	}
+
+	public function woocommerce_shipping_init() {
+		include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-shipping-methods.php';
+	}
+
+	// AJAX QUOTE
+	public function wp_ajax_ajax_simulator() {}
+	public function wp_ajax_nopriv_ajax_simulator() {}
+
+	// CALL QUOTE
+	public function integrai_quote() {}
 }

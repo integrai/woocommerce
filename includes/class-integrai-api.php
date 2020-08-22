@@ -45,7 +45,7 @@ class Integrai_API {
     return $this->config_model->get_api_timeout_seconds();
   }
 
-  public function request($endpoint, $method = 'GET', $body = array()) {
+  public function request($endpoint, $method = 'GET', $body = '') {
     $api_url = $this->get_api_url();
     $timeout = $this->get_api_timeout();
     $headers = $this->get_headers();
@@ -54,7 +54,13 @@ class Integrai_API {
       'method' => $method,
       'headers' => $headers,
       'timeout' => $timeout,
+      'body' => json_encode($body),
     );
+
+    $action_method = $method === 'GET' ? 'get' : 'post';
+    $action = "wp_remote_$action_method";
+
+    Integrai_Helper::log( $options, 'request :: $options: ' );
 
     $response = wp_remote_request($api_url . $endpoint, $options);
 
@@ -69,10 +75,6 @@ class Integrai_API {
   }
 
   public function send_event( $event_name, $payload, $resend = false ) {
-    Integrai_Helper::log(array(
-      'event_name' => $event_name,
-      'payload' => $payload,
-    ), 'HOOKS :: SEND_EVENT: ');
 
     try {
 

@@ -121,8 +121,8 @@ class Integrai {
 		 * side of the site.
 		 */
 		require_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-public.php';
-
 		include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
+
 
 		include_once INTEGRAI__PLUGIN_DIR . 'admin/wc-config/class-wc-integration-integrai-settings-integration.php';
 
@@ -179,22 +179,35 @@ class Integrai {
 		// FILTERS
 		$this->loader->add_filter( 'cron_schedules', $plugin_public, 'integrai_custom_cron_schedules' );
 
+		// QUOTE
+
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		// REST API
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_rest_route' );
 
-		// WOOCOMMERCE - Events
-		// $this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'woocommerce_created_customer' );
-		$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
-		// $this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
-		// $this->loader->add_action( 'woocommerce_checkout_order_processed', $plugin_public, 'woocommerce_checkout_order_processed' );
-
 		// CRON
 		$this->loader->add_action( 'integrai_cron_resend_events_activation', $plugin_public, 'integrai_cron_resend_events_activation' );
 		$this->loader->add_action( 'integrai_cron_resend_events_deactivation', $plugin_public, 'integrai_cron_resend_events_deactivation' );
 		$this->loader->add_action( 'integrai_cron_resend_events', $plugin_public, 'integrai_cron_resend_events' );
+
+		/** WOOCOMMERCE */
+		// Checks with WooCommerce is installed.
+		if ( class_exists( 'WC_Integration' ) ) {
+
+			// WOOCOMMERCE - Events
+			// $this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'woocommerce_created_customer' );
+			$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
+			// $this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
+			// $this->loader->add_action( 'woocommerce_checkout_order_processed', $plugin_public, 'woocommerce_checkout_order_processed' );
+
+			// QUOTE
+			$this->loader->add_action( 'woocommerce_shipping_init', $plugin_public, 'woocommerce_shipping_init' );
+			$this->loader->add_filter( 'woocommerce_shipping_methods', $plugin_public, 'woocommerce_shipping_methods' );
+
+		}
+
 	}
 
 	/**

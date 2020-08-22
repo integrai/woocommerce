@@ -93,7 +93,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   }
 
   public function get_shipping() {
-    return $this->get_by_name('SHIPPING');
+    return $this->get_by_name('shipping');
   }
 
   public function check_if_exists($name = '') {
