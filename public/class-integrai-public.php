@@ -60,18 +60,18 @@ class Integrai_Public {
 	// const CANCEL_ORDER = 'CANCEL_ORDER';
 
 	// CHECKAR
-	const NEW_CUSTOMER = 'NEW_CUSTOMER';
 	const REFUND_INVOICE = 'REFUND_INVOICE';
 	const FINALIZE_CHECKOUT = 'FINALIZE_CHECKOUT';
 
 	// OK
+	const NEW_CUSTOMER = 'NEW_CUSTOMER'; // Ok
 	const SAVE_CUSTOMER = 'SAVE_CUSTOMER'; // OK
-	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
-	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
 	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART'; // OK
-	const ABANDONED_CART = 'ABANDONED_CART';
 	const NEW_ORDER = 'NEW_ORDER'; // OK
 	const SAVE_ORDER = 'SAVE_ORDER'; // OK
+	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
+	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
+	const ABANDONED_CART = 'ABANDONED_CART';
 	const CANCEL_ORDER = 'CANCEL_ORDER';
 
 	public function __construct( $integrai, $version ) {
@@ -172,7 +172,7 @@ class Integrai_Public {
 
 	/** EVENTS */
 
-	// Usuário cadastrado?
+	// NEW_CUSTOMER
 	public function woocommerce_created_customer( $customer_id, $new_customer_data = null, $password_generated = null ) {
 
 		if ( isset($customer_id) && $this->get_config_helper()->event_is_enabled(self::NEW_CUSTOMER) ) {
@@ -188,25 +188,12 @@ class Integrai_Public {
 				'shipping' => $customer->get_shipping(),
 			);
 
-			Integrai_Helper::log($payload, 'HOOKS :: CREATED_CUSTOMER: ');
-
 			return $this->get_api_helper()->send_event(self::NEW_CUSTOMER, $payload);
 		}
 
 	}
 
-	// Novo usuário?
-	public function woocommerce_new_customer( $customer_id, $new_customer_data, $password_generated ) {
-		$customer = array(
-			'customer_id' => $customer_id,
-			'new_customer_data' => $new_customer_data,
-			'password_generated' => $password_generated,
-		);
-
-		Integrai_Helper::log($customer, 'HOOKS :: NEW_CUSTOMER: ');
-	}
-
-	// Adicionar ao carrinho
+	// ADD_PRODUCT_CART
 	public function woocommerce_add_to_cart( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
 
 		if ( is_user_logged_in() && $this->get_config_helper()->event_is_enabled(self::ADD_PRODUCT_CART) ) {
@@ -241,14 +228,26 @@ class Integrai_Public {
 		}
 	}
 
-	// Novo Pedido
-	public function woocommerce_new_order( $order_id, $order ) {
-		$order = array(
-			'order_id' => $order_id,
-			'order' => $order,
+	// NEW_ORDER
+	public function woocommerce_new_order( $order_id ) {
+		$OrderInstance = new WC_Order($order_id);
+
+		$customer_id = $OrderInstance->get_customer_id();
+		$CustomerInstance = new WC_Customer( $customer_id );
+
+		$customer = array(
+			'id' => $customer_id,
+			'email' => $CustomerInstance->get_email(),
+			'first_name' => $CustomerInstance->get_first_name(),
+			'last_name' => $CustomerInstance->get_last_name(),
+			'shipping' => $CustomerInstance->get_shipping(),
+			'billing' => $CustomerInstance->get_billing(),
 		);
 
-		Integrai_Helper::log($customer, 'HOOKS :: NEW_ORDER: ');
+		$payload = $OrderInstance->get_data();
+		$payload['customer'] = $customer;
+
+		return $this->get_api_helper()->send_event(self::NEW_ORDER, $payload);
 	}
 
 	// Pedido Pago [Verificar]

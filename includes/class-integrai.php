@@ -197,10 +197,9 @@ class Integrai {
 		if ( class_exists( 'WC_Integration' ) ) {
 
 			// WOOCOMMERCE - Events
-			$this->loader->add_action( 'woocommerce_new_customer', $plugin_public, 'woocommerce_new_customer' );
 			$this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'woocommerce_created_customer' );
 			$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
-			// $this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
+			$this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
 			// $this->loader->add_action( 'woocommerce_checkout_order_processed', $plugin_public, 'woocommerce_checkout_order_processed' );
 
 			// QUOTE

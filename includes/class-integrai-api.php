@@ -78,6 +78,11 @@ class Integrai_API {
         'payload' => $payload,
       ));
 
+      Integrai_Helper::log(array(
+        'event' => $event_name,
+        'payload' => $payload,
+      ), 'HOOKS :: SEND_EVENT: ');
+
       return $response;
 
     } catch (Exception $e) {
@@ -92,7 +97,6 @@ class Integrai_API {
   }
 
   private function _backup_event( $event_name, $payload ) {
-    Integrai_Helper::log($event_name, 'HOOKS :: BACKUP_EVENT: ');
 
     $data = array(
       'event' => $event_name,
