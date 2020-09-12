@@ -52,6 +52,19 @@ class Integrai_Public {
 	 * @param      string    $version    The version of this plugin.
 	 */
 
+	// EVENTOS PARA MAPEAR
+	// const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
+	// const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART';
+	// const NEW_ORDER = 'NEW_ORDER';
+	// const SAVE_ORDER = 'SAVE_ORDER';
+	// const CANCEL_ORDER = 'CANCEL_ORDER';
+
+	// CHECKAR
+	const NEW_CUSTOMER = 'NEW_CUSTOMER';
+	const REFUND_INVOICE = 'REFUND_INVOICE';
+	const FINALIZE_CHECKOUT = 'FINALIZE_CHECKOUT';
+
+	// OK
 	const SAVE_CUSTOMER = 'SAVE_CUSTOMER'; // OK
 	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
 	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
@@ -157,15 +170,40 @@ class Integrai_Public {
 		) );
 	}
 
+	/** EVENTS */
+
 	// Usuário cadastrado?
-	public function woocommerce_created_customer( $customer_id, $new_customer_data, $password_generated ) {
+	public function woocommerce_created_customer( $customer_id, $new_customer_data = null, $password_generated = null ) {
+
+		if ( isset($customer_id) && $this->get_config_helper()->event_is_enabled(self::NEW_CUSTOMER) ) {
+
+			$customer = new WC_Customer( $customer_id );
+
+			$payload = array(
+				'id' => $customer_id,
+				'email' => $customer->get_email(),
+				'first_name' => $customer->get_first_name(),
+				'last_name' => $customer->get_last_name(),
+				'billing' => $customer->get_billing(),
+				'shipping' => $customer->get_shipping(),
+			);
+
+			Integrai_Helper::log($payload, 'HOOKS :: CREATED_CUSTOMER: ');
+
+			return $this->get_api_helper()->send_event(self::NEW_CUSTOMER, $payload);
+		}
+
+	}
+
+	// Novo usuário?
+	public function woocommerce_new_customer( $customer_id, $new_customer_data, $password_generated ) {
 		$customer = array(
 			'customer_id' => $customer_id,
 			'new_customer_data' => $new_customer_data,
 			'password_generated' => $password_generated,
 		);
 
-		Integrai_Helper::log($customer, 'HOOKS :: CREATED_CUSTOMER: ');
+		Integrai_Helper::log($customer, 'HOOKS :: NEW_CUSTOMER: ');
 	}
 
 	// Adicionar ao carrinho
@@ -194,12 +232,12 @@ class Integrai_Public {
 				'cart_item_data' => $cart_item_data ,
 			);
 
-			$data = array(
+			$payload = array(
 				'customer' => $customer,
 				'item' => $cart,
 			);
 
-			return $this->get_api_helper()->send_event(self::ADD_PRODUCT_CART, $data);
+			return $this->get_api_helper()->send_event(self::ADD_PRODUCT_CART, $payload);
 		}
 	}
 
@@ -222,7 +260,7 @@ class Integrai_Public {
 		);
 	}
 
-	// CRON - EVENTS:
+	/** CRON - EVENTS: */
 	public function integrai_custom_cron_schedules( $schedules ) {
 		$schedules[ 'integrai_every_5_minutes' ] = array(
 			'interval' => (5 * MINUTE_IN_SECONDS),
@@ -284,10 +322,4 @@ class Integrai_Public {
 		include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-shipping-methods.php';
 	}
 
-	// AJAX QUOTE
-	public function wp_ajax_ajax_simulator() {}
-	public function wp_ajax_nopriv_ajax_simulator() {}
-
-	// CALL QUOTE
-	public function integrai_quote() {}
 }

@@ -52,7 +52,7 @@ if ( ! class_exists( 'Integrai_Shipping_Methods' ) ) :
 
       $shipping_helper = $this->get_shipping_helper();
 
-      $rate = $shipping_helper->quote($package);
+      $rate = $shipping_helper->quote( $package );
 
       Integrai_Helper::log($rate, '$rate: ');
 

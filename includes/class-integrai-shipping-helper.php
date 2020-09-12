@@ -80,22 +80,22 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
         } catch(Exception $e) {
           Integrai_Helper::log($e, 'QUOTE :: ERROR: ');
         }
-        }
-
+      }
     }
 
     private function transform_response($response) {
       $body = json_decode( $response['body'] );
+      $result = reset( $body );
 
       return array(
-        'id' => $body['carrierCode'],
-        'label' => $body['methodTitle'],
-        'cost' => $body['cost'],
-        'calc_tax' => $body['price'],
+        'id' => $result->carrierCode,
+        'label' => $result->methodTitle,
+        'cost' => $result->cost,
+        'calc_tax' => $result->price,
         'meta_data' => array(
-          'code' => $body['methodCode'],
-          'description' => $body['methodDescription'],
-          'carrier_title' => $body['carrierTitle'],
+          'code' => $result->methodCode,
+          'description' => $result->methodDescription,
+          'carrier_title' => $result->carrierTitle,
          )
       );
     }
@@ -108,11 +108,6 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
       $quote_order = array(
         'destination_zipcode' => $destination_zipcode,
         'cart_total_price' => $cart_total_price,
-        'cart_total_quantity' => $this->get_total('quantity', $items),
-        'cart_total_weight' => $this->get_total('weight', $items),
-        'cart_total_height' => $this->get_total('height', $items),
-        'cart_total_width' => $this->get_total('width', $items),
-        'cart_total_length' => $this->get_total('length', $items),
         'items' => $this->transform_items($items),
       );
 
@@ -136,10 +131,10 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
         array_push($transformed_items,
           array(
-            "weight" => (float) $product_data->get_weight(),
-            "width" =>  (float) $width,
-            "height" => (float) $height,
-            "length" => (float) $length,
+            "weight" => number_format($product_data->get_weight(), 3),
+            "width" => number_format($width, 2),
+            "height" => number_format($height, 2),
+            "length" => number_format($length, 2),
             "quantity" => (int) max(1, $quantity),
             "sku" => (string) $product_data->get_sku(),
             "unit_price" => (float) $product_data->get_sale_price(),
@@ -149,34 +144,6 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
       }
 
       return $transformed_items;
-    }
-
-    private function get_total($attr, $items) {
-      $data_items = array(
-        'price',
-        'weight',
-        'length',
-        'width',
-        'height',
-      );
-
-      $accumulator = 0;
-
-      foreach ($items as $item) {
-        $data = $item['data'];
-
-        if ( in_array( $attr, $data_items ) ) {
-          $value = in_array($attr, $this->get_default_config_keys())
-            ? $this->get_value_or_default($attr, $data)
-            : $data->{"get_$attr"}();
-
-          $accumulator = $accumulator + (float) $value;
-        } else {
-          $accumulator = $accumulator + $item[$attr];
-        }
-      }
-
-      return $accumulator;
     }
 
     private function get_value_or_default($attr, $data) {
