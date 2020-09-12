@@ -59,19 +59,31 @@ class Integrai_Public {
 	// const SAVE_ORDER = 'SAVE_ORDER';
 	// const CANCEL_ORDER = 'CANCEL_ORDER';
 
-	// CHECKAR
-	const REFUND_INVOICE = 'REFUND_INVOICE';
-	const FINALIZE_CHECKOUT = 'FINALIZE_CHECKOUT';
+	// TO CHECK
 
-	// OK
-	const NEW_CUSTOMER = 'NEW_CUSTOMER'; // Ok
+	/** NEWSLETTER_SUBSCRIBER: ***********************************
+	 * Não tem nativamente. Só via plugin.
+	 * Podemos producrar os hooks dos mais populares pra integrar.
+	 * Vale a pena?
+	*************************************************************/
+	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
+
+
+	const FINALIZE_CHECKOUT = 'FINALIZE_CHECKOUT';
 	const SAVE_CUSTOMER = 'SAVE_CUSTOMER'; // OK
-	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART'; // OK
-	const NEW_ORDER = 'NEW_ORDER'; // OK
+
 	const SAVE_ORDER = 'SAVE_ORDER'; // OK
 	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
-	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
 	const ABANDONED_CART = 'ABANDONED_CART';
+
+	// EVENT OK
+	const REFUND_INVOICE = 'REFUND_INVOICE';
+
+
+	// DONE
+	const NEW_CUSTOMER = 'NEW_CUSTOMER';
+	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART';
+	const NEW_ORDER = 'NEW_ORDER';
 	const CANCEL_ORDER = 'CANCEL_ORDER';
 
 	public function __construct( $integrai, $version ) {
@@ -113,6 +125,40 @@ class Integrai_Public {
 			include_once INTEGRAI__PLUGIN_DIR . '/includes/model/class-integrai-model-events.php';
 		endif;
 
+	}
+
+	private function get_customer( $customer_id ) {
+		$customer = new WC_Customer( $customer_id );
+
+		return array(
+			'id' => $customer_id,
+			'email' => $customer->get_email(),
+			'first_name' => $customer->get_first_name(),
+			'last_name' => $customer->get_last_name(),
+			'billing' => $customer->get_billing(),
+			'shipping' => $customer->get_shipping(),
+		);
+	}
+
+	private function get_order( $order_id ) {
+		$order = new WC_Order( $order_id );
+
+		return $order->get_data();
+	}
+
+	private function get_refund( $refund_id ) {
+		$refund = new WC_Order_Refund( $refund_id) ;
+
+		return array(
+			'type' => $refund->get_type(),
+			'status' => $refund->get_status(),
+			'post_title' => $refund->get_post_title(),
+			'amount' => $refund->get_amount(),
+			'reason' => $refund->get_reason(),
+			'refunded_by' => $refund->get_refunded_by(),
+			'refunded_payment' => $refund->get_refunded_payment(),
+			'formatted_refund_amount' => $refund->get_formatted_refund_amount(),
+		);
 	}
 
 	/**
@@ -177,18 +223,10 @@ class Integrai_Public {
 
 		if ( isset($customer_id) && $this->get_config_helper()->event_is_enabled(self::NEW_CUSTOMER) ) {
 
-			$customer = new WC_Customer( $customer_id );
+			$customer = $this->get_customer( $customer_id );
 
-			$payload = array(
-				'id' => $customer_id,
-				'email' => $customer->get_email(),
-				'first_name' => $customer->get_first_name(),
-				'last_name' => $customer->get_last_name(),
-				'billing' => $customer->get_billing(),
-				'shipping' => $customer->get_shipping(),
-			);
+			return $this->get_api_helper()->send_event(self::NEW_CUSTOMER, $customer);
 
-			return $this->get_api_helper()->send_event(self::NEW_CUSTOMER, $payload);
 		}
 
 	}
@@ -250,13 +288,42 @@ class Integrai_Public {
 		return $this->get_api_helper()->send_event(self::NEW_ORDER, $payload);
 	}
 
-	// Pedido Pago [Verificar]
-	public function woocommerce_checkout_order_processed( $order_id, $posted_data, $order ) {
-		$order = array(
-			'order_id' => $order_id,
-			'order' => $order,
-			'posted_data' => $posted_data,
+	// CANCEL_ORDER
+	public function woocommerce_cancelled_order( $order_id ) {
+		$OrderInstance = new WC_Order($order_id);
+
+		$customer_id = $OrderInstance->get_customer_id();
+		$CustomerInstance = new WC_Customer( $customer_id );
+
+		$customer = array(
+			'id' => $customer_id,
+			'email' => $CustomerInstance->get_email(),
+			'first_name' => $CustomerInstance->get_first_name(),
+			'last_name' => $CustomerInstance->get_last_name(),
+			'shipping' => $CustomerInstance->get_shipping(),
+			'billing' => $CustomerInstance->get_billing(),
 		);
+
+		$payload = $OrderInstance->get_data();
+		$payload['customer'] = $customer;
+
+		return $this->get_api_helper()->send_event(self::CANCEL_ORDER, $payload);
+	}
+
+	// CANCEL_ORDER
+	public function woocommerce_order_refunded( $order_id, $refund_id ) {
+		$OrderInstance = new WC_Order($order_id);
+		$customer_id = $OrderInstance->get_customer_id();
+
+		$order = $this->get_order( $order_id );
+		$refund = $this->get_refund( $refund_id );
+		$customer = $this->get_customer( $customer_id );
+
+		$payload = $order;
+		$payload['refund'] = $refund;
+		$payload['customer'] = $customer;
+
+		return $this->get_api_helper()->send_event(self::REFUND_INVOICE, $payload);
 	}
 
 	/** CRON - EVENTS: */
