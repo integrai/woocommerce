@@ -63,28 +63,32 @@ class Integrai_Public {
 
 	/** NEWSLETTER_SUBSCRIBER: ***********************************
 	 * Não tem nativamente. Só via plugin.
-	 * Podemos producrar os hooks dos mais populares pra integrar.
+	 * Podemos procurar os hooks dos mais populares pra integrar.
 	 * Vale a pena?
+	 * Ou criar uma feature para fazer isso.
 	*************************************************************/
 	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
 
-
-	const FINALIZE_CHECKOUT = 'FINALIZE_CHECKOUT';
-	const SAVE_CUSTOMER = 'SAVE_CUSTOMER'; // OK
-
-	const SAVE_ORDER = 'SAVE_ORDER'; // OK
+	/** CUSTOMER_BIRTHDAY: ***********************************
+	 * WP e WC não oferecem esse campo nativamente.
+	 * Podemos adicionar via plugin, como uma user_meta e usar
+	 * para integrar o evento.
+	 * Vale a pena?
+	*************************************************************/
 	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
+
+	// const FINALIZE_CHECKOUT = 'FINALIZE_CHECKOUT';
 	const ABANDONED_CART = 'ABANDONED_CART';
 
 	// EVENT OK
-	const REFUND_INVOICE = 'REFUND_INVOICE';
-
 
 	// DONE
 	const NEW_CUSTOMER = 'NEW_CUSTOMER';
 	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART';
 	const NEW_ORDER = 'NEW_ORDER';
 	const CANCEL_ORDER = 'CANCEL_ORDER';
+	const REFUND_INVOICE = 'REFUND_INVOICE';
+	const SAVE_ORDER = 'SAVE_ORDER';
 
 	public function __construct( $integrai, $version ) {
 
@@ -139,6 +143,19 @@ class Integrai_Public {
 			'shipping' => $customer->get_shipping(),
 		);
 	}
+
+	// private function get_customers() {
+	// 	$users_per_page = get_option( 'posts_per_page' );
+
+	// 	$query_args = array(
+	// 		'fields'  => 'ID',
+	// 		'role'    => 'customer',
+	// 		'orderby' => 'registered',
+	// 		'number'  => $users_per_page,
+	// 	);
+
+	// 	$query = new WP_User_Query( $query_args );
+	// }
 
 	private function get_order( $order_id ) {
 		$order = new WC_Order( $order_id );
@@ -269,23 +286,27 @@ class Integrai_Public {
 	// NEW_ORDER
 	public function woocommerce_new_order( $order_id ) {
 		$OrderInstance = new WC_Order($order_id);
+		$order = $this->get_order( $order_id );
 
 		$customer_id = $OrderInstance->get_customer_id();
-		$CustomerInstance = new WC_Customer( $customer_id );
+		$customer = $this->get_customer( $customer_id );
 
-		$customer = array(
-			'id' => $customer_id,
-			'email' => $CustomerInstance->get_email(),
-			'first_name' => $CustomerInstance->get_first_name(),
-			'last_name' => $CustomerInstance->get_last_name(),
-			'shipping' => $CustomerInstance->get_shipping(),
-			'billing' => $CustomerInstance->get_billing(),
-		);
+		$order['customer'] = $customer;
 
-		$payload = $OrderInstance->get_data();
-		$payload['customer'] = $customer;
+		return $this->get_api_helper()->send_event(self::NEW_ORDER, $order);
+	}
 
-		return $this->get_api_helper()->send_event(self::NEW_ORDER, $payload);
+	// SAVE_ORDER
+	public function woocommerce_update_order( $order_id ) {
+		$OrderInstance = new WC_Order($order_id);
+		$order = $this->get_order( $order_id );
+
+		$customer_id = $OrderInstance->get_customer_id();
+		$customer = $this->get_customer( $customer_id );
+
+		$order['customer'] = $customer;
+
+		return $this->get_api_helper()->send_event(self::SAVE_ORDER, $order);
 	}
 
 	// CANCEL_ORDER
@@ -326,14 +347,17 @@ class Integrai_Public {
 		return $this->get_api_helper()->send_event(self::REFUND_INVOICE, $payload);
 	}
 
+	// ABANDONED_CART
+
+
 	/** CRON - EVENTS: */
 	public function integrai_custom_cron_schedules( $schedules ) {
-		$schedules[ 'integrai_every_5_minutes' ] = array(
+		$schedules['integrai_every_5_minutes'] = array(
 			'interval' => (5 * MINUTE_IN_SECONDS),
 			'display' => __( 'Every 5 minutes' ),
 		);
 
-		$schedules[ 'integrai_every_minute' ] = array(
+		$schedules['integrai_every_minute'] = array(
 			'interval' => MINUTE_IN_SECONDS,
 			'display' => __( 'Every minute' ),
 		);
@@ -341,15 +365,50 @@ class Integrai_Public {
 		return $schedules;
 	}
 
-	public function integrai_cron_resend_events_activation() {
+	public function integrai_cron_activation() {
 		if ( ! wp_next_scheduled( 'integrai_cron_resend_events' ) ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_resend_events' );
 		}
+
+		if ( ! wp_next_scheduled( 'integrai_cron_abandoned_cart' ) ) {
+			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_abandoned_cart' );
+		}
+
+		// if ( ! wp_next_scheduled( 'integrai_check_dob' ) ) {
+		// 	wp_schedule_event( time(), 'daily', 'integrai_check_dob' );
+		// }
 	}
 
-	public function integrai_cron_resend_events_deactivation() {
-		$timestamp = wp_next_scheduled( 'integrai_cron_resend_events' );
-		wp_unschedule_event ($timestamp, 'integrai_cron_resend_events');
+	public function integrai_cron_deactivation() {
+		// Resend Events
+		$events_timestamp = wp_next_scheduled( 'integrai_cron_resend_events' );
+		wp_unschedule_event ($events_timestamp, 'integrai_cron_resend_events');
+
+		// Check the date of birth
+		// $dob_timestamp = wp_next_scheduled( 'integrai_check_dob' );
+		// wp_unschedule_event ($dob_timestamp, 'integrai_check_dob');
+	}
+
+	// public function integrai_check_dob() {
+
+	// }
+	public function integrai_cron_abandoned_cart() {
+		// Pegar o carrinhos
+		// Verificar a data da ultima atualização
+		// se for maior que X minutos, disparar action para notificação
+		// com o id do carrinho
+		// config.minutes_abandoned_cart_lifetime
+
+		if ( $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART) ) {
+			$minutes = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
+			$fromDate = date('Y-m-d H:i:s', strtotime('-' . ( $minutes || 60 ) . ' minutes'));
+			$toDate = date('Y-m-d H:i:s', strtotime("now"));
+
+			WC()->session  = new WC_Session_Handler();
+			WC()->cart     = new WC_Cart();
+			WC()->customer = new WC_Customer();
+
+		}
 	}
 
 	public function integrai_cron_resend_events() {

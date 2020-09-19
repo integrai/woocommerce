@@ -188,9 +188,10 @@ class Integrai {
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_rest_route' );
 
 		// CRON
-		$this->loader->add_action( 'integrai_cron_resend_events_activation', $plugin_public, 'integrai_cron_resend_events_activation' );
-		$this->loader->add_action( 'integrai_cron_resend_events_deactivation', $plugin_public, 'integrai_cron_resend_events_deactivation' );
+		$this->loader->add_action( 'integrai_cron_activation', $plugin_public, 'integrai_cron_activation' );
+		$this->loader->add_action( 'integrai_cron_deactivation', $plugin_public, 'integrai_cron_deactivation' );
 		$this->loader->add_action( 'integrai_cron_resend_events', $plugin_public, 'integrai_cron_resend_events' );
+		$this->loader->add_action( 'integrai_cron_abandoned_cart', $plugin_public, 'integrai_cron_abandoned_cart' );
 
 		/** WOOCOMMERCE */
 		// Checks with WooCommerce is installed.
@@ -200,6 +201,7 @@ class Integrai {
 			$this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'woocommerce_created_customer' );
 			$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
 			$this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
+			$this->loader->add_action( 'woocommerce_update_order', $plugin_public, 'woocommerce_update_order' );
 			$this->loader->add_action( 'woocommerce_cancelled_order', $plugin_public, 'woocommerce_cancelled_order' );
 			$this->loader->add_action( 'woocommerce_order_refunded', $plugin_public, 'woocommerce_order_refunded' );
 

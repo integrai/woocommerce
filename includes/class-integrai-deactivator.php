@@ -31,6 +31,6 @@ class Integrai_Deactivator {
     Integrai_Helper::log('DEACTIVATOR');
 
     // Desativa o CRON
-    do_action( 'integrai_cron_resend_events_deactivation' );
+    do_action( 'integrai_cron_deactivation' );
   }
 }

@@ -92,6 +92,14 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return $configs[$name] ? $configs[$name] : false;
   }
 
+  public function get_minutes_abandoned_cart_lifetime() {
+    $configs = $this->get_global();
+
+    return $configs['minutes_abandoned_cart_lifetime']
+      ? $configs['minutes_abandoned_cart_lifetime']
+      : false;
+  }
+
   public function get_shipping() {
     return $this->get_by_name('shipping');
   }

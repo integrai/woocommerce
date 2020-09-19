@@ -87,6 +87,10 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
       $body = json_decode( $response['body'] );
       $result = reset( $body );
 
+      if (!$result || !is_object( $result )) {
+        return false;
+      }
+
       return array(
         'id' => $result->carrierCode,
         'label' => $result->methodTitle,
@@ -96,7 +100,7 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
           'code' => $result->methodCode,
           'description' => $result->methodDescription,
           'carrier_title' => $result->carrierTitle,
-         )
+        )
       );
     }
 

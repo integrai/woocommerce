@@ -34,6 +34,6 @@ class Integrai_Activator {
     $events->setup();
 
     // Ativa o CRON
-    do_action( 'integrai_cron_resend_events_activation' );
+    do_action( 'integrai_cron_activation' );
   }
 }
