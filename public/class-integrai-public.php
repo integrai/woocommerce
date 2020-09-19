@@ -111,6 +111,41 @@ class Integrai_Public {
 		return new Integrai_Model_Events();
 	}
 
+	private function get_customer_sessions() {
+		global $wpdb;
+
+		$order_sessions = $wpdb->get_results("
+				SELECT *
+				FROM ". $wpdb->prefix."woocommerce_sessions
+		");
+
+		$serialized_sessions = array();
+		foreach ( $order_sessions as $order ) {
+			$parsed_order = array();
+			$raw_value = maybe_unserialize($order->session_value);
+
+			$parsed_order['cart'] = maybe_unserialize( $raw_value['cart'] );
+			$parsed_order['cart_totals'] = maybe_unserialize( $raw_value['cart_totals'] );
+			$parsed_order['applied_coupons'] = maybe_unserialize( $raw_value['applied_coupons'] );
+			$parsed_order['coupon_discount_totals'] = maybe_unserialize( $raw_value['coupon_discount_totals'] );
+			$parsed_order['coupon_discount_tax_totals'] = maybe_unserialize( $raw_value['coupon_discount_tax_totals'] );
+			$parsed_order['removed_cart_contents'] = maybe_unserialize( $raw_value['removed_cart_contents'] );
+			$parsed_order['shipping_for_package_0'] = maybe_unserialize( $raw_value['shipping_for_package_0'] );
+			$parsed_order['previous_shipping_methods'] = maybe_unserialize( $raw_value['previous_shipping_methods'] );
+			$parsed_order['chosen_shipping_methods'] = maybe_unserialize( $raw_value['chosen_shipping_methods'] );
+			$parsed_order['shipping_method_counts'] = maybe_unserialize( $raw_value['shipping_method_counts'] );
+			$parsed_order['customer'] = maybe_unserialize( $raw_value['customer'] );
+
+			if ( !empty( $parsed_order['customer']['id'] ) ) {
+				array_push($serialized_sessions, $parsed_order);
+			}
+		}
+
+		Integrai_Helper::log($serialized_sessions, '==> SESSIONS :: ');
+
+		return $serialized_sessions;
+	}
+
 	private function load_dependencies() {
 
 		if ( ! class_exists( 'Integrai_Helper' ) ) :
@@ -246,6 +281,13 @@ class Integrai_Public {
 
 		}
 
+	}
+
+	// Filter on ADD_CART to add created_at
+	public function woocommerce_add_cart_item_data( $cart_item_data ) {
+		$cart_item_data['created_at'] = date('Y-m-d H:i:s', strtotime("now"));
+
+		return $cart_item_data;
 	}
 
 	// ADD_PRODUCT_CART
@@ -397,17 +439,39 @@ class Integrai_Public {
 		// Verificar a data da ultima atualização
 		// se for maior que X minutos, disparar action para notificação
 		// com o id do carrinho
-		// config.minutes_abandoned_cart_lifetime
 
 		if ( $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART) ) {
 			$minutes = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
-			$fromDate = date('Y-m-d H:i:s', strtotime('-' . ( $minutes || 60 ) . ' minutes'));
-			$toDate = date('Y-m-d H:i:s', strtotime("now"));
+			$from_date = date('Y-m-d H:i:s', strtotime('-' . ( $minutes || 60 ) . ' minutes'));
+			$cart_created = date('Y-m-d H:i:s', strtotime("now"));
 
-			WC()->session  = new WC_Session_Handler();
-			WC()->cart     = new WC_Cart();
-			WC()->customer = new WC_Customer();
+			$sessions = $this->get_customer_sessions();
+			$abandoned_cart = array();
 
+			foreach ($sessions as $session) {
+				$created_at = $session['cart']['created_at'];
+
+				// Pega a data mais antiga e considera a data da criação do carrinho
+				if ($created_at < $earlier_date) {
+					$cart_created = $created_at;
+
+					// Compara a data da criação do carrinho com a de abandono
+					if ($cart_created > $from_date) {
+						$item = array();
+
+						$item['created_at'] = $cart_created;
+						$item['customer'] = $session['customer'];
+						$item['cart'] = $session['cart'];
+						$item['cart_totals'] = $session['cart_totals'];
+
+						array_push($abandoned_cart, $item);
+					}
+				}
+			}
+
+			if ( !empty($abandoned_cart) ) {
+				return $this->get_api_helper()->send_event(self::ABANDONED_CART, $abandoned_cart);
+			}
 		}
 	}
 

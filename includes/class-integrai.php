@@ -209,6 +209,8 @@ class Integrai {
 			$this->loader->add_action( 'woocommerce_shipping_init', $plugin_public, 'woocommerce_shipping_init' );
 			$this->loader->add_filter( 'woocommerce_shipping_methods', $plugin_public, 'woocommerce_shipping_methods' );
 
+			$this->loader->add_filter( 'woocommerce_add_cart_item_data', $plugin_public, 'woocommerce_add_cart_item_data' );
+
 		}
 
 	}
