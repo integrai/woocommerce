@@ -141,8 +141,6 @@ class Integrai_Public {
 			}
 		}
 
-		Integrai_Helper::log($serialized_sessions, '==> SESSIONS :: ');
-
 		return $serialized_sessions;
 	}
 
@@ -441,33 +439,41 @@ class Integrai_Public {
 		// com o id do carrinho
 
 		if ( $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART) ) {
-			$minutes = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
-			$from_date = date('Y-m-d H:i:s', strtotime('-' . ( $minutes || 60 ) . ' minutes'));
+			$cart_lifetime = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
+			$minutes = $cart_lifetime ? $cart_lifetime : 60;
+			$from_date = date('Y-m-d H:i:s', strtotime('-' . $minutes . ' minutes'));
 			$cart_created = date('Y-m-d H:i:s', strtotime("now"));
 
 			$sessions = $this->get_customer_sessions();
 			$abandoned_cart = array();
 
 			foreach ($sessions as $session) {
-				$created_at = $session['cart']['created_at'];
+				$cart = $session['cart'];
 
-				// Pega a data mais antiga e considera a data da criação do carrinho
-				if ($created_at < $earlier_date) {
-					$cart_created = $created_at;
+				// Verifica qual dos produtos do carrinho tem a data de criação mais antiga
+				foreach ($cart as $product) {
+					$created_at = $product['created_at'];
 
-					// Compara a data da criação do carrinho com a de abandono
-					if ($cart_created > $from_date) {
-						$item = array();
-
-						$item['created_at'] = $cart_created;
-						$item['customer'] = $session['customer'];
-						$item['cart'] = $session['cart'];
-						$item['cart_totals'] = $session['cart_totals'];
-
-						array_push($abandoned_cart, $item);
+					// Pega a data mais antiga e considera a data da criação do carrinho
+					if ($created_at < $cart_created) {
+						$cart_created = $created_at;
 					}
 				}
+
+				// Se a data de criação for mais antiga que a data de corte, considera como abandadono
+				if ($cart_created < $from_date) {
+					$item = array();
+
+					$item['created_at'] = $cart_created;
+					$item['customer'] = $session['customer'];
+					$item['cart'] = $session['cart'];
+					$item['cart_totals'] = $session['cart_totals'];
+
+					array_push($abandoned_cart, $item);
+				}
 			}
+
+			Integrai_Helper::log($abandoned_cart, '==> ABANDONED_CART: ');
 
 			if ( !empty($abandoned_cart) ) {
 				return $this->get_api_helper()->send_event(self::ABANDONED_CART, $abandoned_cart);
