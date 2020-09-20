@@ -42,12 +42,13 @@ class Integrai_Model_Helper {
       $ids = array();
 
       foreach($data as $item) {
-        $inserted_id = $this->insert(
-          array(
-            'name' => $item['name'],
-            'values' => $item['values'],
-          )
-        );
+        $is_array = is_array( $item );
+        $name = $is_array ? $item['name'] : $item->name;
+        $values = $is_array ? $item['values'] : $item->values;
+
+        $row = array( 'name' => $name, 'values' => $values );
+
+        $inserted_id = $this->insert( $row );
 
         array_push($ids, $inserted_id);
       }
@@ -103,12 +104,12 @@ class Integrai_Model_Helper {
       $ids = array();
 
       foreach( $data as $item ) {
-        $row = array(
-          'name' => $item['name'],
-          'values' => $item['values'],
-        );
+        $is_array = is_array( $item );
+        $name = $is_array ? $item['name'] : $item->name;
+        $values = $is_array ? $item['values'] : $item->values;
 
-        $where = array( 'name' => $item['name'] );
+        $row = array( 'name' => $name, 'values' => $values );
+        $where = array( 'name' => $name );
 
         $updated_id = $this->update( $row, $where );
 

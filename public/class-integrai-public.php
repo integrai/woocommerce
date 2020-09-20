@@ -77,8 +77,6 @@ class Integrai_Public {
 	*************************************************************/
 	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
 
-	// const FINALIZE_CHECKOUT = 'FINALIZE_CHECKOUT';
-	const ABANDONED_CART = 'ABANDONED_CART';
 
 	// EVENT OK
 
@@ -89,6 +87,7 @@ class Integrai_Public {
 	const CANCEL_ORDER = 'CANCEL_ORDER';
 	const REFUND_INVOICE = 'REFUND_INVOICE';
 	const SAVE_ORDER = 'SAVE_ORDER';
+	const ABANDONED_CART = 'ABANDONED_CART';
 
 	public function __construct( $integrai, $version ) {
 
@@ -97,6 +96,10 @@ class Integrai_Public {
 
 		$this->load_dependencies();
 
+	}
+
+	private function try_serialize($list, $key) {
+		return array_key_exists( $key, $list ) ? maybe_unserialize( $list[$key] ) : null;
 	}
 
 	private function get_api_helper() {
@@ -124,17 +127,17 @@ class Integrai_Public {
 			$parsed_order = array();
 			$raw_value = maybe_unserialize($order->session_value);
 
-			$parsed_order['cart'] = maybe_unserialize( $raw_value['cart'] );
-			$parsed_order['cart_totals'] = maybe_unserialize( $raw_value['cart_totals'] );
-			$parsed_order['applied_coupons'] = maybe_unserialize( $raw_value['applied_coupons'] );
-			$parsed_order['coupon_discount_totals'] = maybe_unserialize( $raw_value['coupon_discount_totals'] );
-			$parsed_order['coupon_discount_tax_totals'] = maybe_unserialize( $raw_value['coupon_discount_tax_totals'] );
-			$parsed_order['removed_cart_contents'] = maybe_unserialize( $raw_value['removed_cart_contents'] );
-			$parsed_order['shipping_for_package_0'] = maybe_unserialize( $raw_value['shipping_for_package_0'] );
-			$parsed_order['previous_shipping_methods'] = maybe_unserialize( $raw_value['previous_shipping_methods'] );
-			$parsed_order['chosen_shipping_methods'] = maybe_unserialize( $raw_value['chosen_shipping_methods'] );
-			$parsed_order['shipping_method_counts'] = maybe_unserialize( $raw_value['shipping_method_counts'] );
-			$parsed_order['customer'] = maybe_unserialize( $raw_value['customer'] );
+			$parsed_order['cart'] 			 								= $this->try_serialize( $raw_value, 'cart' );
+			$parsed_order['cart_totals'] 								= $this->try_serialize( $raw_value, 'cart_totals' );
+			$parsed_order['applied_coupons'] 						= $this->try_serialize( $raw_value, 'applied_coupons' );
+			$parsed_order['coupon_discount_totals']			= $this->try_serialize( $raw_value, 'coupon_discount_totals' );
+			$parsed_order['coupon_discount_tax_totals'] = $this->try_serialize( $raw_value, 'coupon_discount_tax_totals' );
+			$parsed_order['removed_cart_contents'] 			= $this->try_serialize( $raw_value, 'removed_cart_contents' );
+			$parsed_order['shipping_for_package_0'] 		= $this->try_serialize( $raw_value, 'shipping_for_package_0' );
+			$parsed_order['previous_shipping_methods'] 	= $this->try_serialize( $raw_value, 'previous_shipping_methods' );
+			$parsed_order['chosen_shipping_methods'] 		= $this->try_serialize( $raw_value, 'chosen_shipping_methods' );
+			$parsed_order['shipping_method_counts'] 		= $this->try_serialize( $raw_value, 'shipping_method_counts' );
+			$parsed_order['customer'] 									= $this->try_serialize( $raw_value, 'customer' );
 
 			if ( !empty( $parsed_order['customer']['id'] ) ) {
 				array_push($serialized_sessions, $parsed_order);
@@ -176,19 +179,6 @@ class Integrai_Public {
 			'shipping' => $customer->get_shipping(),
 		);
 	}
-
-	// private function get_customers() {
-	// 	$users_per_page = get_option( 'posts_per_page' );
-
-	// 	$query_args = array(
-	// 		'fields'  => 'ID',
-	// 		'role'    => 'customer',
-	// 		'orderby' => 'registered',
-	// 		'number'  => $users_per_page,
-	// 	);
-
-	// 	$query = new WP_User_Query( $query_args );
-	// }
 
 	private function get_order( $order_id ) {
 		$order = new WC_Order( $order_id );
@@ -257,13 +247,11 @@ class Integrai_Public {
 
 	}
 
-	public function register_rest_route($config_controller) {
+	public function rest_api_init($config_controller) {
 		require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-config.php';
 
-		register_rest_route( 'integrai/v1', '/config', array(
-			'methods' => 'GET',
-			'callback' => array('Integrai_Controller_Config', 'index'),
-		) );
+		$integrai_config_controller = new Integrai_Config_Controller();
+    $integrai_config_controller->register_routes();
 	}
 
 	/** EVENTS */
@@ -433,11 +421,6 @@ class Integrai_Public {
 
 	// }
 	public function integrai_cron_abandoned_cart() {
-		// Pegar o carrinhos
-		// Verificar a data da ultima atualização
-		// se for maior que X minutos, disparar action para notificação
-		// com o id do carrinho
-
 		if ( $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART) ) {
 			$cart_lifetime = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
 			$minutes = $cart_lifetime ? $cart_lifetime : 60;
@@ -472,8 +455,6 @@ class Integrai_Public {
 					array_push($abandoned_cart, $item);
 				}
 			}
-
-			Integrai_Helper::log($abandoned_cart, '==> ABANDONED_CART: ');
 
 			if ( !empty($abandoned_cart) ) {
 				return $this->get_api_helper()->send_event(self::ABANDONED_CART, $abandoned_cart);

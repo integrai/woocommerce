@@ -12,8 +12,20 @@ include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.
  * 5. Setar API_KEY e SECRET_KEY nas configs do WP Woocommerce
  */
 
-class Integrai_Controller_Config {
-  static public function index() {
+class Integrai_Config_Controller extends WP_REST_Controller {
+  public function register_routes() {
+    $namespace = 'integrai/v1';
+    $path = 'config';
+
+    register_rest_route( $namespace, '/' . $path, [
+      array(
+        'methods'  => 'GET',
+        'callback' => array( $this, 'get_items' ),
+      ),
+    ]);
+  }
+
+  public function get_items( $request ) {
     try {
       $api = new Integrai_API();
       $response = $api->request('/config');
@@ -24,16 +36,15 @@ class Integrai_Controller_Config {
 
       // Create the response object
       $response = new WP_REST_Response( array( "ok" => true ) );
-      $response->set_status( 201 );
       $response->header( 'Content-type', 'application/json' );
+      $response->set_status( 201 );
 
       return $response;
 
     } catch (Exception $e) {
 
-      Integrai_Helper::log('Error ao atualizar configs', $e->getMessage());
+      Integrai_Helper::log($e->getMessage(), 'Error ao atualizar configs');
 
-      // Redirect para "/"
     }
   }
 }

@@ -185,7 +185,7 @@ class Integrai {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		// REST API
-		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_rest_route' );
+		$this->loader->add_action( 'rest_api_init', $plugin_public, 'rest_api_init' );
 
 		// CRON
 		$this->loader->add_action( 'integrai_cron_activation', $plugin_public, 'integrai_cron_activation' );

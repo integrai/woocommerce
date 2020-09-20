@@ -8,10 +8,9 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   }
 
   public function setup() {
-    $created = $this->create_table();
+    $this->create_table();
 
     $data = $this->get_default_config();
-
     $action = $this->config_exists() ? 'update_many' : 'insert_many';
 
     $ids = $this->{$action}($data);
@@ -175,24 +174,5 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
     );
-  }
-
-  public function get_from_remote() {
-    $response = wp_remote_get('http://host.docker.internal:3000/v1/config', array(
-      'method' => 'GET',
-      'headers' => array(
-        'Content-Type' => 'application/json'
-        )
-      )
-    );
-
-    $responseBody = wp_remote_retrieve_body( $response );
-    $result = json_decode( $responseBody );
-
-    if( is_wp_error( $response ) ) {
-      return Integrai_Helper::log($response->get_error_message(), 'ERROR GETTING FROM REMOTE: ');
-    }
-
-    return $result;
   }
 }

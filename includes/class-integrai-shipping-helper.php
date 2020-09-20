@@ -91,9 +91,13 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
         return false;
       }
 
+      $titleList = explode(" _ ", $result->methodTitle);
+      $logistic_provider = $titleList[0];
+      $delivery_deadline = $titleList[1];
+
       return array(
         'id' => $result->carrierCode,
-        'label' => $result->methodTitle,
+        'label' => "$logistic_provider - $delivery_deadline",
         'cost' => $result->cost,
         'calc_tax' => $result->price,
         'meta_data' => array(
