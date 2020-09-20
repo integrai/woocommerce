@@ -338,7 +338,7 @@ class Integrai_Public {
 	}
 
 	// CANCEL_ORDER
-	public function woocommerce_cancelled_order( $order_id ) {
+	public function woocommerce_order_status_cancelled( $order_id ) {
 		$OrderInstance = new WC_Order($order_id);
 
 		$customer_id = $OrderInstance->get_customer_id();
@@ -360,12 +360,12 @@ class Integrai_Public {
 	}
 
 	// CANCEL_ORDER
-	public function woocommerce_order_refunded( $order_id, $refund_id ) {
+	public function woocommerce_order_refunded( $order_id, $refund_id = false ) {
 		$OrderInstance = new WC_Order($order_id);
 		$customer_id = $OrderInstance->get_customer_id();
 
 		$order = $this->get_order( $order_id );
-		$refund = $this->get_refund( $refund_id );
+		$refund = $refund_id ? $this->get_refund( $refund_id ) : null;
 		$customer = $this->get_customer( $customer_id );
 
 		$payload = $order;

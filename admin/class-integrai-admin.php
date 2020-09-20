@@ -100,6 +100,20 @@ class Integrai_Admin {
 
 	}
 
+	private function check_woocommerce() {
+		return ( class_exists( 'woocommerce' ) );
+	}
+
+	public function admin_notices() {
+		if ( !$this->check_woocommerce() ) {
+			?>
+				<div class="notice notice-error is-dismissible">
+					<p><a href="https://wordpress.org/plugins/woocommerce/" target="__blank">WooCommerce</a> precisa estar instalado e ativado para usar o plugin <b>Integrai</b>.</p>
+				</div>
+			<?php
+		}
+	}
+
 	public function woocommerce_integrations( $integrations ) {
 		require_once INTEGRAI__PLUGIN_DIR . 'admin/wc-config/class-wc-integration-integrai-settings-integration.php';
 

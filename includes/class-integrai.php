@@ -161,6 +161,9 @@ class Integrai {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+		// CHECK WOOCOMMERCE
+		$this->loader->add_action('admin_notices', $plugin_admin, 'admin_notices');
+
 		// WOOCOMMERCE
 		$this->loader->add_action( 'woocommerce_integrations', $plugin_admin, 'woocommerce_integrations' );
 
@@ -202,7 +205,7 @@ class Integrai {
 			$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
 			$this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
 			$this->loader->add_action( 'woocommerce_update_order', $plugin_public, 'woocommerce_update_order' );
-			$this->loader->add_action( 'woocommerce_cancelled_order', $plugin_public, 'woocommerce_cancelled_order' );
+			$this->loader->add_action( 'woocommerce_order_status_cancelled', $plugin_public, 'woocommerce_order_status_cancelled' );
 			$this->loader->add_action( 'woocommerce_order_refunded', $plugin_public, 'woocommerce_order_refunded' );
 
 			// QUOTE
