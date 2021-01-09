@@ -10,7 +10,9 @@ if ( ! class_exists( 'Integrai_Shipping_Methods' ) ) :
     public function __construct( $instance_id = 0 ) {
       $this->id                 = 'integrai_shipping_method'; // Id for your shipping method. Should be uunique.
       $this->instance_id 	      = absint( $instance_id );
+      $this->title              = __( 'Integrai', 'woocommerce-integrai-settings' );  // Title shown in admin
       $this->method_title       = __( 'Integrai', 'woocommerce-integrai-settings' );  // Title shown in admin
+      $this->method_description = __( 'Método de entrega da Integrai. Permite fazer cotação de frete com plataformas como Frenet e Intelipost.', 'woocommerce-integrai-settings' );  // Title shown in admin
       $this->supports           = array(
         'shipping-zones',
         'instance-settings'
