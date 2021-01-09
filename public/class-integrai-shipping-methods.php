@@ -7,9 +7,14 @@ if ( ! class_exists( 'Integrai_Shipping_Methods' ) ) :
      * @access public
      * @return void
      */
-    public function __construct() {
+    public function __construct( $instance_id = 0 ) {
       $this->id                 = 'integrai_shipping_method'; // Id for your shipping method. Should be uunique.
-      $this->method_title       = __( 'Integrai' );  // Title shown in admin
+      $this->instance_id 	      = absint( $instance_id );
+      $this->method_title       = __( 'Integrai', 'woocommerce-integrai-settings' );  // Title shown in admin
+      $this->supports           = array(
+        'shipping-zones',
+        'instance-settings'
+      );
 
       $this->load_dependencies();
 
@@ -36,6 +41,11 @@ if ( ! class_exists( 'Integrai_Shipping_Methods' ) ) :
       // Load the settings API
       $this->init_form_fields(); // This is part of the settings API. Override the method to add your own settings
       $this->init_settings(); // This is part of the settings API. Loads settings you previously init.
+
+      // Define user set variables.
+      $this->enabled          = $this->get_option( 'enabled' );
+      $this->api_key          = $this->get_option( 'api_key' );
+      $this->secret_key       = $this->get_option( 'secret_key' );
 
       // Save settings in admin if you have any defined
       add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );

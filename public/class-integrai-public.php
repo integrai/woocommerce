@@ -375,9 +375,6 @@ class Integrai_Public {
 		return $this->get_api_helper()->send_event(self::REFUND_INVOICE, $payload);
 	}
 
-	// ABANDONED_CART
-
-
 	/** CRON - EVENTS: */
 	public function integrai_custom_cron_schedules( $schedules ) {
 		$schedules['integrai_every_5_minutes'] = array(
@@ -417,10 +414,10 @@ class Integrai_Public {
 		// wp_unschedule_event ($dob_timestamp, 'integrai_check_dob');
 	}
 
-	// public function integrai_check_dob() {
-
-	// }
+	// ABANDONED_CART
 	public function integrai_cron_abandoned_cart() {
+		// TODO: Após enviar um carrinho abandonado, tirar ele da lista para evitar duplicados
+
 		if ( $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART) ) {
 			$cart_lifetime = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
 			$minutes = $cart_lifetime ? $cart_lifetime : 60;

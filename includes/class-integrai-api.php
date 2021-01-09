@@ -3,7 +3,6 @@
 class Integrai_API {
   private $api_key;
   private $secret_key;
-  private $config_model;
   private $events_model;
 
   protected $api_url;
@@ -12,15 +11,15 @@ class Integrai_API {
   public function __construct() {
     $this->load_depedencies();
 
-    $options = get_option('woocommerce_integrai-settings_settings');
-
-    $this->config_model = new Integrai_Model_Config();
+    // Load Models
+    $Config = new Integrai_Model_Config();
     $this->events_model = new Integrai_Model_Events();
-    $this->api_url = $this->get_api_url();
-    $this->timeout = $this->get_api_timeout();
-    $this->api_key = $options['api_key'];
-    $this->secret_key = $options['secret_key'];
-    $this->secret_key = $this->config_model->get_secret_key();
+
+    // Load Configs
+    $this->api_url      = $Config->get_api_url();
+    $this->timeout      = $Config->get_api_timeout_seconds();
+    $this->api_key      = $Config->get_api_key();
+    $this->secret_key   = $Config->get_secret_key();
   }
 
   private function load_depedencies() {
@@ -37,27 +36,22 @@ class Integrai_API {
 		endif;
   }
 
-  public function get_api_url() {
-    return $this->config_model->get_api_url();
-  }
-
-  public function get_api_timeout() {
-    return $this->config_model->get_api_timeout_seconds();
-  }
-
   public function request($endpoint, $method = 'GET', $body = '') {
-    $api_url = $this->get_api_url();
-    $timeout = $this->get_api_timeout();
-    $headers = $this->get_headers();
+
+    try {
+      $body = json_encode($body);
+    } catch (Exception $e) {
+      Integrai_Helper::log($e->getMessage(), 'Error ao transformar em JSON no request');
+    }
 
     $options = array(
       'method' => $method,
-      'headers' => $headers,
-      'timeout' => $timeout,
-      'body' => json_encode($body),
+      'headers' => $this->get_headers(),
+      'timeout' => $this->timeout,
+      'body' => $body,
     );
 
-    $response = wp_remote_request($api_url . $endpoint, $options);
+    $response = wp_remote_request($this->api_url . $endpoint, $options);
 
     if ( is_wp_error( $response ) ) {
       throw new Exception( $response->get_error_message() );
@@ -69,6 +63,25 @@ class Integrai_API {
     return $response;
   }
 
+  private function get_headers(): array {
+    global $wp_version, $woocommerce;
+
+    $wc_version = $woocommerce->version;
+    $plugin_version = INTEGRAI_VERSION;
+    $token = base64_encode("{$this->api_key}:{$this->secret_key}");
+
+    return array(
+      "Content-Type" => "application/json; charset=utf-8",
+      "Accept" => "application/json",
+      "data_format" => "body",
+      "Authorization" => "Basic {$token}",
+      "x-integrai-plaform" => "wordpress",
+      "x-integrai-plaform-version" => "{$wp_version}",
+      "x-integrai-plaform-framework" => "woocommerce {$wc_version}",
+      "x-integrai-module-version" => "{$plugin_version}",
+    );
+  }
+
   public function send_event( $event_name, $payload, $resend = false ) {
 
     try {
@@ -77,11 +90,6 @@ class Integrai_API {
         'event' => $event_name,
         'payload' => $payload,
       ));
-
-      Integrai_Helper::log(array(
-        'event' => $event_name,
-        'payload' => $payload,
-      ), 'HOOKS :: SEND_EVENT: ');
 
       return $response;
 
@@ -105,24 +113,5 @@ class Integrai_API {
     );
 
     return $this->events_model->insert( $data );
-  }
-
-  private function get_headers() {
-    global $wp_version, $woocommerce;
-
-    $wc_version = $woocommerce->version;
-    $plugin_version = INTEGRAI_VERSION;
-    $token = base64_encode("{$this->api_key}:{$this->secret_key}");
-
-    return array(
-      "Content-Type" => "application/json; charset=utf-8",
-      "Accept" => "application/json",
-      "data_format" => "body",
-      "Authorization" => "Bearer {$token}",
-      "x-integrai-plaform" => "wordpress",
-      "x-integrai-plaform-version" => "{$wp_version}",
-      "x-integrai-plaform-framework" => "woocommerce {$wc_version}",
-      "x-integrai-module-version" => "{$plugin_version}",
-    );
   }
 }

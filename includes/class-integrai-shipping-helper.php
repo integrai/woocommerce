@@ -73,7 +73,7 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
           $quote_order = $this->transform_order($order);
 
-          $response = $this->get_api_helper()->request('/shipping/quote', 'POST', $quote_order);
+          $response = $this->get_api_helper()->request('/quote/shipping', 'POST', $quote_order);
 
           return $this->transform_response($response);
 
@@ -110,13 +110,15 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
     private function transform_order($order) {
       $items = $order['contents'];
-      $destination_zipcode = $order['destination']['postcode'];
+      $destination_zipcode = preg_replace('/[^0-9]/', '', $order['destination']['postcode']);
       $cart_total_price = $order['cart_subtotal'];
 
       $quote_order = array(
         'destination_zipcode' => $destination_zipcode,
-        'cart_total_price' => $cart_total_price,
-        'items' => $this->transform_items($items),
+        'cart_total_price'    => $cart_total_price,
+        "cart_total_quantity" => WC()->cart->get_cart_contents_count(),
+        "cart_total_weight"   => WC()->cart->get_cart_contents_weight(),
+        'items'               => $this->transform_items($items),
       );
 
       return $quote_order;
@@ -139,14 +141,14 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
         array_push($transformed_items,
           array(
-            "weight" => number_format($product_data->get_weight(), 3),
-            "width" => number_format($width, 2),
-            "height" => number_format($height, 2),
-            "length" => number_format($length, 2),
-            "quantity" => (int) max(1, $quantity),
-            "sku" => (string) $product_data->get_sku(),
+            "weight"     => (float) number_format($product_data->get_weight(), 3),
+            "width"      => (float) number_format($width, 2),
+            "height"     => (float) number_format($height, 2),
+            "length"     => (float) number_format($length, 2),
+            "quantity"   => (int) max(1, $quantity),
+            "sku"        => (string) $product_data->get_sku(),
             "unit_price" => (float) $product_data->get_sale_price(),
-            "product" => (object) wc_get_product( $item['product_id'] ),
+            "product"    => (object) wc_get_product( $item['product_id'] ),
           )
         );
       }

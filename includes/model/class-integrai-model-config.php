@@ -57,6 +57,10 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return in_array( $name, $events );
   }
 
+  public function get_options() {
+    return get_option('woocommerce_integrai-settings_settings');
+  }
+
   public function get_global() {
     return $this->get_by_name('global');
   }
@@ -68,15 +72,15 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   }
 
   public function get_api_key() {
-    $configs = $this->get_global();
+    $options = $this->get_options();
 
-    return isset( $configs['api_key'] ) ? $configs['api_key'] : false;
+    return isset( $options['api_key'] ) ? $options['api_key'] : false;
   }
 
   public function get_secret_key() {
-    $configs = $this->get_global();
+    $options = $this->get_options();
 
-    return isset( $configs['secret_key'] ) ? $configs['secret_key'] : false;
+    return isset( $options['secret_key'] ) ? $options['secret_key'] : false;
   }
 
   public function get_api_timeout_seconds() {
@@ -85,7 +89,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return $configs['api_timeout_seconds'] ? $configs['api_timeout_seconds'] : false;
   }
 
-  public function get_global_config() {
+  public function get_global_config( $name ) {
     $configs = $this->get_global();
 
     return $configs[$name] ? $configs[$name] : false;

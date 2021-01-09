@@ -19,7 +19,7 @@ class WC_Integration_Integrai_Settings {
 		if ( class_exists( 'WC_Integration' ) ) {
 			// Include our integration class.
 			include_once INTEGRAI__PLUGIN_DIR . 'admin/wc-config/class-wc-integration-integrai-settings-integration.php';
-			// include_once 'class-wc-integration-integrai-settings-integration.php';
+
 			// Register the integration.
 			add_filter( 'woocommerce_integrations', array( $this, 'add_integration' ) );
 		} else {
@@ -32,7 +32,6 @@ class WC_Integration_Integrai_Settings {
 	 */
 	public function add_integration( $integrations ) {
 		$integrations[] = 'WC_Integration_Integrai_Settings_Integration';
-		Integrai_Helper::log($integrations, 'WC :: INTEGRATIONS :: SETTINGS :: ADD INTEGRATIONS:  ');
 
 		return $integrations;
 	}

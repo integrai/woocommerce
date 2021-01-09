@@ -26,8 +26,18 @@ if ( ! class_exists( 'WC_Integration' )) {
 if ( ! class_exists( 'WC_Integration_Integrai_Settings_Integration' ) ) :
 class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
   /**
- * Init and hook in the integration.
- */
+   * @var string
+   */
+  private $api_key;
+
+  /**
+   * @var string
+   */
+  private $secret_key;
+
+  /**
+  * Init and hook in the integration.
+  */
   public function __construct() {
     global $woocommerce;
 
@@ -40,6 +50,7 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
     $this->init_settings();
 
     // Define user set variables.
+    $this->enabled          = $this->get_option( 'enabled' );
     $this->api_key          = $this->get_option( 'api_key' );
     $this->secret_key       = $this->get_option( 'secret_key' );
 
@@ -84,21 +95,12 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
   public function display_errors( ) {
     foreach ( $this->errors as $key => $value ) {
       ?>
-      <div class="error">
-        <p><?php _e( 'Looks like you made a mistake with the ' . $value . ' field. Make sure it isn&apos;t longer than 20 characters', 'woocommerce-integration-demo' ); ?></p>
-      </div>
+          <div class="error">
+            <p><?php _e( 'Looks like you made a mistake with the ' . $value . ' field. Make sure it isn&apos;t longer than 20 characters', 'woocommerce-integration-demo' ); ?></p>
+          </div>
       <?php
     }
   }
-
-	/**
-	 * Override the normal options so we can print the database file path to the admin,
-	 */
-	public function admin_options() {
-		parent::admin_options();
-
-		// include INTEGRAI__PLUGIN_DIR . '/admin/partials/integrai-admin-form.php';
-	}
 
   /**
    * Initialize integration settings form fields.
@@ -108,7 +110,7 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
       'enabled' => array(
         'title'             => __( 'Habilitar', 'woocommerce-integrai-settings' ),
         'type'              => 'select',
-        'description'       => __( 'Habilitar integração com IntegrAi.', 'woocommerce-integrai-settings' ),
+        'description'       => __( 'Habilitar integração com Integrai.', 'woocommerce-integrai-settings' ),
         'default'           => 'no',
         'options'           => array(
           'true' => 'Sim',
@@ -118,14 +120,14 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
       'api_key' => array(
         'title'             => __( 'Chave da API', 'woocommerce-integrai-settings' ),
         'type'              => 'text',
-        'description'       => __( 'Sua API Key criadas no painel da IntegrAi', 'woocommerce-integrai-settings' ),
+        'description'       => __( 'Sua API Key criadas no painel da Integrai', 'woocommerce-integrai-settings' ),
         'desc_tip'          => true,
         'default'           => ''
       ),
       'secret_key' => array(
         'title'             => __( 'Segredo da Chave', 'woocommerce-integrai-settings' ),
         'type'              => 'password',
-        'description'       => __( 'Seu Segredo da Chave criado no painel da IntegrAi', 'woocommerce-integrai-settings' ),
+        'description'       => __( 'Seu Segredo da Chave criado no painel da Integrai', 'woocommerce-integrai-settings' ),
         'desc_tip'          => true,
         'default'           => '',
       ),
