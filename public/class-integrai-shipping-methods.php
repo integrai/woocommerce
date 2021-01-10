@@ -66,8 +66,6 @@ if ( ! class_exists( 'Integrai_Shipping_Methods' ) ) :
 
       $rate = $shipping_helper->quote( $package );
 
-      Integrai_Helper::log($rate, '$rate: ');
-
       $this->add_rate( $rate );
     }
   }

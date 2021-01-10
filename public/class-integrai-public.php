@@ -495,4 +495,21 @@ class Integrai_Public {
 		include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-shipping-methods.php';
 	}
 
+	/** CHECKOUT */
+	// PAYMENT METHODS
+	public function woocommerce_payment_gateways($methods) {
+    if ( ! class_exists( 'Integrai_Payment_Method_Boleto' ) ) :
+      include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-boleto.php';
+    endif;
+
+    if ( ! class_exists( 'Integrai_Payment_Method_Credit_Card' ) ) :
+      include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-credit-card.php';
+    endif;
+
+		$methods[] = 'Integrai_Payment_Method_Boleto';
+		$methods[] = 'Integrai_Payment_Method_Credit_Card';
+
+		return $methods;
+	}
+
 }

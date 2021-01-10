@@ -197,24 +197,26 @@ class Integrai {
 		$this->loader->add_action( 'integrai_cron_abandoned_cart', $plugin_public, 'integrai_cron_abandoned_cart' );
 
 		/** WOOCOMMERCE */
-		// Checks with WooCommerce is installed.
+
+    // Events
+    $this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'woocommerce_created_customer' );
+    $this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
+    $this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
+    $this->loader->add_action( 'woocommerce_update_order', $plugin_public, 'woocommerce_update_order' );
+    $this->loader->add_action( 'woocommerce_order_status_cancelled', $plugin_public, 'woocommerce_order_status_cancelled' );
+    $this->loader->add_action( 'woocommerce_order_refunded', $plugin_public, 'woocommerce_order_refunded' );
+
+    // QUOTE
 		if ( class_exists( 'WC_Integration' ) ) {
 
-			// WOOCOMMERCE - Events
-			$this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'woocommerce_created_customer' );
-			$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
-			$this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
-			$this->loader->add_action( 'woocommerce_update_order', $plugin_public, 'woocommerce_update_order' );
-			$this->loader->add_action( 'woocommerce_order_status_cancelled', $plugin_public, 'woocommerce_order_status_cancelled' );
-			$this->loader->add_action( 'woocommerce_order_refunded', $plugin_public, 'woocommerce_order_refunded' );
-
-			// QUOTE
 			$this->loader->add_action( 'woocommerce_shipping_init', $plugin_public, 'woocommerce_shipping_init' );
 			$this->loader->add_filter( 'woocommerce_shipping_methods', $plugin_public, 'woocommerce_shipping_methods' );
-
 			$this->loader->add_filter( 'woocommerce_add_cart_item_data', $plugin_public, 'woocommerce_add_cart_item_data' );
 
 		}
+
+    // CHECKOUT
+    $this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_public, 'woocommerce_payment_gateways' );
 
 	}
 
