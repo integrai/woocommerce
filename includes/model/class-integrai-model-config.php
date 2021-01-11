@@ -113,14 +113,31 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return !is_null( $row );
   }
 
+  public function get_payment_creditcard() {
+    return $this->get_by_name('payment_creditcard');
+  }
+
+  public function get_creditcard_scripts() {
+    $configs = $this->get_payment_creditcard();
+
+    return $configs['scripts'] ? $configs['scripts'] : false;
+  }
+
+  public function get_creditcard_form_options() {
+    $configs = $this->get_payment_creditcard();
+
+    return $configs['formOptions'] ? $configs['formOptions'] : false;
+  }
+
   public function config_exists() {
     $table_exists = $this->table_exists();
 
     if ( $this->table_exists() ) {
       $configs = array(
-        'EVENTS_ENABLED',
-        'SHIPPING',
         'GLOBAL',
+        'SHIPPING',
+        'PAYMENT_CREDITCARD',
+        'EVENTS_ENABLED',
       );
 
       $count = 0;
@@ -173,6 +190,65 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
           "width_default": 11,
           "height_default": 2,
           "length_default": 16
+        }',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+      ),
+      array(
+        'name' => 'PAYMENT_CREDITCARD',
+        'values' => '{
+          "scripts": [
+            "https://assets.integrai.com.br/payment-form/creditcard/magento.js",
+            "https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js",
+            "https://assets.pagar.me/pagarme-js/4.11/pagarme.min.js",
+            "https://assets.integrai.com.br/gateways/scripts/moip-sdk-min.js"
+          ],
+          "formOptions": {
+            "labels": {
+              "number": "Número do cartão de crédito ",
+              "expiration": "Data de expiração",
+              "cvv": "Código de segurança",
+              "holder_name": "Nome no cartão",
+              "doc_type": "Tipo de documento",
+              "doc_number": "Número do documento",
+              "installments": "Número de parcelas",
+              "installments_placeholder": "Informe o número de parcelas",
+              "installments_replace": "%sx de %s (%s)"
+            },
+            "beforeForm": "%3Ch1%3E%3Cbr%3E%3C/h1%3E",
+            "afterForm": "%3Cp%3E%20%3C/p%3E",
+            "gateways": [
+              {
+                "name": "mercadopago",
+                "isMain": true,
+                "credentials": {
+                  "publicKey": "TEST-089dddcf-8cb5-448e-aa5d-56ffc180bd4d"
+                }
+              },
+              {
+                "name": "pagarme",
+                "isMain": false,
+                "credentials": {
+                  "publicKey": "ek_test_sGN33foESLLWjyuGXNMv9NQxgaJ0cP",
+                  "free_installments": "1",
+                  "max_installments": "12",
+                  "interest_rate": "1,8",
+                  "min_value": "5,50"
+                }
+              },
+              {
+                "name": "wirecard",
+                "isMain": false,
+                "credentials": {
+                  "publicKey": "-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAobunyDlls7veMBaxxDTormHS17p/RA6IQMlBlM9VIFQ8U4Uwdd5Wwua2qZNomaIfequ1+lOPNby+eykyn9K76EFzIYVTuQJRfMCLqrEj/XbfCP8GhJAY07hCSlizkllI7JAIwKCfPhJ8c7MrsTcXg59Qgt9Wbv0sr2RCYpbkaXRFwPADcA42l7nOZONYxw3/5ZQ6HFzZ+8FmM4gIjPKD4Ly2STcoi3a03p2nxhg9+7rOwn36n1dexD+fOmdciF1v6KBkaMlQABMFIZV7fjg5HU54FeGHggWBObB2wg4riWbTNQumUY2murxWKecbOCaozvocm0mCUzo30dxvzRK+zwIDAQAB-----END PUBLIC KEY-----",
+                  "free_installments": "1",
+                  "max_installments": "12",
+                  "interest_rate": "1,8",
+                  "min_value": "5"
+                }
+              }
+            ]
+          }
         }',
         'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
         'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),

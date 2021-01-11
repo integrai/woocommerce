@@ -183,7 +183,6 @@ class Integrai {
 		$this->loader->add_filter( 'cron_schedules', $plugin_public, 'integrai_custom_cron_schedules' );
 
 		// QUOTE
-
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
@@ -217,6 +216,7 @@ class Integrai {
 
     // CHECKOUT
     $this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_public, 'woocommerce_payment_gateways' );
+    $this->loader->add_action( 'woocommerce_after_checkout_form', $plugin_public, 'woocommerce_after_checkout_form' );
 
 	}
 

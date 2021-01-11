@@ -7,7 +7,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->id                 = 'integrai_payment_method_credit_card';
       $this->has_fields         = true;
       $this->icon 	            = apply_filters('woocommerce_custom_gateway_icon', '');
-      $this->title              = __( 'Integrai', 'woocommerce-integrai-settings' );
+      $this->title              = __( 'Integrai', 'woocommerce' );
       $this->method_title       = __( 'Integrai', 'woocommerce' );  // Title shown in admin
       $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento com plataformas como MercadoPago, Wirecard, PagarMe.', 'woocommerce-integrai-settings' );  // Title shown in admin
       $this->supports           = array(
@@ -71,6 +71,10 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       ?>
 
         <p>Cartão de Crédito</p>
+
+        <div class="form-list" id="payment_form_integrai">
+          <div id="integrai-payment-creditcard"></div>
+        </div>
 
       <?php
     }

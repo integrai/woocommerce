@@ -84,7 +84,7 @@ class Integrai_Model_Helper {
       return json_decode( $raw_data->values, 2 );
 
     } catch (Exception $e) {
-      Integrai_Helper::log( $e.getMessage() );
+      Integrai_Helper::log( $e->getMessage() );
     }
   }
 

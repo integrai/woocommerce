@@ -243,7 +243,7 @@ class Integrai_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->integrai, plugin_dir_url( __FILE__ ) . 'js/integrai-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( 'integrai-public.js', plugin_dir_url( __FILE__ ) . 'js/integrai-public.js', array( 'jquery' ), $this->version, true );
 
 	}
 
@@ -511,5 +511,35 @@ class Integrai_Public {
 
 		return $methods;
 	}
+
+	public function woocommerce_after_checkout_form() {
+	  $configHelper = new Integrai_Model_Config();
+	  $options = $configHelper->get_payment_creditcard();
+
+      $cart_totals = WC()->session->get('cart_totals');
+      $total = $cart_totals['total'] ? $cart_totals['total'] : null;
+
+	  ?>
+      <script>
+          const data = JSON.parse('<?php echo json_encode( $options ) ?>');
+
+          window.IntegraiCreditCard = Object.assign({}, data.formOptions, {
+              amount: <?php echo $total ?>
+          });
+
+          console.log('IntegraiCreditCard: ', window.IntegraiCreditCard);
+
+          window.addEventListener('load', function () {
+              console.log('appending...');
+              data.scripts.forEach(function (script) {
+                  let scriptElm = document.createElement('script');
+                  scriptElm.src = script;
+
+                  document.body.appendChild(scriptElm);
+              });
+          });
+      </script>
+    <?php
+  }
 
 }
