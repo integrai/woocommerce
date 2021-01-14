@@ -216,7 +216,7 @@ class Integrai {
 
     // CHECKOUT
     $this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_public, 'woocommerce_payment_gateways' );
-    $this->loader->add_action( 'woocommerce_after_checkout_form', $plugin_public, 'woocommerce_after_checkout_form' );
+//    $this->loader->add_action( 'woocommerce_after_checkout_form', $plugin_public, 'woocommerce_after_checkout_form' );
 
 	}
 

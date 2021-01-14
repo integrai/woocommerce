@@ -498,13 +498,13 @@ class Integrai_Public {
 	/** CHECKOUT */
 	// PAYMENT METHODS
 	public function woocommerce_payment_gateways($methods) {
-    if ( ! class_exists( 'Integrai_Payment_Method_Boleto' ) ) :
-      include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-boleto.php';
-    endif;
+        if ( ! class_exists( 'Integrai_Payment_Method_Boleto' ) ) :
+          include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-boleto.php';
+        endif;
 
-    if ( ! class_exists( 'Integrai_Payment_Method_Credit_Card' ) ) :
-      include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-credit-card.php';
-    endif;
+        if ( ! class_exists( 'Integrai_Payment_Method_Credit_Card' ) ) :
+          include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-credit-card.php';
+        endif;
 
 		$methods[] = 'Integrai_Payment_Method_Boleto';
 		$methods[] = 'Integrai_Payment_Method_Credit_Card';
@@ -512,34 +512,9 @@ class Integrai_Public {
 		return $methods;
 	}
 
+	// TODO: Remover se n usar
 	public function woocommerce_after_checkout_form() {
-	  $configHelper = new Integrai_Model_Config();
-	  $options = $configHelper->get_payment_creditcard();
 
-      $cart_totals = WC()->session->get('cart_totals');
-      $total = $cart_totals['total'] ? $cart_totals['total'] : null;
-
-	  ?>
-      <script>
-          const data = JSON.parse('<?php echo json_encode( $options ) ?>');
-
-          window.IntegraiCreditCard = Object.assign({}, data.formOptions, {
-              amount: <?php echo $total ?>
-          });
-
-          console.log('IntegraiCreditCard: ', window.IntegraiCreditCard);
-
-          window.addEventListener('load', function () {
-              console.log('appending...');
-              data.scripts.forEach(function (script) {
-                  let scriptElm = document.createElement('script');
-                  scriptElm.src = script;
-
-                  document.body.appendChild(scriptElm);
-              });
-          });
-      </script>
-    <?php
   }
 
 }
