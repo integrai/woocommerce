@@ -83,18 +83,18 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function payment_fields() {
-      if ( $this->supports( 'tokenization' ) && is_checkout() ) {
-        $this->tokenization_script();
-        $this->saved_payment_methods();
-        $this->form();
-        $this->save_payment_method_checkbox();
-      } else {
-        $this->form();
-      }
+      $this->form();
+//      if ( $this->supports( 'tokenization' ) && is_checkout() ) {
+//        $this->tokenization_script();
+//        $this->saved_payment_methods();
+//        $this->form();
+//        $this->save_payment_method_checkbox();
+//      } else {
+//        $this->form();
+//      }
     }
 
     public function form() {
-//      wp_enqueue_script( 'wc-credit-card-form' );
       $configHelper = new Integrai_Model_Config();
       $options = $configHelper->get_payment_creditcard();
 
@@ -111,7 +111,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         <script>
             if (!window.integraiData) {
                 window.integraiData = JSON.parse('<?php echo json_encode( $options ) ?>');
-                console.log('integraiData: ', integraiData);
             }
 
             window.IntegraiCreditCard = Object.assign({}, integraiData.formOptions, {
@@ -123,7 +122,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
                 scriptElm.src = script;
 
                 document.body.appendChild(scriptElm);
-                console.log('Append: ', script);
             });
         </script>
       <?php
@@ -131,6 +129,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function checkout_process( $order_id ) {
+      Integrai_Helper::log($order_id, 'checkout_process :: ORDER_ID: ');
+
       if ($_POST['payment_method'] != 'integrai_payment_cc')
         return;
 
@@ -151,14 +151,15 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function update_order_meta( $order_id ) {
+//      Integrai_Helper::log($order_id, 'update_order_meta :: ORDER_ID: ');
 
       if ($_POST['payment_method'] != 'integrai_payment_cc')
         return;
 
-       echo "<pre>";
-        print_r($_POST);
-       echo "</pre>";
-       exit();
+//       echo "<pre>";
+//        print_r($_POST);
+//       echo "</pre>";
+//       exit();
 
 //      update_post_meta( $order_id, 'mobile', $_POST['mobile'] );
 //      update_post_meta( $order_id, 'transaction', $_POST['transaction'] );
