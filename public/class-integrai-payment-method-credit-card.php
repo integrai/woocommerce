@@ -8,12 +8,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->has_fields         = true;
       $this->icon 	            = apply_filters('woocommerce_custom_gateway_icon', '');
       $this->title              = __( 'Integrai', 'woocommerce' );
-      $this->method_title       = __( 'Integrai', 'woocommerce' );  // Title shown in admin
-      $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento com plataformas como MercadoPago, Wirecard, PagarMe.', 'woocommerce-integrai-settings' );  // Title shown in admin
-      $this->supports           = array(
-        'products',
-        'refunds',
-      );
+      $this->method_title       = __( 'Integrai', 'woocommerce' );
+      $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento com plataformas como MercadoPago, Wirecard, PagarMe.', 'woocommerce-integrai-settings' );
 
       $this->init();
     }
@@ -35,17 +31,11 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       // Custom thankyou page
       add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
 
-      // Process order checkout
-      add_action( 'woocommerce_checkout_process', array( $this, 'checkout_process' ) );
-
       // Add the custom data to order post
       add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'update_order_meta' ) );
 
       // Display custom order data on admin
       add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'display_admin_order_meta' ) );
-
-      // Customer Emails
-      // add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
     }
 
     public function init_form_fields() {
@@ -79,19 +69,40 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
      * Output for the order received page.
      */
     public function thankyou_page() {
-       echo wpautop( wptexturize( 'OBRIGADO! Funcionou' ) );
+//       echo wpautop( wptexturize( 'OBRIGADO! Funcionou' ) );
     }
 
     public function payment_fields() {
-      $this->form();
-//      if ( $this->supports( 'tokenization' ) && is_checkout() ) {
-//        $this->tokenization_script();
-//        $this->saved_payment_methods();
-//        $this->form();
-//        $this->save_payment_method_checkbox();
-//      } else {
-//        $this->form();
-//      }
+      $configHelper = new Integrai_Model_Config();
+      $options = $configHelper->get_payment_creditcard();
+
+      $cart_totals = WC()->session->get('cart_totals');
+      $total = $cart_totals['total'] ? $cart_totals['total'] : null;
+
+      ?>
+        <p>Cartão de Crédito</p>
+
+        <div class="form-list" id="payment_form_integrai">
+            <div id="integrai-payment-creditcard"></div>
+        </div>
+
+        <script>
+            if (!window.integraiData) {
+                window.integraiData = JSON.parse('<?php echo json_encode( $options ) ?>');
+            }
+
+            window.IntegraiCreditCard = Object.assign({}, integraiData.formOptions, {
+                amount: <?php echo $total ?>
+            });
+
+            integraiData.scripts.forEach(function (script) {
+                let scriptElm = document.createElement('script');
+                scriptElm.src = script;
+
+                document.body.appendChild(scriptElm);
+            });
+        </script>
+      <?php
     }
 
     public function form() {
@@ -128,22 +139,20 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
     }
 
-    public function checkout_process( $order_id ) {
-      Integrai_Helper::log($order_id, 'checkout_process :: ORDER_ID: ');
-
+    public function process_payment( $order_id ) {
       if ($_POST['payment_method'] != 'integrai_payment_cc')
         return;
 
       global $woocommerce;
-      $order = new WC_Order( $order_id );
+      $order = wc_get_order( $order_id );
 
       // Mark as on-hold (we're awaiting the cheque)
-      $order->update_status('on-hold', __( 'Awaiting cheque payment', 'woocommerce' ));
+      $order->update_status('on-hold', __( 'Integrai: The transaction is being processed', 'woocommerce' ));
 
       // Remove cart
       $woocommerce->cart->empty_cart();
 
-      // Return thankyou redirect
+      // Return thank you redirect
       return array(
         'result' => 'success',
         'redirect' => $this->get_return_url( $order )
@@ -151,34 +160,65 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function update_order_meta( $order_id ) {
-//      Integrai_Helper::log($order_id, 'update_order_meta :: ORDER_ID: ');
+      $payment_method = $_POST['payment_method'];
+      $data = $_POST['payment'];
 
-      if ($_POST['payment_method'] != 'integrai_payment_cc')
+      if ( $payment_method != 'integrai_payment_cc' || empty( $data ) )
         return;
 
-//       echo "<pre>";
-//        print_r($_POST);
-//       echo "</pre>";
-//       exit();
+      // Sanitize data
+      $payment_data = array_map(
+        'sanitize_text_field',
+        array(
+          'payment_method'  => $payment_method,
+          'installments'    => $data['installments'],
+          'card_brand'      => $data['additional_data']['card_brand'],
+          'doc_type'        => $data['doc_type'],
+          'doc_number'      => $data['doc_number'],
+        )
+      );
 
-//      update_post_meta( $order_id, 'mobile', $_POST['mobile'] );
-//      update_post_meta( $order_id, 'transaction', $_POST['transaction'] );
+      // Save data on order
+      foreach ( $payment_data as $key => $value ) {
+        update_post_meta( $order_id, $key, $value );
+      }
     }
 
     public function display_admin_order_meta( $order ) {
-      $method = get_post_meta( $order->id, '_payment_method', true );
+      $payment_method = get_post_meta( $order->id, '_payment_method', true );
 
-      if ($method != 'integrai_payment_cc')
+      if ($payment_method != 'integrai_payment_cc')
         return;
 
-//      $mobile      = get_post_meta( $order->id, 'mobile', true );
-//      $transaction = get_post_meta( $order->id, 'transaction', true );
+      $installments     = get_post_meta( $order->id, 'installments',   true );
+      $card_brand       = get_post_meta( $order->id, 'card_brand',     true );
+      $doc_type         = get_post_meta( $order->id, 'doc_type',       true );
+      $doc_number       = get_post_meta( $order->id, 'doc_number',     true );
 
-      echo '<p><strong>'.__( 'Teste' ).':</strong> 123</p>';
-//      echo '<p><strong>'.__( 'Transaction ID').':</strong> ' . $transaction . '</p>';
+      // Update meta data title
+      $meta_data = array(
+        __( 'Payment Method', 'integrai' )          => 'Credit Card (Integrai)',
+        __( 'Credit Card', 'integrai' )             => sanitize_text_field( ucfirst( $card_brand ) ),
+        __( 'Document', 'integrai' )                => sanitize_text_field( strtoupper($doc_type) ),
+        __( 'Document Number', 'integrai' )         => sanitize_text_field( $doc_number ),
+        __( 'Installments', 'integrai' )            => sanitize_text_field( $installments ),
+      );
 
+      ?>
+        <div class="clear"></div>
+        <div class="integrai_payment">
+            <h4><?php echo __( 'Payment Method', '' ) ?></h4>
+            <p>
+              <?php
+                foreach ($meta_data as $key => $value) {
+                  echo '<strong>' . $key . ':</strong> ' . $value . '<br />';
+                }
+              ?>
+            </p>
+        </div>
+
+      <?php
     }
-
   }
 endif;
 ?>
