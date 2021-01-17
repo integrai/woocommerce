@@ -28,14 +28,17 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       // Save settings in admin if you have any defined
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
-      // Custom thankyou page
-      add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
+      // Validate custom form data
+//      add_action('woocommerce_checkout_process', array( $this, 'process_custom_payment' ));
 
       // Add the custom data to order post
       add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'update_order_meta' ) );
 
       // Display custom order data on admin
       add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'display_admin_order_meta' ) );
+
+      // Custom thankyou page
+      add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
     }
 
     public function init_form_fields() {
@@ -65,9 +68,50 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       );
     }
 
-    /**
-     * Output for the order received page.
-     */
+    public function validate_fields() {
+      $payment_method   = $_POST['payment_method'];
+      $card_number      = $_POST['card_number'];
+      $expiration_month = $_POST['expiration_month'];
+      $expiration_year  = $_POST['expiration_year'];
+      $card_cvc         = $_POST['card_cvc'];
+      $holder_name      = $_POST['holder_name'];
+      $doc_type         = $_POST['doc_type'];
+      $doc_number       = $_POST['doc_number'];
+      $birth_date       = $_POST['birth_date'];
+      $installments     = $_POST['installments'];
+
+      if ( $payment_method !== $this->id )
+          return;
+
+      if( !isset( $card_number ) || empty( $card_number ) )
+        wc_add_notice( __( 'Card Number is required', $this->id ), 'error' );
+
+      if( !isset( $expiration_month ) || empty( $expiration_month ) )
+        wc_add_notice( __( 'Expiration month is required', $this->id ), 'error' );
+
+      if( !isset( $expiration_year ) || empty( $expiration_year ) )
+        wc_add_notice( __( 'Expiration year is required', $this->id ), 'error' );
+
+      if( !isset( $card_cvc ) || empty( $card_cvc ) )
+        wc_add_notice( __( 'Card CVC is required', $this->id ), 'error' );
+
+      if( !isset( $holder_name ) || empty( $holder_name ) )
+        wc_add_notice( __( 'Card Holder\'s name is required', $this->id ), 'error' );
+
+      if( !isset( $doc_type ) || empty( $doc_type ) )
+        wc_add_notice( __( 'Document type (CPF / CNPJ) is required', $this->id ), 'error' );
+
+      if( !isset( $doc_number ) || empty( $doc_number ) )
+        wc_add_notice( __( 'Document number is required', $this->id ), 'error' );
+
+      if( !isset( $birth_date ) || empty( $birth_date ) )
+        wc_add_notice( __( 'Birth date is required', $this->id ), 'error' );
+
+      if( !isset( $installments ) || empty( $installments ) )
+        wc_add_notice( __( 'Select the number of installments', $this->id ), 'error' );
+
+    }
+
     public function thankyou_page() {
 //       echo wpautop( wptexturize( 'OBRIGADO! Funcionou' ) );
     }
@@ -113,8 +157,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $total = $cart_totals['total'] ? $cart_totals['total'] : null;
 
       ?>
-        <p>Cartão de Crédito</p>
-
         <div class="form-list" id="payment_form_integrai">
             <div id="integrai-payment-creditcard"></div>
         </div>
@@ -143,11 +185,13 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ($_POST['payment_method'] != 'integrai_payment_cc')
         return;
 
+      return;
+
       global $woocommerce;
       $order = wc_get_order( $order_id );
 
       // Mark as on-hold (we're awaiting the cheque)
-      $order->update_status('on-hold', __( 'Integrai: The transaction is being processed', 'woocommerce' ));
+      $order->update_status('on-hold', __( 'Integrai: The transaction is being processed', 'integrai' ));
 
       // Remove cart
       $woocommerce->cart->empty_cart();
@@ -187,7 +231,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     public function display_admin_order_meta( $order ) {
       $payment_method = get_post_meta( $order->id, '_payment_method', true );
 
-      if ($payment_method != 'integrai_payment_cc')
+      if ( $payment_method !== 'integrai_payment_cc' )
         return;
 
       $installments     = get_post_meta( $order->id, 'installments',   true );
