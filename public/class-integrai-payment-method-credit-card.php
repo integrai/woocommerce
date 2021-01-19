@@ -110,6 +110,15 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if( !isset( $installments ) || empty( $installments ) )
         wc_add_notice( __( 'Select the number of installments', $this->id ), 'error' );
 
+      // Validate DOCUMENT:
+      if ( $doc_type === 'cpf' || $doc_type === 'cnpj' ) {
+        $is_valid = Integrai_Validator::{$doc_type}( $doc_number );
+
+        if ( !$is_valid )
+          wc_add_notice( __( 'Document number is invalid', $this->id ), 'error' );
+
+      }
+
     }
 
     public function thankyou_page() {
@@ -124,8 +133,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $total = $cart_totals['total'] ? $cart_totals['total'] : null;
 
       ?>
-        <p>Cartão de Crédito</p>
-
         <div class="form-list" id="payment_form_integrai">
             <div id="integrai-payment-creditcard"></div>
         </div>

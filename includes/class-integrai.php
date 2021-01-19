@@ -122,6 +122,7 @@ class Integrai {
 		 */
 		require_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-public.php';
 		include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
+		include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-validator.php';
 
 
 		include_once INTEGRAI__PLUGIN_DIR . 'admin/wc-config/class-wc-integration-integrai-settings-integration.php';
