@@ -29,7 +29,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
       // Validate custom form data
-//      add_action('woocommerce_checkout_process', array( $this, 'process_custom_payment' ));
+      // add_action('woocommerce_checkout_process', array( $this, 'process_custom_payment' ));
 
       // Add the custom data to order post
       add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'update_order_meta' ) );
@@ -69,16 +69,18 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function validate_fields() {
+      $payment          = $_POST['payment'];
       $payment_method   = $_POST['payment_method'];
-      $card_number      = $_POST['card_number'];
-      $expiration_month = $_POST['expiration_month'];
-      $expiration_year  = $_POST['expiration_year'];
-      $card_cvc         = $_POST['card_cvc'];
-      $holder_name      = $_POST['holder_name'];
-      $doc_type         = $_POST['doc_type'];
-      $doc_number       = $_POST['doc_number'];
-      $birth_date       = $_POST['birth_date'];
-      $installments     = $_POST['installments'];
+
+      $card_number      = $payment['card_number'];
+      $expiration_month = $payment['expiration_month'];
+      $expiration_year  = $payment['expiration_year'];
+      $card_cvc         = $payment['card_cvc'];
+      $holder_name      = $payment['holder_name'];
+      $doc_type         = $payment['doc_type'];
+      $doc_number       = $payment['doc_number'];
+      $birth_date       = $payment['birth_date'];
+      $installments     = $payment['installments'];
 
       if ( $payment_method !== $this->id )
           return;
@@ -115,9 +117,10 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         $is_valid = Integrai_Validator::{$doc_type}( $doc_number );
 
         if ( !$is_valid )
-          wc_add_notice( __( 'Document number is invalid', $this->id ), 'error' );
-
+          wc_add_notice( __( strtoupper($doc_type) . ' number is invalid', $this->id ), 'error' );
       }
+
+      return true;
 
     }
 
@@ -191,8 +194,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     public function process_payment( $order_id ) {
       if ($_POST['payment_method'] != 'integrai_payment_cc')
         return;
-
-      return;
 
       global $woocommerce;
       $order = wc_get_order( $order_id );
