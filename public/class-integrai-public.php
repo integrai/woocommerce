@@ -247,11 +247,17 @@ class Integrai_Public {
 
 	}
 
-	public function rest_api_init($config_controller) {
-		require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-config.php';
+	public function rest_api_init() {
+    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-config.php';
+    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-events.php';
 
-		$integrai_config_controller = new Integrai_Config_Controller();
+    // CONFIG
+    $integrai_config_controller = new Integrai_Config_Controller();
     $integrai_config_controller->register_routes();
+
+    // EVENTS
+    $integrai_events_controller = new Integrai_Events_Controller();
+    $integrai_events_controller->register_routes();
 	}
 
 	/** EVENTS */
