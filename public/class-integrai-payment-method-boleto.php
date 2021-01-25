@@ -9,11 +9,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->icon 	            = apply_filters('woocommerce_custom_gateway_icon', '');
       $this->title              = __( 'Integrai', 'woocommerce-integrai-settings' );
       $this->method_title       = __( 'Integrai', 'woocommerce-integrai-settings' );  // Title shown in admin
-      $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento com plataformas como MercadoPago, Wirecard, PagarMe.', 'woocommerce-integrai-settings' );  // Title shown in admin
-      $this->supports           = array(
-        'products',
-        'refunds',
-      );
+      $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento via Boleto.', 'woocommerce-integrai-settings' );  // Title shown in admin
+
 
       $this->init();
     }
@@ -31,6 +28,15 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
       // Save settings in admin if you have any defined
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+
+      // Add the custom data to order post
+      add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'update_order_meta' ) );
+
+      // Display custom order data on admin
+      add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'display_admin_order_meta' ) );
+
+      // Custom thankyou page
+      add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
 
     }
 
@@ -68,9 +74,27 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
      * @return void
      */
     public function payment_fields() {
+      $configHelper = new Integrai_Model_Config();
+      $options = $configHelper->get_payment_boleto();
       ?>
+        <div class="form-list" id="payment_form_integrai-boleto">
+            <div id="integrai-payment-boleto"></div>
+        </div>
 
-        <p>Boleto</p>
+        <script>
+            window.integraiBoletoData = JSON.parse('<?php echo json_encode( $options ) ?>');
+
+            window.IntegraiBoleto = Object.assign({}, integraiCCData.formOptions, {
+                boletoModel: JSON.parse('<?php echo $this->getCustomer() ?>'),
+            });
+
+            integraiBoletoData.scripts.forEach(function (script) {
+                let scriptElm = document.createElement('script');
+                scriptElm.src = script;
+
+                document.body.appendChild(scriptElm);
+            });
+        </script>
 
       <?php
     }
@@ -90,6 +114,10 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         'result' => 'success',
         'redirect' => $this->get_return_url( $order )
       );
+    }
+
+    public function thankyou_page() {
+       echo wpautop( wptexturize( 'LINK do Boleto' ) );
     }
 
   }

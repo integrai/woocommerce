@@ -258,6 +258,10 @@ class Integrai_Public {
     // EVENTS
     $integrai_events_controller = new Integrai_Events_Controller();
     $integrai_events_controller->register_routes();
+
+    // BOLETO
+    $integrai_boleto_controller = new Integrai_Boleto_Controller();
+    $integrai_boleto_controller->register_routes();
 	}
 
 	/** EVENTS */

@@ -113,6 +113,14 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return !is_null( $row );
   }
 
+  public function get_payment_success() {
+    return $this->get_by_name('payment_success');
+  }
+
+  public function get_payment_boleto() {
+    return $this->get_by_name('payment_boleto');
+  }
+
   public function get_payment_creditcard() {
     return $this->get_by_name('payment_creditcard');
   }

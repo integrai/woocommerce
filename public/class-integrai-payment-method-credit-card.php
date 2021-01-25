@@ -141,15 +141,15 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         </div>
 
         <script>
-            if (!window.integraiData) {
-                window.integraiData = JSON.parse('<?php echo json_encode( $options ) ?>');
+            if (!window.integraiCCData) {
+                window.integraiCCData = JSON.parse('<?php echo json_encode( $options ) ?>');
             }
 
-            window.IntegraiCreditCard = Object.assign({}, integraiData.formOptions, {
+            window.IntegraiCreditCard = Object.assign({}, integraiCCData.formOptions, {
                 amount: <?php echo $total ?>
             });
 
-            integraiData.scripts.forEach(function (script) {
+            integraiCCData.scripts.forEach(function (script) {
                 let scriptElm = document.createElement('script');
                 scriptElm.src = script;
 
