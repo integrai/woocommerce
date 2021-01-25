@@ -58,13 +58,16 @@ class Integrai_Events_Controller extends WP_REST_Controller {
         ));
       }
 
-      $this->getResponse()->setHeader('Content-type', 'application/json');
-      $this->getResponse()->setBody(Mage::helper('core')->jsonEncode(array(
-        "ok" => true,
-      )));
+      // Create the response object
+      $response = new WP_REST_Response( array( "ok" => true ) );
+      $response->header( 'Content-type', 'application/json' );
+      $response->set_status( 201 );
+
+      return $response;
+
     } catch (Exception $e) {
 
-      Integrai_Helper::log($e->getMessage(), 'Error ao atualizar configs');
+      Integrai_Helper::log($e->getMessage(), 'Error ao solicitar eventos');
 
     }
   }
