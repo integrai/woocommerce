@@ -159,40 +159,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       <?php
     }
 
-    public function form() {
-      $configHelper = new Integrai_Model_Config();
-      $options = $configHelper->get_payment_creditcard();
-
-      $cart_totals = WC()->session->get('cart_totals');
-      $total = $cart_totals['total'] ? $cart_totals['total'] : null;
-
-      ?>
-        <div class="form-list" id="payment_form_integrai">
-            <div id="integrai-payment-creditcard"></div>
-        </div>
-
-        <script>
-            if (!window.integraiData) {
-                window.integraiData = JSON.parse('<?php echo json_encode( $options ) ?>');
-            }
-
-            window.IntegraiCreditCard = Object.assign({}, integraiData.formOptions, {
-                amount: <?php echo $total ?>
-            });
-
-            integraiData.scripts.forEach(function (script) {
-                let scriptElm = document.createElement('script');
-                scriptElm.src = script;
-
-                document.body.appendChild(scriptElm);
-            });
-        </script>
-      <?php
-
-    }
-
     public function process_payment( $order_id ) {
-      if ($_POST['payment_method'] != 'integrai_payment_cc')
+      if ($_POST['payment_method'] != $this->id)
         return;
 
       global $woocommerce;
@@ -215,7 +183,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $payment_method = $_POST['payment_method'];
       $data = $_POST['payment'];
 
-      if ( $payment_method != 'integrai_payment_cc' || empty( $data ) )
+      if ( $payment_method != $this->id || empty( $data ) )
         return;
 
       // Sanitize data
@@ -239,21 +207,21 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     public function display_admin_order_meta( $order ) {
       $payment_method = get_post_meta( $order->id, '_payment_method', true );
 
-      if ( $payment_method !== 'integrai_payment_cc' )
+      if ( $payment_method !== $this->id )
         return;
 
-      $installments     = get_post_meta( $order->id, 'installments',   true );
-      $card_brand       = get_post_meta( $order->id, 'card_brand',     true );
-      $doc_type         = get_post_meta( $order->id, 'doc_type',       true );
-      $doc_number       = get_post_meta( $order->id, 'doc_number',     true );
+      $installments  = get_post_meta( $order->id, 'installments',   true );
+      $card_brand    = get_post_meta( $order->id, 'card_brand',     true );
+      $doc_type      = get_post_meta( $order->id, 'doc_type',       true );
+      $doc_number    = get_post_meta( $order->id, 'doc_number',     true );
 
       // Update meta data title
       $meta_data = array(
-        __( 'Payment Method', 'integrai' )          => 'Credit Card (Integrai)',
-        __( 'Credit Card', 'integrai' )             => sanitize_text_field( ucfirst( $card_brand ) ),
-        __( 'Document', 'integrai' )                => sanitize_text_field( strtoupper($doc_type) ),
-        __( 'Document Number', 'integrai' )         => sanitize_text_field( $doc_number ),
-        __( 'Installments', 'integrai' )            => sanitize_text_field( $installments ),
+        __( 'Payment Method', 'integrai' )  => 'Credit Card (Integrai)',
+        __( 'Credit Card', 'integrai' )     => sanitize_text_field( ucfirst( $card_brand ) ),
+        __( 'Document', 'integrai' )        => sanitize_text_field( strtoupper($doc_type) ),
+        __( 'Document Number', 'integrai' ) => sanitize_text_field( $doc_number ),
+        __( 'Installments', 'integrai' )    => sanitize_text_field( $installments ),
       );
 
       ?>

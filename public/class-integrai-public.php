@@ -249,6 +249,7 @@ class Integrai_Public {
 
 	public function rest_api_init() {
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-config.php';
+    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-boleto.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-events.php';
 
     // CONFIG
@@ -440,27 +441,29 @@ class Integrai_Public {
 			foreach ($sessions as $session) {
 				$cart = $session['cart'];
 
-				// Verifica qual dos produtos do carrinho tem a data de criação mais antiga
-				foreach ($cart as $product) {
-					$created_at = $product['created_at'];
+				if (  isset( $cart ) && is_array($cart) && count($cart) > 0 ) {
+          // Verifica qual dos produtos do carrinho tem a data de criação mais antiga
+          foreach ($cart as $product) {
+            $created_at = $product['created_at'];
 
-					// Pega a data mais antiga e considera a data da criação do carrinho
-					if ($created_at < $cart_created) {
-						$cart_created = $created_at;
-					}
-				}
+            // Pega a data mais antiga e considera a data da criação do carrinho
+            if ($created_at < $cart_created) {
+              $cart_created = $created_at;
+            }
+          }
 
-				// Se a data de criação for mais antiga que a data de corte, considera como abandadono
-				if ($cart_created < $from_date) {
-					$item = array();
+          // Se a data de criação for mais antiga que a data de corte, considera como abandadono
+          if ($cart_created < $from_date) {
+            $item = array();
 
-					$item['created_at'] = $cart_created;
-					$item['customer'] = $session['customer'];
-					$item['cart'] = $session['cart'];
-					$item['cart_totals'] = $session['cart_totals'];
+            $item['created_at'] = $cart_created;
+            $item['customer'] = $session['customer'];
+            $item['cart'] = $session['cart'];
+            $item['cart_totals'] = $session['cart_totals'];
 
-					array_push($abandoned_cart, $item);
-				}
+            array_push($abandoned_cart, $item);
+          }
+        }
 			}
 
 			if ( !empty($abandoned_cart) ) {
@@ -508,23 +511,18 @@ class Integrai_Public {
 	/** CHECKOUT */
 	// PAYMENT METHODS
 	public function woocommerce_payment_gateways($methods) {
-        if ( ! class_exists( 'Integrai_Payment_Method_Boleto' ) ) :
-          include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-boleto.php';
-        endif;
+    if ( ! class_exists( 'Integrai_Payment_Method_Boleto' ) ) :
+      include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-boleto.php';
+    endif;
 
-        if ( ! class_exists( 'Integrai_Payment_Method_Credit_Card' ) ) :
-          include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-credit-card.php';
-        endif;
+    if ( ! class_exists( 'Integrai_Payment_Method_Credit_Card' ) ) :
+      include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-credit-card.php';
+    endif;
 
 		$methods[] = 'Integrai_Payment_Method_Boleto';
 		$methods[] = 'Integrai_Payment_Method_Credit_Card';
 
 		return $methods;
 	}
-
-	// TODO: Remover se n usar
-	public function woocommerce_after_checkout_form() {
-
-  }
 
 }

@@ -70,8 +70,6 @@ class Integrai_API {
     $plugin_version = INTEGRAI_VERSION;
     $token = base64_encode("{$this->api_key}:{$this->secret_key}");
 
-    Integrai_Helper::log($token, '==> $token: ');
-
     return array(
       "Content-Type" => "application/json; charset=utf-8",
       "Accept" => "application/json",

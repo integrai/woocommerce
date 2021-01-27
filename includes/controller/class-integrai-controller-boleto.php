@@ -23,19 +23,23 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
 
   public function get_items( $request ) {
     try {
-      $order_id = trim($_GET['order_id']);
-      $is_duplicate = (bool) $_GET['is_duplicate'];
+      $order_id     = strval( trim($_GET['order_id']) );
+      $is_duplicate = 'false';
+
+      if ( isset($_GET['is_duplicate']) && $_GET['is_duplicate'] === true ) {
+        $is_duplicate = 'true';
+      }
+
+      $request_url  = "/store/boleto?order_id=$order_id&is_duplicate=$is_duplicate";
 
       $api = new Integrai_API();
-      $response_boleto = $api->request('/store/boleto', 'GET', array(
-        'order_id' => $order_id,
-        'is_duplicate' => $is_duplicate
-      ));
-
+      $response_boleto = $api->request( $request_url );
 
       // Create the response object
       $response = new WP_REST_Response( array(
-        'boleto_url' => $response_boleto['boleto_url'],
+        'boleto_url' => isset( $response_boleto['boleto_url'] )
+          ? $response_boleto['boleto_url']
+          : null,
       ));
       $response->header( 'Content-type', 'application/json' );
       $response->set_status( 201 );

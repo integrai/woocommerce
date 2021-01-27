@@ -67,6 +67,72 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       );
     }
 
+    public function validate_fields() {
+      $payment          = $_POST['payment'];
+      $payment_method   = $_POST['payment_method'];
+
+      $doc_type         = $payment['boleto_doc_type'];
+      $first_name       = $payment['boleto_first_name'];
+      $last_name        = $payment['boleto_last_name'];
+      $company_name     = $payment['boleto_company_name'];
+      $doc_number       = $payment['doc_number'];
+      $address_street   = $payment['boleto_address_street'];
+      $address_zipcode  = $payment['boleto_address_zipcode'];
+      $address_number   = $payment['boleto_address_number'];
+      $address_city     = $payment['boleto_address_city'];
+      $address_state    = $payment['boleto_address_state'];
+
+      if ( $payment_method !== $this->id )
+        return true;
+
+      if( !isset( $doc_number ) || empty( $doc_number ) )
+        wc_add_notice( __( 'Document number is required', $this->id ), 'error' );
+
+      if( !isset( $address_street ) || empty( $address_street ) )
+        wc_add_notice( __( 'Address Street is required', $this->id ), 'error' );
+
+      if( !isset( $address_zipcode ) || empty( $address_zipcode ) )
+        wc_add_notice( __( 'Zip Code is required', $this->id ), 'error' );
+
+      if( !isset( $address_number ) || empty( $address_number ) )
+        wc_add_notice( __( '$address_number is required', $this->id ), 'error' );
+
+      if( !isset( $address_city ) || empty( $address_city ) )
+        wc_add_notice( __( '$address_city is required', $this->id ), 'error' );
+
+      if( !isset( $address_state ) || empty( $address_state ) )
+        wc_add_notice( __( '$address_state is required', $this->id ), 'error' );
+
+      if( !isset( $doc_type ) || empty( $doc_type ) )
+        wc_add_notice( __( 'Document type (CPF / CNPJ) is required', $this->id ), 'error' );
+
+      // Person
+      if ( $doc_type === 'cpf' ) {
+        if( !isset( $first_name ) || empty( $first_name ) )
+          wc_add_notice( __( 'First Name is required', $this->id ), 'error' );
+
+        if( !isset( $last_name ) || empty( $last_name ) )
+          wc_add_notice( __( 'Last Name is required', $this->id ), 'error' );
+      }
+
+      // Company
+      if ( $doc_type === 'cnpj' ) {
+        if( !isset( $company_name ) || empty( $company_name ) )
+          wc_add_notice( __( 'Company Name is required', $this->id ), 'error' );
+      }
+
+      // Validate DOCUMENT:
+      if ( $doc_type === 'cpf' || $doc_type === 'cnpj' ) {
+        $is_valid = Integrai_Validator::{$doc_type}( $doc_number );
+
+        if ( !$is_valid )
+          wc_add_notice( __( strtoupper($doc_type) . ' number is invalid', $this->id ), 'error' );
+      }
+
+      return true;
+
+    }
+
     /**
      * Prints the form fields
      *
@@ -76,6 +142,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     public function payment_fields() {
       $configHelper = new Integrai_Model_Config();
       $options = $configHelper->get_payment_boleto();
+
       ?>
         <div class="form-list" id="payment_form_integrai-boleto">
             <div id="integrai-payment-boleto"></div>
@@ -84,8 +151,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         <script>
             window.integraiBoletoData = JSON.parse('<?php echo json_encode( $options ) ?>');
 
-            window.IntegraiBoleto = Object.assign({}, integraiCCData.formOptions, {
-                boletoModel: JSON.parse('<?php echo $this->getCustomer() ?>'),
+            window.IntegraiBoleto = Object.assign({}, integraiBoletoData.formOptions, {
+                boletoModel: {},
             });
 
             integraiBoletoData.scripts.forEach(function (script) {
@@ -95,11 +162,13 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
                 document.body.appendChild(scriptElm);
             });
         </script>
-
       <?php
     }
 
     public function process_payment( $order_id ) {
+      if ($_POST['payment_method'] != $this->id)
+        return;
+
       global $woocommerce;
       $order = new WC_Order( $order_id );
 
@@ -116,10 +185,105 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       );
     }
 
-    public function thankyou_page() {
-       echo wpautop( wptexturize( 'LINK do Boleto' ) );
+    public function thankyou_page( $order_id ) {
+      $order        = $this->get_integrai_order( $order_id );
+      $configHelper = new Integrai_Model_Config();
+      $options      = $configHelper->get_payment_success();
+
+      ?>
+        <script>
+            const integraiSuccessData = JSON.parse('<?php echo json_encode( $options ) ?>');
+
+            window.IntegraiSuccess = Object.assign({}, integraiSuccessData.pageOptions, {
+                order: JSON.parse('<?php echo $order ?>'),
+            });
+
+            integraiSuccessData.scripts.forEach(function (script) {
+                let scriptElm = document.createElement('script');
+                scriptElm.src = script;
+
+                document.body.appendChild(scriptElm);
+            });
+        </script>
+
+        <ul class="order_details">
+            <li>
+                <div id="integrai-payment-success"></div>
+            </li>
+        </ul>
+      <?php
     }
 
+    public function update_order_meta( $order_id ) {
+      $payment_method = $_POST['payment_method'];
+      $data           = $_POST['payment'];
+
+      if ( $payment_method != $this->id || empty( $data ) )
+        return;
+
+      // Sanitize data
+      $payment_data = array_map(
+        'sanitize_text_field',
+        array(
+          'payment_method'  => $payment_method,
+          'doc_type'        => $data['doc_type'],
+          'doc_number'      => $data['doc_number'],
+        )
+      );
+
+      // Save data on order
+      foreach ( $payment_data as $key => $value ) {
+        update_post_meta( $order_id, $key, $value );
+      }
+    }
+
+    public function display_admin_order_meta( $order ) {
+      $payment_method = get_post_meta( $order->id, '_payment_method', true );
+
+      if ( $payment_method !== $this->id )
+        return;
+
+      $doc_type   = get_post_meta( $order->id, 'doc_type',       true );
+      $doc_number = get_post_meta( $order->id, 'doc_number',     true );
+
+      // Update meta data title
+      $meta_data = array(
+        __( 'Payment Method', 'integrai' )  => 'Boleto (Integrai)',
+        __( 'Document', 'integrai' )        => sanitize_text_field( strtoupper($doc_type) ),
+        __( 'Document Number', 'integrai' ) => sanitize_text_field( $doc_number ),
+      );
+
+      ?>
+        <div class="clear"></div>
+        <div class="integrai_payment">
+            <h4><?php echo __( 'Payment Method', '' ) ?></h4>
+            <p>
+              <?php
+                foreach ($meta_data as $key => $value) {
+                  echo '<strong>' . $key . ':</strong> ' . $value . '<br />';
+                }
+              ?>
+            </p>
+        </div>
+
+      <?php
+    }
+
+    private function get_integrai_order( $order_id ) {
+      $order = wc_get_order( $order_id );
+
+      return json_encode(array(
+        "payment_method"      => 'integrai_boleto',
+        "order_entity_id"     => $order->get_order_number(),
+        "order_increment_id"  => $order->get_order_number(),
+        "order_link_detail"   => $order->get_view_order_url(),
+        "store_url"           => get_home_url(),
+        "boleto_url"          => get_rest_url(
+            null,
+            'integrai/v1/boleto&order_id=' . $order->get_order_number(),
+        ),
+      ));
+    }
   }
 endif;
 ?>
