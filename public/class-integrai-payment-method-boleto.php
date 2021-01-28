@@ -75,7 +75,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $first_name       = $payment['boleto_first_name'];
       $last_name        = $payment['boleto_last_name'];
       $company_name     = $payment['boleto_company_name'];
-      $doc_number       = $payment['doc_number'];
+      $doc_number       = $payment['boleto_doc_number'];
       $address_street   = $payment['boleto_address_street'];
       $address_zipcode  = $payment['boleto_address_zipcode'];
       $address_number   = $payment['boleto_address_number'];
@@ -95,13 +95,13 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         wc_add_notice( __( 'Zip Code is required', $this->id ), 'error' );
 
       if( !isset( $address_number ) || empty( $address_number ) )
-        wc_add_notice( __( '$address_number is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Address Number is required', $this->id ), 'error' );
 
       if( !isset( $address_city ) || empty( $address_city ) )
-        wc_add_notice( __( '$address_city is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Address City is required', $this->id ), 'error' );
 
       if( !isset( $address_state ) || empty( $address_state ) )
-        wc_add_notice( __( '$address_state is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Address State is required', $this->id ), 'error' );
 
       if( !isset( $doc_type ) || empty( $doc_type ) )
         wc_add_notice( __( 'Document type (CPF / CNPJ) is required', $this->id ), 'error' );
@@ -142,6 +142,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     public function payment_fields() {
       $configHelper = new Integrai_Model_Config();
       $options = $configHelper->get_payment_boleto();
+      $wcCustomer = new WC_Customer( WC()->session->get_customer_id() );
+      $customer = $this->get_integrai_customer( $wcCustomer );
 
       ?>
         <div class="form-list" id="payment_form_integrai-boleto">
@@ -152,8 +154,10 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
             window.integraiBoletoData = JSON.parse('<?php echo json_encode( $options ) ?>');
 
             window.IntegraiBoleto = Object.assign({}, integraiBoletoData.formOptions, {
-                boletoModel: {},
+                boletoModel: JSON.parse('<?php echo json_encode( $customer ) ?>'),
             });
+
+            console.log(window.IntegraiBoleto)
 
             integraiBoletoData.scripts.forEach(function (script) {
                 let scriptElm = document.createElement('script');
@@ -265,7 +269,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
               ?>
             </p>
         </div>
-
       <?php
     }
 
@@ -283,6 +286,44 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
             'integrai/v1/boleto&order_id=' . $order->get_order_number(),
         ),
       ));
+    }
+
+    public function get_integrai_customer( $customer ) {
+      $id = $customer->get_id();
+
+      $billing = $customer->get_billing();
+      $billing_cpf  = get_user_meta($id, 'billing_cpf');
+      $billing_cnpj = get_user_meta($id, 'billing_cnpj');
+      $billing_company    = get_user_meta($id, 'billing_company');
+      $billing_persontype = $this->get_person_type( get_user_meta($id, 'billing_persontype') );
+
+      $doc_number = '';
+
+      if ( isset($billing_persontype) && $billing_persontype === 'cpf' )
+        $doc_number = $billing_cpf;
+
+      if ( isset($billing_persontype) && $billing_persontype === 'cnpj' )
+        $doc_number = $billing_cnpj;
+
+      return array(
+        'name'           => $billing['first_name'],
+        'lastName'       => $billing['last_name'],
+        'docType'        => $billing_persontype,
+        'docNumber'      => $doc_number,
+        'addressZipCode' => $billing['postcode'],
+        'addressStreet'  => $billing['address_1'],
+        'addressCity'    => $billing['city'],
+        'addressState'   => $billing['state'],
+        'companyName'    => $billing_company,
+      );
+    }
+
+    private function get_person_type( $persontype ) {
+      if ( !isset($person_type) || empty($person_type) ) {
+          return 'cpf';
+      }
+
+      return $persontype[0] == '1' ? 'cpf' : 'cnpj';
     }
   }
 endif;
