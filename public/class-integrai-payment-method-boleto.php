@@ -86,39 +86,39 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         return true;
 
       if( !isset( $doc_number ) || empty( $doc_number ) )
-        wc_add_notice( __( 'Document number is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o número do documento (CPF / CNPJ)', $this->id ), 'error' );
 
       if( !isset( $address_street ) || empty( $address_street ) )
-        wc_add_notice( __( 'Address Street is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe um endereço', $this->id ), 'error' );
 
       if( !isset( $address_zipcode ) || empty( $address_zipcode ) )
-        wc_add_notice( __( 'Zip Code is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o CEP', $this->id ), 'error' );
 
       if( !isset( $address_number ) || empty( $address_number ) )
-        wc_add_notice( __( 'Address Number is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o número do endereço', $this->id ), 'error' );
 
       if( !isset( $address_city ) || empty( $address_city ) )
-        wc_add_notice( __( 'Address City is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe a cidade', $this->id ), 'error' );
 
       if( !isset( $address_state ) || empty( $address_state ) )
-        wc_add_notice( __( 'Address State is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o estado', $this->id ), 'error' );
 
       if( !isset( $doc_type ) || empty( $doc_type ) )
-        wc_add_notice( __( 'Document type (CPF / CNPJ) is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o Tipo do documento (CPF / CNPJ)', $this->id ), 'error' );
 
       // Person
       if ( $doc_type === 'cpf' ) {
         if( !isset( $first_name ) || empty( $first_name ) )
-          wc_add_notice( __( 'First Name is required', $this->id ), 'error' );
+          wc_add_notice( __( 'Informe o Primeiro nome', $this->id ), 'error' );
 
         if( !isset( $last_name ) || empty( $last_name ) )
-          wc_add_notice( __( 'Last Name is required', $this->id ), 'error' );
+          wc_add_notice( __( 'Informe o sobrenome', $this->id ), 'error' );
       }
 
       // Company
       if ( $doc_type === 'cnpj' ) {
         if( !isset( $company_name ) || empty( $company_name ) )
-          wc_add_notice( __( 'Company Name is required', $this->id ), 'error' );
+          wc_add_notice( __( 'Informe o nome da empresa', $this->id ), 'error' );
       }
 
       // Validate DOCUMENT:
@@ -126,7 +126,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         $is_valid = Integrai_Validator::{$doc_type}( $doc_number );
 
         if ( !$is_valid )
-          wc_add_notice( __( strtoupper($doc_type) . ' number is invalid', $this->id ), 'error' );
+          wc_add_notice( __( 'Número de ' . strtoupper($doc_type) . ' inválido', $this->id ), 'error' );
       }
 
       return true;
@@ -177,7 +177,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $order = new WC_Order( $order_id );
 
       // Mark as on-hold (we're awaiting the cheque)
-      $order->update_status('on-hold', __( 'Awaiting cheque payment', 'woocommerce' ));
+      $order->update_status('on-hold', __( 'Integrai: Aguardando pagamento do boleto', 'woocommerce' ));
 
       // Remove cart
       $woocommerce->cart->empty_cart();
@@ -252,9 +252,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
       // Update meta data title
       $meta_data = array(
-        __( 'Payment Method', 'integrai' )  => 'Boleto (Integrai)',
-        __( 'Document', 'integrai' )        => sanitize_text_field( strtoupper($doc_type) ),
-        __( 'Document Number', 'integrai' ) => sanitize_text_field( $doc_number ),
+        __( 'Método de Pagamento', 'integrai' )  => 'Boleto (Integrai)',
+        __( 'Documento', 'integrai' )        => sanitize_text_field( strtoupper($doc_type) ),
+        __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $doc_number ),
       );
 
       ?>

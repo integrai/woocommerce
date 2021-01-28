@@ -167,7 +167,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $order = wc_get_order( $order_id );
 
       // Mark as on-hold (we're awaiting the cheque)
-      $order->update_status('on-hold', __( 'Integrai: The transaction is being processed', 'integrai' ));
+      $order->update_status('on-hold', __( 'Integrai: Transação sendo processada', 'integrai' ));
 
       // Remove cart
       $woocommerce->cart->empty_cart();
@@ -217,11 +217,11 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
       // Update meta data title
       $meta_data = array(
-        __( 'Payment Method', 'integrai' )  => 'Credit Card (Integrai)',
-        __( 'Credit Card', 'integrai' )     => sanitize_text_field( ucfirst( $card_brand ) ),
-        __( 'Document', 'integrai' )        => sanitize_text_field( strtoupper($doc_type) ),
-        __( 'Document Number', 'integrai' ) => sanitize_text_field( $doc_number ),
-        __( 'Installments', 'integrai' )    => sanitize_text_field( $installments ),
+        __( 'Método de Pagamento', 'integrai' ) => 'Cartão de Crédito (Integrai)',
+        __( 'Bandeira do Cartão', 'integrai' )  => sanitize_text_field( ucfirst( $card_brand ) ),
+        __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper($doc_type) ),
+        __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $doc_number ),
+        __( 'Número de Parcelas', 'integrai' )  => sanitize_text_field( $installments ),
       );
 
       ?>
