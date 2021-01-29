@@ -258,9 +258,14 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $doc_type   = get_post_meta( $order->id, 'boleto_doc_type',       true );
       $doc_number = get_post_meta( $order->id, 'boleto_doc_number',     true );
 
+      $boleto_url = get_rest_url(
+        null,
+        'integrai/v1/boleto&order_id=' . $order->get_order_number() . '&duplicated=true',
+      );
+
       // Update meta data title
       $meta_data = array(
-        __( 'Método de Pagamento', 'integrai' ) => 'Boleto (Integrai)',
+        __( 'Pagamento', 'integrai' ) => 'Boleto (Integrai)',
         __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper($doc_type) ),
         __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $doc_number ),
       );
@@ -275,8 +280,24 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
                   echo '<strong>' . $key . ':</strong> ' . $value . '<br />';
                 }
               ?>
+
+              <?php
+                echo '<strong>' . __( 'Boleto' ) . '</strong>: ';
+                echo '<a id="integrai_printBoleto" title="'. __( 'Acessar boleto' ) .'" href="#">' . __( ' clique aqui ' ) . '</a>'
+              ?>
             </p>
         </div>
+
+        <script>
+            document.querySelector('#integrai_printBoleto').addEventListener('click', function () {
+                fetch('<?php echo $boleto_url ?>')
+                    .then((response) => response.json())
+                    .then((response) => {
+                        this.loading = false;
+                        window.open(response.boleto_url, '_blank');
+                    });
+            });
+        </script>
       <?php
     }
 
