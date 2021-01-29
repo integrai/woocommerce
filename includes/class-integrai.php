@@ -201,7 +201,7 @@ class Integrai {
     // Events
     $this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'woocommerce_created_customer' );
     $this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'woocommerce_add_to_cart', 10, 6 );
-    $this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'woocommerce_new_order' );
+    $this->loader->add_action( 'woocommerce_checkout_order_created', $plugin_public, 'woocommerce_new_order' );
     $this->loader->add_action( 'woocommerce_update_order', $plugin_public, 'woocommerce_update_order' );
     $this->loader->add_action( 'woocommerce_order_status_cancelled', $plugin_public, 'woocommerce_order_status_cancelled' );
     $this->loader->add_action( 'woocommerce_order_refunded', $plugin_public, 'woocommerce_order_refunded' );
