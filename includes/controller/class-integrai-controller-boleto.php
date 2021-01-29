@@ -30,10 +30,11 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
         $is_duplicate = 'true';
       }
 
-      $request_url  = "/store/boleto?order_id=$order_id&is_duplicate=$is_duplicate";
-
       $api = new Integrai_API();
-      $response_boleto = $api->request( $request_url );
+      $response_boleto = $api->request( '/store/boleto', 'GET', null, array(
+        'order_id' => $order_id,
+        'is_duplicate' => $is_duplicate
+      ) );
 
       // Create the response object
       $response = new WP_REST_Response( array(
@@ -47,8 +48,6 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
       return $response;
 
     } catch (Exception $e) {
-
-      Integrai_Helper::log($e->getMessage(), 'Error ao solicitar eventos');
 
       // Create the response object
       $response = new WP_REST_Response( array(

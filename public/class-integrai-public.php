@@ -169,12 +169,16 @@ class Integrai_Public {
 
 	private function get_customer( $customer_id ) {
 		$customer = new WC_Customer( $customer_id );
+    $doc_type = $customer->get_meta('billing_persontype') == '1' ? 'cpf' : 'cnpj';
+		$doc_key  = $doc_type == 'cpf' ? 'billing_cpf' : 'billing_cnpj';
 
 		return array(
 			'id' => $customer_id,
 			'email' => $customer->get_email(),
 			'first_name' => $customer->get_first_name(),
 			'last_name' => $customer->get_last_name(),
+      'document_type' => $doc_type,
+      'document_number' => $customer->get_meta( $doc_key ),
 			'billing' => $customer->get_billing(),
 			'shipping' => $customer->get_shipping(),
 		);
@@ -185,6 +189,65 @@ class Integrai_Public {
 
 		return $order->get_data();
 	}
+
+	private function get_full_order( $order_id ) {
+	  $order = $this->get_order( $order_id );
+
+    $order['payment'] = $this->get_payment( $order_id );
+    $order['customer'] = $this->get_customer( $order['customer_id'] );
+    $order['items'] = $this->get_items( $order_id );
+    $order['shipping_method'] = $this->get_shipping_method();
+
+    return $order;
+  }
+
+  private function get_shipping_method() {
+    $rate_table = array();
+
+    $shipping_methods = WC()->shipping->get_shipping_methods();
+
+    foreach($shipping_methods as $shipping_method){
+      $shipping_method->init();
+
+      foreach($shipping_method->rates as $key => $rate)
+        $meta[$key] = $rate->get_meta_data();
+
+      $rate_table[$key] = array(
+        'id' => $rate->id,
+        'method_id' => $rate->method_id,
+        'instance_id' => $rate->instance_id,
+        'label' => $rate->label,
+        'cost' => $rate->cost,
+        'taxes' => $rate->taxes,
+        'code' => $meta['code'],
+        'description' => $meta['carrier_title'] . ' - ' . $meta['description'],
+        'carrier_title' => $meta['carrier_title'],
+      );
+    }
+
+    return $rate_table[WC()->session->get( 'chosen_shipping_methods' )[0]];
+  }
+
+  private function get_items( $order_id ) {
+    $order = wc_get_order( $order_id );
+    $products = array();
+
+    foreach ( $order->get_items() as $item ) {
+      $product = new WC_Product( $item->get_product_id() );
+
+      array_push($products, array(
+        'id' => $item->get_id(),
+        'sku' => $product->get_sku(),
+        'name' => $product->get_name(),
+        'description' => $product->get_description(),
+        'qty' => $item->get_quantity(),
+        'price' => $order->get_line_total( $item, true, false ),
+        'weight' => $product->get_weight(),
+      ));
+    }
+
+    return $products;
+  }
 
 	private function get_refund( $refund_id ) {
 		$refund = new WC_Order_Refund( $refund_id) ;
@@ -200,6 +263,42 @@ class Integrai_Public {
 			'formatted_refund_amount' => $refund->get_formatted_refund_amount(),
 		);
 	}
+
+	private function get_payment( $order_id ) {
+    $order = new WC_Order( $order_id );
+
+    $boleto = array(
+      'doc_type'        => $order->get_meta('boleto_doc_type'),
+      'doc_number'      => $order->get_meta('boleto_doc_number'),
+      'first_name'      => $order->get_meta('boleto_first_name'),
+      'last_name'       => $order->get_meta('boleto_last_name'),
+      'company_name'    => $order->get_meta('boleto_company_name'),
+      'address_zipcode' => $order->get_meta('boleto_address_zipcode'),
+      'address_street'  => $order->get_meta('boleto_address_street'),
+      'address_number'  => $order->get_meta('boleto_address_number'),
+      'address_city'    => $order->get_meta('boleto_address_city'),
+      'address_state'   => $order->get_meta('boleto_address_state'),
+    );
+
+    $creditcard = array(
+      'doc_type'                 => $order->get_meta('cc_doc_type'),
+      'doc_number'               => $order->get_meta('cc_doc_number'),
+      'birth_date'               => $order->get_meta('cc_birth_date'),
+      'holder_name'              => $order->get_meta('cc_holder_name'),
+      'installments'             => $order->get_meta('cc_installments'),
+      'installment_amount'       => $order->get_meta('cc_installment_amount'),
+      'installment_total_amount' => $order->get_meta('cc_installment_total_amount'),
+      'card_hashs'               => $order->get_meta('cc_card_hashs'),
+      'card_brands'              => $order->get_meta('cc_card_brands'),
+      'card_brand'               => $order->get_meta('cc_card_brand'),
+    );
+
+    return array(
+      'boleto' => $boleto,
+      'creditcard' => $creditcard,
+    );
+
+  }
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
@@ -324,47 +423,24 @@ class Integrai_Public {
 
 	// NEW_ORDER
 	public function woocommerce_new_order( $order_id ) {
-		$OrderInstance = new WC_Order($order_id);
-		$order = $this->get_order( $order_id );
-
-		$customer_id = $OrderInstance->get_customer_id();
-		$customer = $this->get_customer( $customer_id );
-
-		$order['customer'] = $customer;
+		$order = $this->get_full_order( $order_id );
 
 		return $this->get_api_helper()->send_event(self::NEW_ORDER, $order);
 	}
 
 	// SAVE_ORDER
 	public function woocommerce_update_order( $order_id ) {
-		$OrderInstance = new WC_Order($order_id);
-		$order = $this->get_order( $order_id );
-
-		$customer_id = $OrderInstance->get_customer_id();
-		$customer = $this->get_customer( $customer_id );
-
-		$order['customer'] = $customer;
+    $order = $this->get_full_order( $order_id );
 
 		return $this->get_api_helper()->send_event(self::SAVE_ORDER, $order);
 	}
 
 	// CANCEL_ORDER
 	public function woocommerce_order_status_cancelled( $order_id ) {
-		$OrderInstance = new WC_Order($order_id);
+		$order = new WC_Order($order_id);
+		$customer = $this->get_customer( $order->get_customer_id() );
 
-		$customer_id = $OrderInstance->get_customer_id();
-		$CustomerInstance = new WC_Customer( $customer_id );
-
-		$customer = array(
-			'id' => $customer_id,
-			'email' => $CustomerInstance->get_email(),
-			'first_name' => $CustomerInstance->get_first_name(),
-			'last_name' => $CustomerInstance->get_last_name(),
-			'shipping' => $CustomerInstance->get_shipping(),
-			'billing' => $CustomerInstance->get_billing(),
-		);
-
-		$payload = $OrderInstance->get_data();
+		$payload = $order->get_data();
 		$payload['customer'] = $customer;
 
 		return $this->get_api_helper()->send_event(self::CANCEL_ORDER, $payload);
@@ -372,18 +448,15 @@ class Integrai_Public {
 
 	// CANCEL_ORDER
 	public function woocommerce_order_refunded( $order_id, $refund_id = false ) {
-		$OrderInstance = new WC_Order($order_id);
-		$customer_id = $OrderInstance->get_customer_id();
-
 		$order = $this->get_order( $order_id );
+		$customer = $this->get_customer( $order['customer_id'] );
 		$refund = $refund_id ? $this->get_refund( $refund_id ) : null;
-		$customer = $this->get_customer( $customer_id );
 
-		$payload = $order;
-		$payload['refund'] = $refund;
-		$payload['customer'] = $customer;
+		$order['refund'] = $refund;
+		$order['customer'] = $customer;
+    $order['items'] = $this->get_items( $order_id );
 
-		return $this->get_api_helper()->send_event(self::REFUND_INVOICE, $payload);
+		return $this->get_api_helper()->send_event(self::REFUND_INVOICE, $order);
 	}
 
 	/** CRON - EVENTS: */

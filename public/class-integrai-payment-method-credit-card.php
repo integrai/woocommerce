@@ -190,11 +190,21 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $payment_data = array_map(
         'sanitize_text_field',
         array(
-          'payment_method'  => $payment_method,
-          'installments'    => $data['installments'],
-          'card_brand'      => $data['additional_data']['card_brand'],
-          'doc_type'        => $data['doc_type'],
-          'doc_number'      => $data['doc_number'],
+          'cc_payment_method'   => $payment_method,
+          'cc_card_brand'       => $data['card_brand'],
+          'cc_installments'     => $data['installments'],
+          'cc_doc_type'         => $data['card_number'],
+          'cc_expiration_month' => $data['expiration_month'],
+          'cc_expiration_year'  => $data['expiration_year'],
+          'cc_card_cvc'         => $data['card_cvc'],
+          'cc_holder_name'      => $data['holder_name'],
+          'cc_doc_number'       => $data['doc_number'],
+          'cc_birth_date'       => $data['birth_date'],
+          'cc_card_hashs'       => $data['card_hashs'],
+          'cc_card_brands'      => $data['card_brands'],
+          'cc_custom_hidden'    => $data['custom_hidden'],
+          'cc_installment_amount'        => $data['card_installment_amount'],
+          'cc_installment_total_amount'  => $data['card_installment_total_amount'],
         )
       );
 
@@ -210,10 +220,10 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ( $payment_method !== $this->id )
         return;
 
-      $installments  = get_post_meta( $order->id, 'installments',   true );
-      $card_brand    = get_post_meta( $order->id, 'card_brand',     true );
-      $doc_type      = get_post_meta( $order->id, 'doc_type',       true );
-      $doc_number    = get_post_meta( $order->id, 'doc_number',     true );
+      $installments  = get_post_meta( $order->id, 'cc_installments',   true );
+      $card_brand    = get_post_meta( $order->id, 'cc_card_brand',     true );
+      $doc_type      = get_post_meta( $order->id, 'cc_doc_type',       true );
+      $doc_number    = get_post_meta( $order->id, 'cc_doc_number',     true );
 
       // Update meta data title
       $meta_data = array(
@@ -227,7 +237,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       ?>
         <div class="clear"></div>
         <div class="integrai_payment">
-            <h4><?php echo __( 'Payment Method', '' ) ?></h4>
+            <h4><?php echo __( 'Método de Pagamento', 'integrai' ) ?></h4>
             <p>
               <?php
                 foreach ($meta_data as $key => $value) {

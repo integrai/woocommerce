@@ -21,7 +21,7 @@ class Integrai_Config_Controller extends WP_REST_Controller {
   public function get_items( $request ) {
     try {
       $api = new Integrai_API();
-      $response = $api->request('/config');
+      $response = $api->request('/store/config');
       $configs = json_decode( $response['body'] );
 
       $integrai_config = new Integrai_Model_Config();

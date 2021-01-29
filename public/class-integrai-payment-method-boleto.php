@@ -4,7 +4,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
   class Integrai_Payment_Method_Boleto extends WC_Payment_Gateway {
 
     public function __construct() {
-      $this->id                 = 'integrai_payment_method_boleto';
+      $this->id                 = 'integrai_boleto';
       $this->has_fields         = true;
       $this->icon 	            = apply_filters('woocommerce_custom_gateway_icon', '');
       $this->title              = __( 'Integrai', 'woocommerce-integrai-settings' );
@@ -171,7 +171,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
     public function process_payment( $order_id ) {
       if ($_POST['payment_method'] != $this->id)
-        return;
+        return false;
 
       global $woocommerce;
       $order = new WC_Order( $order_id );
@@ -219,19 +219,27 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function update_order_meta( $order_id ) {
-      $payment_method = $_POST['payment_method'];
-      $data           = $_POST['payment'];
+      $payment          = $_POST['payment'];
+      $payment_method   = $_POST['payment_method'];
 
-      if ( $payment_method != $this->id || empty( $data ) )
+      if ( $payment_method != $this->id || empty( $payment ) )
         return;
 
-      // Sanitize data
       $payment_data = array_map(
         'sanitize_text_field',
         array(
-          'payment_method'  => $payment_method,
-          'doc_type'        => $data['doc_type'],
-          'doc_number'      => $data['doc_number'],
+          'payment_method'         => $payment_method,
+          'boleto_doc_type'        => $payment['boleto_doc_type'],
+          'boleto_first_name'      => $payment['boleto_first_name'],
+          'boleto_last_name'       => $payment['boleto_last_name'],
+          'boleto_company_name'    => $payment['boleto_company_name'],
+          'boleto_doc_number'      => $payment['boleto_doc_number'],
+          'boleto_address_street'  => $payment['boleto_address_street'],
+          'boleto_address_zipcode' => $payment['boleto_address_zipcode'],
+          'boleto_address_number'  => $payment['boleto_address_number'],
+          'boleto_address_city'    => $payment['boleto_address_city'],
+          'boleto_address_state'   => $payment['boleto_address_state'],
+          'boleto_custom_hidden'   => $payment['boleto_custom_hidden'],
         )
       );
 
@@ -247,20 +255,20 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ( $payment_method !== $this->id )
         return;
 
-      $doc_type   = get_post_meta( $order->id, 'doc_type',       true );
-      $doc_number = get_post_meta( $order->id, 'doc_number',     true );
+      $doc_type   = get_post_meta( $order->id, 'boleto_doc_type',       true );
+      $doc_number = get_post_meta( $order->id, 'boleto_doc_number',     true );
 
       // Update meta data title
       $meta_data = array(
-        __( 'Método de Pagamento', 'integrai' )  => 'Boleto (Integrai)',
-        __( 'Documento', 'integrai' )        => sanitize_text_field( strtoupper($doc_type) ),
+        __( 'Método de Pagamento', 'integrai' ) => 'Boleto (Integrai)',
+        __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper($doc_type) ),
         __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $doc_number ),
       );
 
       ?>
         <div class="clear"></div>
         <div class="integrai_payment">
-            <h4><?php echo __( 'Payment Method', '' ) ?></h4>
+            <h4><?php echo __( 'Método de Pagamento', 'integrai' ) ?></h4>
             <p>
               <?php
                 foreach ($meta_data as $key => $value) {
@@ -276,7 +284,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $order = wc_get_order( $order_id );
 
       return json_encode(array(
-        "payment_method"      => 'integrai_boleto',
+        "payment_method"      => $this->id,
         "order_entity_id"     => $order->get_order_number(),
         "order_increment_id"  => $order->get_order_number(),
         "order_link_detail"   => $order->get_view_order_url(),
@@ -294,6 +302,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $billing = $customer->get_billing();
       $billing_cpf  = get_user_meta($id, 'billing_cpf');
       $billing_cnpj = get_user_meta($id, 'billing_cnpj');
+      $billing_number = get_user_meta($id, 'billing_number');
       $billing_company    = get_user_meta($id, 'billing_company');
       $billing_persontype = $this->get_person_type( get_user_meta($id, 'billing_persontype') );
 
@@ -312,6 +321,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         'docNumber'      => $doc_number,
         'addressZipCode' => $billing['postcode'],
         'addressStreet'  => $billing['address_1'],
+        'addressNumber'  => $billing_number,
         'addressCity'    => $billing['city'],
         'addressState'   => $billing['state'],
         'companyName'    => $billing_company,

@@ -36,12 +36,18 @@ class Integrai_API {
 		endif;
   }
 
-  public function request($endpoint, $method = 'GET', $body = '') {
+  public function request($endpoint, $method = 'GET', $body = '', $params = array()) {
 
     try {
       $body = json_encode($body);
     } catch (Exception $e) {
       Integrai_Helper::log($e->getMessage(), 'Error ao transformar em JSON no request');
+    }
+
+    $url = $this->api_url . $endpoint;
+
+    if (isset($params) && is_array($params) && count($params) > 0) {
+      $url = $url . '?' . http_build_query($params);
     }
 
     $options = array(
@@ -51,7 +57,9 @@ class Integrai_API {
       'body' => $body,
     );
 
-    $response = wp_remote_request($this->api_url . $endpoint, $options);
+    Integrai_Helper::log("REQUEST ==> $url: ");
+
+    $response = wp_remote_request($url, $options);
 
     if ( is_wp_error( $response ) ) {
       throw new Exception( $response->get_error_message() );
@@ -75,7 +83,7 @@ class Integrai_API {
       "Accept" => "application/json",
       "data_format" => "body",
       "Authorization" => "Basic {$token}",
-      "x-integrai-plaform" => "wordpress",
+      "x-integrai-plaform" => "woocommerce",
       "x-integrai-plaform-version" => "{$wp_version}",
       "x-integrai-plaform-framework" => "woocommerce {$wc_version}",
       "x-integrai-module-version" => "{$plugin_version}",
@@ -85,11 +93,13 @@ class Integrai_API {
   public function send_event( $event_name, $payload, $resend = false ) {
 
     try {
-
-      $response = $this->request('/event/woocommerce', 'POST', array(
+      $response = $this->request('/store/event/woocommerce', 'POST', array(
         'event' => $event_name,
         'payload' => $payload,
       ));
+
+      Integrai_Helper::log(json_encode($payload), "==> $event_name: ");
+      Integrai_Helper::log($response['body'], "==> $response: ");
 
       return $response;
 
