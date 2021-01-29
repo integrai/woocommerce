@@ -37,10 +37,8 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
       ) );
 
       // Create the response object
-      $response = new WP_REST_Response( array(
-        'boleto_url' => isset( $response_boleto['boleto_url'] )
-          ? $response_boleto['boleto_url']
-          : null,
+      $response = new WP_REST_Response(
+        json_decode( $response_boleto['body'],
       ));
       $response->header( 'Content-type', 'application/json' );
       $response->set_status( 201 );

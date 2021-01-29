@@ -99,7 +99,6 @@ class Integrai_API {
       ));
 
       Integrai_Helper::log(json_encode($payload), "==> $event_name: ");
-      Integrai_Helper::log($response['body'], "==> $response: ");
 
       return $response;
 
