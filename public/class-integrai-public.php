@@ -216,6 +216,10 @@ class Integrai_Public {
       foreach($shipping_method->rates as $key => $rate)
         $meta[$key] = $rate->get_meta_data();
 
+      if ($rate->method_id !== 'integrai_shipping_method') {
+        return array();
+      }
+
       $rate_table[$key] = array(
         'id' => $rate->id,
         'method_id' => $rate->method_id,
@@ -269,39 +273,45 @@ class Integrai_Public {
 	}
 
 	private function get_payment( $order_id ) {
-    $order = new WC_Order( $order_id );
+    $data = get_post_meta( $order_id, '_integrai_transaction_data', true );
 
-    $boleto = array(
-      'doc_type'        => $order->get_meta('boleto_doc_type'),
-      'doc_number'      => $order->get_meta('boleto_doc_number'),
-      'first_name'      => $order->get_meta('boleto_first_name'),
-      'last_name'       => $order->get_meta('boleto_last_name'),
-      'company_name'    => $order->get_meta('boleto_company_name'),
-      'address_zipcode' => $order->get_meta('boleto_address_zipcode'),
-      'address_street'  => $order->get_meta('boleto_address_street'),
-      'address_number'  => $order->get_meta('boleto_address_number'),
-      'address_city'    => $order->get_meta('boleto_address_city'),
-      'address_state'   => $order->get_meta('boleto_address_state'),
-    );
+    if ( !isset( $data ) || empty( $data ) ) {
+      return array();
+    }
 
-    $creditcard = array(
-      'doc_type'                 => $order->get_meta('cc_doc_type'),
-      'doc_number'               => $order->get_meta('cc_doc_number'),
-      'birth_date'               => $order->get_meta('cc_birth_date'),
-      'holder_name'              => $order->get_meta('cc_holder_name'),
-      'installments'             => $order->get_meta('cc_installments'),
-      'installment_amount'       => $order->get_meta('cc_installment_amount'),
-      'installment_total_amount' => $order->get_meta('cc_installment_total_amount'),
-      'card_hashs'               => $order->get_meta('cc_card_hashs'),
-      'card_brands'              => $order->get_meta('cc_card_brands'),
-      'card_brand'               => $order->get_meta('cc_card_brand'),
-    );
+    if ($data['payment_method'] === 'integrai_boleto') {
+      return array(
+        'boleto' => array(
+          'doc_type'        => $data['boleto_doc_type'],
+          'doc_number'      => $data['boleto_doc_number'],
+          'first_name'      => $data['boleto_first_name'],
+          'last_name'       => $data['boleto_last_name'],
+          'company_name'    => $data['boleto_company_name'],
+          'address_zipcode' => $data['boleto_address_zipcode'],
+          'address_street'  => $data['boleto_address_street'],
+          'address_number'  => $data['boleto_address_number'],
+          'address_city'    => $data['boleto_address_city'],
+          'address_state'   => $data['boleto_address_state'],
+        ),
+      );
+    }
 
-    return array(
-      'boleto' => $boleto,
-      'creditcard' => $creditcard,
-    );
-
+    if ($data['payment_method'] === 'integrai_creditcard') {
+      return array(
+        'creditcard' => array(
+          'doc_type'                 => $data['cc_doc_type'],
+          'doc_number'               => $data['cc_doc_number'],
+          'birth_date'               => $data['cc_birth_date'],
+          'holder_name'              => $data['cc_holder_name'],
+          'installments'             => $data['cc_installments'],
+          'installment_amount'       => $data['cc_installment_amount'],
+          'installment_total_amount' => $data['cc_installment_total_amount'],
+          'card_hashs'               => $data['cc_card_hashs'],
+          'card_brands'              => $data['cc_card_brands'],
+          'card_brand'               => $data['cc_card_brand'],
+        ),
+      );
+    }
   }
 
 	/**

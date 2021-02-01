@@ -72,62 +72,51 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $payment          = $_POST['payment'];
       $payment_method   = $_POST['payment_method'];
 
-      $doc_type         = $payment['boleto_doc_type'];
-      $first_name       = $payment['boleto_first_name'];
-      $last_name        = $payment['boleto_last_name'];
-      $company_name     = $payment['boleto_company_name'];
-      $doc_number       = $payment['boleto_doc_number'];
-      $address_street   = $payment['boleto_address_street'];
-      $address_zipcode  = $payment['boleto_address_zipcode'];
-      $address_number   = $payment['boleto_address_number'];
-      $address_city     = $payment['boleto_address_city'];
-      $address_state    = $payment['boleto_address_state'];
-
       if ( $payment_method !== $this->id )
         return true;
 
-      if( !isset( $doc_number ) || empty( $doc_number ) )
+      if( !isset( $payment['boleto_doc_number'] ) || empty( $payment['boleto_doc_number'] ) )
         wc_add_notice( __( 'Informe o número do documento (CPF / CNPJ)', $this->id ), 'error' );
 
-      if( !isset( $address_street ) || empty( $address_street ) )
+      if( !isset( $payment['boleto_address_street'] ) || empty( $payment['boleto_address_street'] ) )
         wc_add_notice( __( 'Informe um endereço', $this->id ), 'error' );
 
-      if( !isset( $address_zipcode ) || empty( $address_zipcode ) )
+      if( !isset( $payment['boleto_address_zipcode'] ) || empty( $payment['boleto_address_zipcode'] ) )
         wc_add_notice( __( 'Informe o CEP', $this->id ), 'error' );
 
-      if( !isset( $address_number ) || empty( $address_number ) )
+      if( !isset( $payment['boleto_address_number'] ) || empty( $payment['boleto_address_number'] ) )
         wc_add_notice( __( 'Informe o número do endereço', $this->id ), 'error' );
 
-      if( !isset( $address_city ) || empty( $address_city ) )
+      if( !isset( $payment['boleto_address_city'] ) || empty( $payment['boleto_address_city'] ) )
         wc_add_notice( __( 'Informe a cidade', $this->id ), 'error' );
 
-      if( !isset( $address_state ) || empty( $address_state ) )
+      if( !isset( $payment['boleto_address_state'] ) || empty( $payment['boleto_address_state'] ) )
         wc_add_notice( __( 'Informe o estado', $this->id ), 'error' );
 
-      if( !isset( $doc_type ) || empty( $doc_type ) )
+      if( !isset( $payment['boleto_doc_type'] ) || empty( $payment['boleto_doc_type'] ) )
         wc_add_notice( __( 'Informe o Tipo do documento (CPF / CNPJ)', $this->id ), 'error' );
 
       // Person
-      if ( $doc_type === 'cpf' ) {
-        if( !isset( $first_name ) || empty( $first_name ) )
+      if ( $payment['boleto_doc_type'] === 'cpf' ) {
+        if( !isset( $payment['boleto_first_name'] ) || empty( $payment['boleto_first_name'] ) )
           wc_add_notice( __( 'Informe o Primeiro nome', $this->id ), 'error' );
 
-        if( !isset( $last_name ) || empty( $last_name ) )
+        if( !isset( $payment['boleto_last_name'] ) || empty( $payment['boleto_last_name'] ) )
           wc_add_notice( __( 'Informe o sobrenome', $this->id ), 'error' );
       }
 
       // Company
-      if ( $doc_type === 'cnpj' ) {
-        if( !isset( $company_name ) || empty( $company_name ) )
+      if ( $payment['boleto_doc_type'] === 'cnpj' ) {
+        if( !isset( $payment['boleto_company_name'] ) || empty( $payment['boleto_company_name'] ) )
           wc_add_notice( __( 'Informe o nome da empresa', $this->id ), 'error' );
       }
 
       // Validate DOCUMENT:
-      if ( $doc_type === 'cpf' || $doc_type === 'cnpj' ) {
-        $is_valid = Integrai_Validator::{$doc_type}( $doc_number );
+      if ( $payment['boleto_doc_type'] === 'cpf' || $payment['boleto_doc_type'] === 'cnpj' ) {
+        $is_valid = Integrai_Validator::{$payment['boleto_doc_type']}( $payment['boleto_doc_number'] );
 
         if ( !$is_valid )
-          wc_add_notice( __( 'Número de ' . strtoupper($doc_type) . ' inválido', $this->id ), 'error' );
+          wc_add_notice( __( 'Número de ' . strtoupper($payment['boleto_doc_type']) . ' inválido', $this->id ), 'error' );
       }
 
       return true;
@@ -183,68 +172,54 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function update_order_meta( $order_id ) {
-      $payment          = $_POST['payment'];
-      $payment_method   = $_POST['payment_method'];
+      $payment_data = $_POST['payment'];
+      $payment_data['payment_method'] = $_POST['payment_method'];
 
-      if ( $payment_method != $this->id || empty( $payment ) )
+      if ( $_POST['payment_method'] != $this->id || empty( $payment_data ) )
         return;
 
-      $payment_data = array_map(
-        'sanitize_text_field',
-        array(
-          'payment_method'         => $payment_method,
-          'boleto_doc_type'        => $payment['boleto_doc_type'],
-          'boleto_first_name'      => $payment['boleto_first_name'],
-          'boleto_last_name'       => $payment['boleto_last_name'],
-          'boleto_company_name'    => $payment['boleto_company_name'],
-          'boleto_doc_number'      => $payment['boleto_doc_number'],
-          'boleto_address_street'  => $payment['boleto_address_street'],
-          'boleto_address_zipcode' => $payment['boleto_address_zipcode'],
-          'boleto_address_number'  => $payment['boleto_address_number'],
-          'boleto_address_city'    => $payment['boleto_address_city'],
-          'boleto_address_state'   => $payment['boleto_address_state'],
-          'boleto_custom_hidden'   => $payment['boleto_custom_hidden'],
-        )
-      );
-
       // Save data on order
-      foreach ( $payment_data as $key => $value ) {
-        update_post_meta( $order_id, $key, $value );
-      }
+      $this->get_helper()->save_transaction_data( $order_id, $payment_data );
+
     }
 
     public function display_admin_order_meta( $order ) {
-      $payment_method = get_post_meta( $order->id, '_payment_method', true );
+      $payment_method = get_post_meta( $order->get_id(), '_payment_method', true );
 
       if ( $payment_method !== $this->id )
         return;
 
-      $doc_type   = get_post_meta( $order->id, 'boleto_doc_type',       true );
-      $doc_number = get_post_meta( $order->id, 'boleto_doc_number',     true );
-
+      $data = get_post_meta( $order->get_id(), '_integrai_transaction_data',       true );
       $boleto_url = get_rest_url(
         null,
         'integrai/v1/boleto&order_id=' . $order->get_order_number() . '&duplicated=true',
       );
 
-      // Update meta data title
-      $meta_data = array(
-        __( 'Pagamento', 'integrai' )           => 'Boleto (Integrai)',
-        __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper($doc_type) ),
-        __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $doc_number ),
-      );
+      if (
+        isset($data)
+        && $boleto_url
+        && isset($data['boleto_doc_type'])
+        && isset($data['boleto_doc_number'])
+      ) {
 
-      $this->get_helper()->get_template(
-        'boleto/admin-order-detail.php',
-        array(
-          'data' => $meta_data,
-          'boleto_url' => $boleto_url,
-        ),
-      );
+        $meta_data = array(
+          __('Pagamento', 'integrai') => 'Boleto (Integrai)',
+          __('Documento', 'integrai') => sanitize_text_field(strtoupper($data['boleto_doc_type'])),
+          __('Número do Documento', 'integrai') => sanitize_text_field($data['boleto_doc_number']),
+        );
+
+        $this->get_helper()->get_template(
+          'boleto/admin-order-detail.php',
+          array(
+            'data' => $meta_data,
+            'boleto_url' => $boleto_url,
+          ),
+        );
+      }
     }
 
     public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
-      if ( $sent_to_admin || ! in_array( $order->get_status(), array( 'processing', 'on-hold' ), true ) || $this->id !== $order->payment_method ) {
+      if ( $sent_to_admin || ! in_array( $order->get_status(), array( 'processing', 'on-hold' ), true ) || $this->id !== $order->get_payment_method() ) {
         return;
       }
 

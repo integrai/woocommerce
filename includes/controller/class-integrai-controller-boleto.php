@@ -25,7 +25,7 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
       $api = new Integrai_API();
       $response_boleto = $api->request( '/store/boleto', 'GET', null, array(
         'order_id'     => strval( trim($_GET['order_id']) ),
-        'is_duplicate' => $_GET['is_duplicate']
+        'is_duplicate' => isset( $_GET['is_duplicate'] ) ? $_GET['is_duplicate'] : 'false',
       ) );
 
       $body = json_decode( wp_remote_retrieve_body( $response_boleto ) );

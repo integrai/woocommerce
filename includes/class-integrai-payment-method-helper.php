@@ -3,6 +3,7 @@
 if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
   class Integrai_Payment_Method_Helper {
     private $payment_method = null;
+    private $meta_transaction_key = '_integrai_transaction_data';
 
     public function __construct( $payment_method ) {
       $this->payment_method = $payment_method;
@@ -72,6 +73,16 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
         'woocommerce/integrai',
         $this->get_template_path(),
       );
+    }
+
+    public function save_transaction_data( $order_id, $payment_data = array() ) {
+      $sanitized_data = array_map( 'sanitize_text_field', $payment_data );
+
+      return update_post_meta( $order_id, $this->meta_transaction_key, $sanitized_data );
+    }
+
+    public function get_transaction_data( $order_id ) {
+      return get_post_meta( $order_id, $this->meta_transaction_key, true );
     }
   }
 }

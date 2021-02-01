@@ -4,12 +4,12 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
   class Integrai_Payment_Method_Credit_Card extends WC_Payment_Gateway {
 
     public function __construct() {
-      $this->id                 = 'integrai_payment_cc';
+      $this->id                 = 'integrai_creditcard';
       $this->has_fields         = true;
       $this->icon 	            = apply_filters('woocommerce_custom_gateway_icon', '');
       $this->title              = __( 'Integrai', 'woocommerce' );
       $this->method_title       = __( 'Integrai', 'woocommerce' );
-      $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento com plataformas como MercadoPago, Wirecard, PagarMe.', 'woocommerce-integrai-settings' );
+      $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento com plataformas como MercadoPago, Wirecard, PagarMe.', 'woocommerce' );
 
       $this->init();
     }
@@ -28,9 +28,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       // Save settings in admin if you have any defined
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
-      // Validate custom form data
-      // add_action('woocommerce_checkout_process', array( $this, 'process_custom_payment' ));
-
       // Add the custom data to order post
       add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'update_order_meta' ) );
 
@@ -39,6 +36,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
       // Custom thankyou page
       add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
+      add_action( 'woocommerce_email_after_order_table', array( $this, 'email_instructions' ), 10, 3 );
     }
 
     public function init_form_fields() {
@@ -72,60 +70,46 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $payment          = $_POST['payment'];
       $payment_method   = $_POST['payment_method'];
 
-      $card_number      = $payment['card_number'];
-      $expiration_month = $payment['expiration_month'];
-      $expiration_year  = $payment['expiration_year'];
-      $card_cvc         = $payment['card_cvc'];
-      $holder_name      = $payment['holder_name'];
-      $doc_type         = $payment['doc_type'];
-      $doc_number       = $payment['doc_number'];
-      $birth_date       = $payment['birth_date'];
-      $installments     = $payment['installments'];
-
       if ( $payment_method !== $this->id )
-          return;
+        return false;
 
-      if( !isset( $card_number ) || empty( $card_number ) )
+      if( !isset( $payment['cc_card_number'] ) || empty( $payment['cc_card_number'] ) )
         wc_add_notice( __( 'Card Number is required', $this->id ), 'error' );
 
-      if( !isset( $expiration_month ) || empty( $expiration_month ) )
+      if( !isset( $payment['cc_expiration_month'] ) || empty( $payment['cc_expiration_month'] ) )
         wc_add_notice( __( 'Expiration month is required', $this->id ), 'error' );
 
-      if( !isset( $expiration_year ) || empty( $expiration_year ) )
+      if( !isset( $payment['cc_expiration_year'] ) || empty( $payment['cc_expiration_year'] ) )
         wc_add_notice( __( 'Expiration year is required', $this->id ), 'error' );
 
-      if( !isset( $card_cvc ) || empty( $card_cvc ) )
+      if( !isset( $payment['cc_card_cvc'] ) || empty( $payment['cc_card_cvc'] ) )
         wc_add_notice( __( 'Card CVC is required', $this->id ), 'error' );
 
-      if( !isset( $holder_name ) || empty( $holder_name ) )
+      if( !isset( $payment['cc_holder_name'] ) || empty( $payment['cc_holder_name'] ) )
         wc_add_notice( __( 'Card Holder\'s name is required', $this->id ), 'error' );
 
-      if( !isset( $doc_type ) || empty( $doc_type ) )
+      if( !isset( $payment['cc_doc_type'] ) || empty( $payment['cc_doc_type'] ) )
         wc_add_notice( __( 'Document type (CPF / CNPJ) is required', $this->id ), 'error' );
 
-      if( !isset( $doc_number ) || empty( $doc_number ) )
+      if( !isset( $payment['cc_doc_number'] ) || empty( $payment['cc_doc_number'] ) )
         wc_add_notice( __( 'Document number is required', $this->id ), 'error' );
 
-      if( !isset( $birth_date ) || empty( $birth_date ) )
+      if( !isset( $payment['cc_birth_date'] ) || empty( $payment['cc_birth_date'] ) )
         wc_add_notice( __( 'Birth date is required', $this->id ), 'error' );
 
-      if( !isset( $installments ) || empty( $installments ) )
+      if( !isset( $payment['cc_installments'] ) || empty( $payment['cc_installments'] ) )
         wc_add_notice( __( 'Select the number of installments', $this->id ), 'error' );
 
       // Validate DOCUMENT:
-      if ( $doc_type === 'cpf' || $doc_type === 'cnpj' ) {
-        $is_valid = Integrai_Validator::{$doc_type}( $doc_number );
+      if ( $payment['cc_doc_type'] === 'cpf' || $payment['cc_doc_type'] === 'cnpj' ) {
+        $is_valid = Integrai_Validator::{$payment['cc_doc_type']}( $payment['cc_doc_number'] );
 
         if ( !$is_valid )
-          wc_add_notice( __( strtoupper($doc_type) . ' number is invalid', $this->id ), 'error' );
+          wc_add_notice( __( strtoupper($payment['cc_doc_type']) . ' number is invalid', $this->id ), 'error' );
       }
 
       return true;
 
-    }
-
-    public function thankyou_page() {
-//       echo wpautop( wptexturize( 'OBRIGADO! Funcionou' ) );
     }
 
     public function payment_fields() {
@@ -135,33 +119,18 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $cart_totals = WC()->session->get('cart_totals');
       $total = $cart_totals['total'] ? $cart_totals['total'] : null;
 
-      ?>
-        <div class="form-list" id="payment_form_integrai">
-            <div id="integrai-payment-creditcard"></div>
-        </div>
-
-        <script>
-            if (!window.integraiCCData) {
-                window.integraiCCData = JSON.parse('<?php echo json_encode( $options ) ?>');
-            }
-
-            window.IntegraiCreditCard = Object.assign({}, integraiCCData.formOptions, {
-                amount: <?php echo $total ?>
-            });
-
-            integraiCCData.scripts.forEach(function (script) {
-                let scriptElm = document.createElement('script');
-                scriptElm.src = script;
-
-                document.body.appendChild(scriptElm);
-            });
-        </script>
-      <?php
+      $this->get_helper()->get_template(
+        'credit-card/payment-form.php',
+        array(
+          'options' => $options,
+          'total' => $total,
+        ),
+      );
     }
 
     public function process_payment( $order_id ) {
       if ($_POST['payment_method'] != $this->id)
-        return;
+        return false;
 
       global $woocommerce;
       $order = wc_get_order( $order_id );
@@ -179,75 +148,86 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       );
     }
 
-    public function update_order_meta( $order_id ) {
-      $payment_method = $_POST['payment_method'];
-      $data = $_POST['payment'];
+    public function thankyou_page( $order_id ) {
+      $order        = $this->get_helper()->get_integrai_order( $order_id );
+      $configHelper = new Integrai_Model_Config();
+      $options      = $configHelper->get_payment_success();
 
-      if ( $payment_method != $this->id || empty( $data ) )
+      $this->get_helper()->get_template(
+        'credit-card/payment-success.php',
+        array(
+          'options' => $options,
+          'order' => $order,
+        ),
+      );
+    }
+
+    public function update_order_meta( $order_id ) {
+      $payment_data = $_POST['payment'];
+      $payment_data['payment_method'] = $_POST['payment_method'];
+
+      if ( $_POST['payment_method'] != $this->id || empty( $payment_data ) )
         return;
 
-      // Sanitize data
-      $payment_data = array_map(
-        'sanitize_text_field',
-        array(
-          'cc_payment_method'   => $payment_method,
-          'cc_card_brand'       => $data['card_brand'],
-          'cc_installments'     => $data['installments'],
-          'cc_doc_type'         => $data['card_number'],
-          'cc_expiration_month' => $data['expiration_month'],
-          'cc_expiration_year'  => $data['expiration_year'],
-          'cc_card_cvc'         => $data['card_cvc'],
-          'cc_holder_name'      => $data['holder_name'],
-          'cc_doc_number'       => $data['doc_number'],
-          'cc_birth_date'       => $data['birth_date'],
-          'cc_card_hashs'       => $data['card_hashs'],
-          'cc_card_brands'      => $data['card_brands'],
-          'cc_custom_hidden'    => $data['custom_hidden'],
-          'cc_installment_amount'        => $data['card_installment_amount'],
-          'cc_installment_total_amount'  => $data['card_installment_total_amount'],
-        )
-      );
-
       // Save data on order
-      foreach ( $payment_data as $key => $value ) {
-        update_post_meta( $order_id, $key, $value );
-      }
+      $this->get_helper()->save_transaction_data( $order_id, $payment_data );
+
     }
 
     public function display_admin_order_meta( $order ) {
-      $payment_method = get_post_meta( $order->id, '_payment_method', true );
+      $payment_method = get_post_meta( $order->get_id(), '_payment_method', true );
 
       if ( $payment_method !== $this->id )
         return;
 
-      $installments  = get_post_meta( $order->id, 'cc_installments',   true );
-      $card_brand    = get_post_meta( $order->id, 'cc_card_brand',     true );
-      $doc_type      = get_post_meta( $order->id, 'cc_doc_type',       true );
-      $doc_number    = get_post_meta( $order->id, 'cc_doc_number',     true );
+      $data = get_post_meta( $order->get_id(), '_integrai_transaction_data', true );
 
-      // Update meta data title
-      $meta_data = array(
-        __( 'Método de Pagamento', 'integrai' ) => 'Cartão de Crédito (Integrai)',
-        __( 'Bandeira do Cartão', 'integrai' )  => sanitize_text_field( ucfirst( $card_brand ) ),
-        __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper($doc_type) ),
-        __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $doc_number ),
-        __( 'Número de Parcelas', 'integrai' )  => sanitize_text_field( $installments ),
-      );
+      if (
+        isset($data)
+        && isset($data['cc_card_brand'])
+        && isset($data['cc_doc_type'])
+        && isset($data['cc_doc_number'])
+        && isset($data['cc_installments'])
+      ) {
 
-      ?>
-        <div class="clear"></div>
-        <div class="integrai_payment">
-            <h4><?php echo __( 'Método de Pagamento', 'integrai' ) ?></h4>
-            <p>
-              <?php
-                foreach ($meta_data as $key => $value) {
-                  echo '<strong>' . $key . ':</strong> ' . $value . '<br />';
-                }
-              ?>
-            </p>
-        </div>
+        $meta_data = array(
+          __( 'Método de Pagamento', 'integrai' ) => 'Cartão de Crédito (Integrai)',
+          __( 'Bandeira do Cartão', 'integrai' )  => sanitize_text_field( ucfirst( $data['cc_card_brand'] ) ),
+          __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper( $data['cc_doc_type'] ) ),
+          __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $data['cc_doc_number'] ),
+          __( 'Número de Parcelas', 'integrai' )  => sanitize_text_field( $data['cc_installments'] ),
+        );
 
-      <?php
+        $this->get_helper()->get_template(
+          'credit-card/admin-order-detail.php',
+          array(
+            'data' => $meta_data,
+          ),
+        );
+      }
+    }
+
+    public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
+      if ( $sent_to_admin || ! in_array( $order->get_status(), array( 'processing', 'on-hold' ), true ) || $this->id !== $order->get_payment_method() ) {
+        return;
+      }
+
+      $data = get_post_meta( $order->get_id(), '_integrai_transaction_data', true );
+      $email_type = $plain_text ? 'plain' : 'html';
+
+      if ( isset($data['card_brand']) && isset($data['installments']) ) {
+        $this->get_helper()->get_template(
+          'credit-card/emails/' . $email_type . '-instructions.php',
+          array(
+            'card_brand'   => $data['cc_card_brand'],
+            'installments' => $data['cc_installments'],
+          ),
+        );
+      }
+    }
+
+    private function get_helper() {
+      return new Integrai_Payment_Method_Helper( $this->id );
     }
   }
 endif;

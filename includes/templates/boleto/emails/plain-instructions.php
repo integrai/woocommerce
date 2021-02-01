@@ -4,11 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-esc_html_e( 'Payment', 'integrai' );
+esc_html_e( 'Pagamento', 'integrai' );
 
 echo "\n\n";
 
-esc_html_e( 'Please use the link below to view your banking ticket, you can print and pay in your internet banking or in a lottery retailer:', 'integrai' );
+esc_html_e( 'Utilize o link abaixo para visualizar o boleto:', 'integrai' );
 
 echo "\n";
 
@@ -16,6 +16,6 @@ echo esc_url( $url );
 
 echo "\n";
 
-esc_html_e( 'After we receive the banking ticket payment confirmation, your order will be processed.', 'integrai' );
+esc_html_e( 'O seu pedido será processado assim que recebermos a confirmação do pagamento do boleto.', 'integrai' );
 
 echo "\n\n****************************************************\n\n";
