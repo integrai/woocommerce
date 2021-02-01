@@ -153,6 +153,10 @@ class Integrai_Public {
 			include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
 		endif;
 
+		if ( ! class_exists( 'Integrai_Payment_Method_Helper' ) ) :
+			include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-payment-method-helper.php';
+		endif;
+
 		if ( ! class_exists( 'Integrai_API' ) ) :
 			include_once INTEGRAI__PLUGIN_DIR . '/includes/class-integrai-api.php';
 		endif;

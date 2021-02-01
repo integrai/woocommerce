@@ -7,9 +7,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->id                 = 'integrai_boleto';
       $this->has_fields         = true;
       $this->icon 	            = apply_filters('woocommerce_custom_gateway_icon', '');
-      $this->title              = __( 'Integrai', 'woocommerce-integrai-settings' );
-      $this->method_title       = __( 'Integrai', 'woocommerce-integrai-settings' );  // Title shown in admin
-      $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento via Boleto.', 'woocommerce-integrai-settings' );  // Title shown in admin
+      $this->title              = __( 'Integrai', 'woocommerce' );
+      $this->method_title       = __( 'Integrai', 'woocommerce' );  // Title shown in admin
+      $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento via Boleto.', 'woocommerce' );  // Title shown in admin
 
 
       $this->init();
@@ -37,6 +37,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
       // Custom thankyou page
       add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
+      add_action( 'woocommerce_email_after_order_table', array( $this, 'email_instructions' ), 10, 3 );
 
     }
 
@@ -133,40 +134,18 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
     }
 
-    /**
-     * Prints the form fields
-     *
-     * @access public
-     * @return void
-     */
     public function payment_fields() {
       $configHelper = new Integrai_Model_Config();
-      $options = $configHelper->get_payment_boleto();
-      $wcCustomer = new WC_Customer( WC()->session->get_customer_id() );
-      $customer = $this->get_integrai_customer( $wcCustomer );
+      $options  = $configHelper->get_payment_boleto();
+      $customer = $this->get_helper()->get_integrai_customer( WC()->session->get_customer_id() );
 
-      ?>
-        <div class="form-list" id="payment_form_integrai-boleto">
-            <div id="integrai-payment-boleto"></div>
-        </div>
-
-        <script>
-            window.integraiBoletoData = JSON.parse('<?php echo json_encode( $options ) ?>');
-
-            window.IntegraiBoleto = Object.assign({}, integraiBoletoData.formOptions, {
-                boletoModel: JSON.parse('<?php echo json_encode( $customer ) ?>'),
-            });
-
-            console.log(window.IntegraiBoleto)
-
-            integraiBoletoData.scripts.forEach(function (script) {
-                let scriptElm = document.createElement('script');
-                scriptElm.src = script;
-
-                document.body.appendChild(scriptElm);
-            });
-        </script>
-      <?php
+      $this->get_helper()->get_template(
+        'boleto/payment-form.php',
+        array(
+           'options' => $options,
+           'customer' => $customer,
+        ),
+      );
     }
 
     public function process_payment( $order_id ) {
@@ -190,32 +169,17 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function thankyou_page( $order_id ) {
-      $order        = $this->get_integrai_order( $order_id );
+      $order        = $this->get_helper()->get_integrai_order( $order_id );
       $configHelper = new Integrai_Model_Config();
       $options      = $configHelper->get_payment_success();
 
-      ?>
-        <script>
-            const integraiSuccessData = JSON.parse('<?php echo json_encode( $options ) ?>');
-
-            window.IntegraiSuccess = Object.assign({}, integraiSuccessData.pageOptions, {
-                order: JSON.parse('<?php echo $order ?>'),
-            });
-
-            integraiSuccessData.scripts.forEach(function (script) {
-                let scriptElm = document.createElement('script');
-                scriptElm.src = script;
-
-                document.body.appendChild(scriptElm);
-            });
-        </script>
-
-        <ul class="order_details">
-            <li>
-                <div id="integrai-payment-success"></div>
-            </li>
-        </ul>
-      <?php
+      $this->get_helper()->get_template(
+        'boleto/payment-success.php',
+        array(
+          'options' => $options,
+          'order' => $order,
+        ),
+      );
     }
 
     public function update_order_meta( $order_id ) {
@@ -265,96 +229,40 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
       // Update meta data title
       $meta_data = array(
-        __( 'Pagamento', 'integrai' ) => 'Boleto (Integrai)',
+        __( 'Pagamento', 'integrai' )           => 'Boleto (Integrai)',
         __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper($doc_type) ),
         __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $doc_number ),
       );
 
-      ?>
-        <div class="clear"></div>
-        <div class="integrai_payment">
-            <h4><?php echo __( 'Método de Pagamento', 'integrai' ) ?></h4>
-            <p>
-              <?php
-                foreach ($meta_data as $key => $value) {
-                  echo '<strong>' . $key . ':</strong> ' . $value . '<br />';
-                }
-              ?>
-
-              <?php
-                echo '<strong>' . __( 'Boleto' ) . '</strong>: ';
-                echo '<a id="integrai_printBoleto" title="'. __( 'Acessar boleto' ) .'" href="#">' . __( ' clique aqui ' ) . '</a>'
-              ?>
-            </p>
-        </div>
-
-        <script>
-            document.querySelector('#integrai_printBoleto').addEventListener('click', function () {
-                fetch('<?php echo $boleto_url ?>')
-                    .then((response) => response.json())
-                    .then((response) => {
-                        this.loading = false;
-                        window.open(response.boleto_url, '_blank');
-                    });
-            });
-        </script>
-      <?php
-    }
-
-    private function get_integrai_order( $order_id ) {
-      $order = wc_get_order( $order_id );
-
-      return json_encode(array(
-        "payment_method"      => $this->id,
-        "order_entity_id"     => $order->get_order_number(),
-        "order_increment_id"  => $order->get_order_number(),
-        "order_link_detail"   => $order->get_view_order_url(),
-        "store_url"           => get_home_url(),
-        "boleto_url"          => get_rest_url(
-            null,
-            'integrai/v1/boleto&order_id=' . $order->get_order_number(),
+      $this->get_helper()->get_template(
+        'boleto/admin-order-detail.php',
+        array(
+          'data' => $meta_data,
+          'boleto_url' => $boleto_url,
         ),
-      ));
-    }
-
-    public function get_integrai_customer( $customer ) {
-      $id = $customer->get_id();
-
-      $billing = $customer->get_billing();
-      $billing_cpf  = get_user_meta($id, 'billing_cpf');
-      $billing_cnpj = get_user_meta($id, 'billing_cnpj');
-      $billing_number = get_user_meta($id, 'billing_number');
-      $billing_company    = get_user_meta($id, 'billing_company');
-      $billing_persontype = $this->get_person_type( get_user_meta($id, 'billing_persontype') );
-
-      $doc_number = '';
-
-      if ( isset($billing_persontype) && $billing_persontype === 'cpf' )
-        $doc_number = $billing_cpf;
-
-      if ( isset($billing_persontype) && $billing_persontype === 'cnpj' )
-        $doc_number = $billing_cnpj;
-
-      return array(
-        'name'           => $billing['first_name'],
-        'lastName'       => $billing['last_name'],
-        'docType'        => $billing_persontype,
-        'docNumber'      => $doc_number,
-        'addressZipCode' => $billing['postcode'],
-        'addressStreet'  => $billing['address_1'],
-        'addressNumber'  => $billing_number,
-        'addressCity'    => $billing['city'],
-        'addressState'   => $billing['state'],
-        'companyName'    => $billing_company,
       );
     }
 
-    private function get_person_type( $persontype ) {
-      if ( !isset($person_type) || empty($person_type) ) {
-          return 'cpf';
+    public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
+      if ( $sent_to_admin || ! in_array( $order->get_status(), array( 'processing', 'on-hold' ), true ) || $this->id !== $order->payment_method ) {
+        return;
       }
 
-      return $persontype[0] == '1' ? 'cpf' : 'cnpj';
+      $email_type = $plain_text ? 'plain' : 'html';
+
+      $this->get_helper()->get_template(
+        'boleto/emails/' . $email_type . '-instructions.php',
+        array(
+          'url' => get_rest_url(
+            null,
+            'integrai/v1/boleto&order_id=' . $order->get_order_number(),
+          ),
+        ),
+      );
+    }
+
+    private function get_helper() {
+        return new Integrai_Payment_Method_Helper( $this->id );
     }
   }
 endif;
