@@ -74,38 +74,38 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         return false;
 
       if( !isset( $payment['cc_card_number'] ) || empty( $payment['cc_card_number'] ) )
-        wc_add_notice( __( 'Card Number is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o Número do cartão de crédito.', $this->id ), 'error' );
 
       if( !isset( $payment['cc_expiration_month'] ) || empty( $payment['cc_expiration_month'] ) )
-        wc_add_notice( __( 'Expiration month is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o mês de expiração do cartão de crédito.', $this->id ), 'error' );
 
       if( !isset( $payment['cc_expiration_year'] ) || empty( $payment['cc_expiration_year'] ) )
-        wc_add_notice( __( 'Expiration year is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o ano de expiração do cartão de crédito.', $this->id ), 'error' );
 
       if( !isset( $payment['cc_card_cvc'] ) || empty( $payment['cc_card_cvc'] ) )
-        wc_add_notice( __( 'Card CVC is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o CVC do cartão de crédito.', $this->id ), 'error' );
 
       if( !isset( $payment['cc_holder_name'] ) || empty( $payment['cc_holder_name'] ) )
-        wc_add_notice( __( 'Card Holder\'s name is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o nome do titular do cartão de crédito.', $this->id ), 'error' );
 
       if( !isset( $payment['cc_doc_type'] ) || empty( $payment['cc_doc_type'] ) )
-        wc_add_notice( __( 'Document type (CPF / CNPJ) is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Selecione o tipo do documento (CPF ou CNPJ).', $this->id ), 'error' );
 
       if( !isset( $payment['cc_doc_number'] ) || empty( $payment['cc_doc_number'] ) )
-        wc_add_notice( __( 'Document number is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o documento (CPF ou CNPJ).', $this->id ), 'error' );
 
       if( !isset( $payment['cc_birth_date'] ) || empty( $payment['cc_birth_date'] ) )
-        wc_add_notice( __( 'Birth date is required', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe a data de nascimento.', $this->id ), 'error' );
 
       if( !isset( $payment['cc_installments'] ) || empty( $payment['cc_installments'] ) )
-        wc_add_notice( __( 'Select the number of installments', $this->id ), 'error' );
+        wc_add_notice( __( 'Selecione o número de parcelas.', $this->id ), 'error' );
 
       // Validate DOCUMENT:
-      if ( $payment['cc_doc_type'] === 'cpf' || $payment['cc_doc_type'] === 'cnpj' ) {
+      if ( $payment['cc_doc_type'] === 'cpf' || $payment['cc_doc_type'] === 'cnpj' && isset($payment['cc_doc_number']) ) {
         $is_valid = Integrai_Validator::{$payment['cc_doc_type']}( $payment['cc_doc_number'] );
 
         if ( !$is_valid )
-          wc_add_notice( __( strtoupper($payment['cc_doc_type']) . ' number is invalid', $this->id ), 'error' );
+          wc_add_notice( __( strtoupper('O ' . $payment['cc_doc_type']) . ' informado é inválido. Verifique e tente novamente.', $this->id ), 'error' );
       }
 
       return true;

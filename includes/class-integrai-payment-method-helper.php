@@ -38,11 +38,11 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
       $customer = new WC_Customer( $customer_id );
       $billing  = $customer->get_billing();
 
-      $billing_cpf        = get_user_meta($customer_id, 'billing_cpf');
-      $billing_cnpj       = get_user_meta($customer_id, 'billing_cnpj');
-      $billing_number     = get_user_meta($customer_id, 'billing_number');
-      $billing_company    = get_user_meta($customer_id, 'billing_company');
-      $billing_persontype = $this->get_person_type( get_user_meta($customer_id, 'billing_persontype') );
+      $billing_cpf        = $this->get_customer_data($customer_id, 'billing_cpf');
+      $billing_cnpj       = $this->get_customer_data($customer_id, 'billing_cnpj');
+      $billing_number     = $this->get_customer_data($customer_id, 'billing_number');
+      $billing_company    = $this->get_customer_data($customer_id, 'billing_company');
+      $billing_persontype = $this->get_person_type( $this->get_customer_data($customer_id, 'billing_persontype') );
 
       $doc_number = ( isset($billing_persontype) && $billing_persontype === 'cpf' )
         ? $billing_cpf
@@ -73,6 +73,12 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
         'woocommerce/integrai',
         $this->get_template_path(),
       );
+    }
+
+    private function get_customer_data( $customer_id, $meta_key ) {
+        $data = get_user_meta( $customer_id, $meta_key );
+
+        return isset($data) && $data !== false ? $data : '';
     }
 
     public function save_transaction_data( $order_id, $payment_data = array() ) {

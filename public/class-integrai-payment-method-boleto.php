@@ -79,7 +79,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         wc_add_notice( __( 'Informe o número do documento (CPF / CNPJ)', $this->id ), 'error' );
 
       if( !isset( $payment['boleto_address_street'] ) || empty( $payment['boleto_address_street'] ) )
-        wc_add_notice( __( 'Informe um endereço', $this->id ), 'error' );
+        wc_add_notice( __( 'Informe o endereço', $this->id ), 'error' );
 
       if( !isset( $payment['boleto_address_zipcode'] ) || empty( $payment['boleto_address_zipcode'] ) )
         wc_add_notice( __( 'Informe o CEP', $this->id ), 'error' );
@@ -112,7 +112,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       }
 
       // Validate DOCUMENT:
-      if ( $payment['boleto_doc_type'] === 'cpf' || $payment['boleto_doc_type'] === 'cnpj' ) {
+      if ( $payment['boleto_doc_type'] === 'cpf' || $payment['boleto_doc_type'] === 'cnpj' && isset( $payment['boleto_doc_number'] ) ) {
         $is_valid = Integrai_Validator::{$payment['boleto_doc_type']}( $payment['boleto_doc_number'] );
 
         if ( !$is_valid )
