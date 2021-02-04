@@ -5,11 +5,12 @@ include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
 include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.php';
 
 class Integrai_Config_Controller extends WP_REST_Controller {
-  public function register_routes() {
-    $namespace = 'integrai/v1';
-    $path = 'config';
 
-    register_rest_route( $namespace, '/' . $path, [
+  protected $namespace = 'integrai';
+  protected $path = 'config';
+
+  public function register_routes() {
+    register_rest_route( $this->namespace, '/' . $this->path, [
       array(
         'methods'  => 'GET',
         'callback' => array( $this, 'get_items' ),

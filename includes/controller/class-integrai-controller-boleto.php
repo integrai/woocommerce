@@ -6,7 +6,7 @@ include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.
 
 class Integrai_Boleto_Controller extends WP_REST_Controller {
 
-  protected $namespace = 'integrai/v1';
+  protected $namespace = 'integrai';
   protected $path = 'boleto';
 
   public function register_routes() {

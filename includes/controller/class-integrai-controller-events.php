@@ -6,13 +6,12 @@ include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.
 
 class Integrai_Events_Controller extends WP_REST_Controller {
 
+  protected $namespace = 'integrai';
+  protected $path = 'event';
   protected $_models = array();
 
   public function register_routes() {
-    $namespace = 'integrai/v1';
-    $path = 'event';
-
-    register_rest_route( $namespace, '/' . $path, [
+    register_rest_route( $this->namespace, '/' . $this->path, [
       array(
         'methods'  => 'GET',
         'callback' => array( $this, 'get_items' ),
