@@ -18,10 +18,7 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
         "order_increment_id"  => $order->get_order_number(),
         "order_link_detail"   => $order->get_view_order_url(),
         "store_url"           => get_home_url(),
-        "boleto_url"          => get_rest_url(
-          null,
-          'integrai/v1/boleto&order_id=' . $order->get_order_number(),
-        ),
+        "boleto_url"          => $this->get_boleto_url( $order->get_order_number() ),
       );
     }
 
@@ -89,6 +86,22 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
 
     public function get_transaction_data( $order_id ) {
       return get_post_meta( $order_id, $this->meta_transaction_key, true );
+    }
+
+    public function rest_is_pretty_link() {
+      $api_url = get_rest_url(null, '/');
+
+      return strpos($api_url , 'wp-json') !== false;
+    }
+
+    public function get_boleto_url( $order_number, $is_duplicated = false ) {
+      $query_concat_params = $this->rest_is_pretty_link() ? '?' : '&';
+      $is_duplicated_str = $is_duplicated ? 'true' : 'false';
+
+      return get_rest_url(
+        null,
+        'integrai/boleto' . $query_concat_params . 'order_id=' . $order_number . '&' . $is_duplicated_str,
+      );
     }
   }
 }

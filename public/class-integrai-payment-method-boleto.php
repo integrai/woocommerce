@@ -190,10 +190,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         return;
 
       $data = get_post_meta( $order->get_id(), '_integrai_transaction_data',       true );
-      $boleto_url = get_rest_url(
-        null,
-        'integrai/v1/boleto&order_id=' . $order->get_order_number() . '&duplicated=true',
-      );
+      $boleto_url = $this->get_helper()->get_boleto_url( $order->get_order_number() );
 
       if (
         isset($data)
@@ -228,10 +225,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->get_helper()->get_template(
         'boleto/emails/' . $email_type . '-instructions.php',
         array(
-          'url' => get_rest_url(
-            null,
-            'integrai/v1/boleto&order_id=' . $order->get_order_number(),
-          ),
+          'url' => $this->get_helper()->get_boleto_url( $order->get_order_number() ),
         ),
       );
     }
