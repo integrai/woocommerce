@@ -28,7 +28,6 @@ class Integrai_Config_Controller extends WP_REST_Controller {
       $integrai_config = new Integrai_Model_Config();
       $integrai_config->update_config( $configs );
 
-      // Create the response object
       $response = new WP_REST_Response( array( "ok" => true ) );
       $response->header( 'Content-type', 'application/json' );
       $response->set_status( 201 );

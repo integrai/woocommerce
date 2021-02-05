@@ -40,7 +40,6 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
 
     } catch (Exception $e) {
 
-      // Create the response object
       $response = new WP_REST_Response( array(
         "ok" => false,
         "error" => $e->getMessage()

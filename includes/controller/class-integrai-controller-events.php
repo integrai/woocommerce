@@ -49,7 +49,6 @@ class Integrai_Events_Controller extends WP_REST_Controller {
         }
       }
 
-
       // Delete events with success
       if(count($success) > 0){
         $api->request('/store/event', 'DELETE', array(
@@ -57,7 +56,6 @@ class Integrai_Events_Controller extends WP_REST_Controller {
         ));
       }
 
-      // Create the response object
       $response = new WP_REST_Response( array( "ok" => true ) );
       $response->header( 'Content-type', 'application/json' );
       $response->set_status( 201 );
