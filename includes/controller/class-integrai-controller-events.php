@@ -23,44 +23,49 @@ class Integrai_Events_Controller extends WP_REST_Controller {
   public function get_items( $request ) {
     try {
       $api = new Integrai_API();
-      $events = $api->request('/store/event');
+      $response = $api->request('/store/event');
+      $events = json_decode( $response['body'] );
       $success = [];
 
-      foreach ($events as $event) {
-        $eventId = $event['_id'];
-        $payload = $event['payload'];
+      Integrai_Helper::log($events, '== $events: ');
 
-        try {
-          foreach ($payload["models"] as $modelItem) {
-            $model = new $modelItem['className'](...$this->transformArgs($modelItem['modelArgs']));
+      if ( isset($events) && !empty($events) ) {
+        foreach ($events as $event) {
+          $eventId = $event->_id;
+          $payload = $event->payload;
 
-            foreach ($modelItem["methods"] as $methodItem) {
-              call_user_func_array(array($model, $methodItem["method"]), $this->transformArgs($methodItem["args"]));
+          try {
+            foreach ($payload->models as $modelItem) {
+              $model = new $modelItem->className(...$this->transformArgs($modelItem->modelArgs));
+
+              foreach ($modelItem->methods as $methodItem) {
+                call_user_func_array(array($model, $methodItem['method']), $this->transformArgs($methodItem['args']));
+              }
+
+              $this->_models[$modelItem->name] = $model;
             }
 
-            $this->_models[$modelItem["name"]] = $model;
+            array_push($success, $eventId);
+
+          } catch (Exception $e) {
+            Integrai_Helper::log($event, 'Erro ao processar o evento');
+            Integrai_Helper::log($e->getMessage(), 'Erro');
           }
-
-          array_push($success, $eventId);
-
-        } catch (Exception $e) {
-          Integrai_Helper::log($event, 'Erro ao processar o evento');
-          Integrai_Helper::log($e->getMessage(), 'Erro');
         }
+
+        // Delete events with success
+        if(count($success) > 0){
+          $api->request('/store/event', 'DELETE', array(
+            'event_ids' => $success
+          ));
+        }
+
+        $response = new WP_REST_Response( array( "ok" => true ) );
+        $response->header( 'Content-type', 'application/json' );
+        $response->set_status( 201 );
+
+        return $response;
       }
-
-      // Delete events with success
-      if(count($success) > 0){
-        $api->request('/store/event', 'DELETE', array(
-          'event_ids' => $success
-        ));
-      }
-
-      $response = new WP_REST_Response( array( "ok" => true ) );
-      $response->header( 'Content-type', 'application/json' );
-      $response->set_status( 201 );
-
-      return $response;
 
     } catch (Exception $e) {
 
