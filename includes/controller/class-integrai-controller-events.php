@@ -27,8 +27,6 @@ class Integrai_Events_Controller extends WP_REST_Controller {
       $events = json_decode( $response['body'] );
       $success = [];
 
-      Integrai_Helper::log($events, '== $events: ');
-
       if ( isset($events) && !empty($events) ) {
         foreach ($events as $event) {
           $eventId = $event->_id;
