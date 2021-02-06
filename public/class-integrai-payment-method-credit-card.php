@@ -108,6 +108,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
           wc_add_notice( __( strtoupper('O ' . $payment['cc_doc_type']) . ' informado é inválido. Verifique e tente novamente.', $this->id ), 'error' );
       }
 
+      if( !isset( $payment['cc_card_hashs'] ) || empty( $payment['cc_card_hashs'] || count( $payment['cc_card_hashs'] ) === 0 ) )
+        wc_add_notice( __( 'Ocorreu um erro. Aguarde alguns segundos e tente novamente.', $this->id ), 'error' );
+
       return true;
 
     }

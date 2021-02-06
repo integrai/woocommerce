@@ -37,7 +37,9 @@ class Integrai_Events_Controller extends WP_REST_Controller {
               $model = new $modelItem->className(...$this->transformArgs($modelItem->modelArgs));
 
               foreach ($modelItem->methods as $methodItem) {
-                call_user_func_array(array($model, $methodItem['method']), $this->transformArgs($methodItem['args']));
+                if ( isset($methodItem->method) && isset($methodItem->args) ) {
+                  call_user_func_array(array($model, $methodItem->method), $this->transformArgs($methodItem->args));
+                }
               }
 
               $this->_models[$modelItem->name] = $model;
@@ -74,8 +76,6 @@ class Integrai_Events_Controller extends WP_REST_Controller {
 
 
   private function get_other_model($modelName) {
-    Integrai_Helper::log($this->_models, 'Models: ');
-
     return $this->_models[$modelName];
   }
 

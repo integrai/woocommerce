@@ -11,8 +11,6 @@
         boletoModel: JSON.parse('<?php echo json_encode( $customer ) ?>'),
     });
 
-    console.log(window.IntegraiBoleto)
-
     integraiBoletoData.scripts.forEach(function (script) {
         let scriptElm = document.createElement('script');
         scriptElm.src = script;

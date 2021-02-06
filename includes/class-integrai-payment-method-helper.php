@@ -5,7 +5,7 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
     private $payment_method = null;
     private $meta_transaction_key = '_integrai_transaction_data';
 
-    public function __construct( $payment_method ) {
+    public function __construct( $payment_method = null ) {
       $this->payment_method = $payment_method;
     }
 
@@ -79,13 +79,24 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
     }
 
     public function save_transaction_data( $order_id, $payment_data = array() ) {
-      $sanitized_data = array_map( 'sanitize_text_field', $payment_data );
+      $transformed_data = $this->transform_transaction_data( $payment_data );
 
-      return update_post_meta( $order_id, $this->meta_transaction_key, $sanitized_data );
+      return update_post_meta( $order_id, $this->meta_transaction_key, $transformed_data );
     }
 
     public function get_transaction_data( $order_id ) {
-      return get_post_meta( $order_id, $this->meta_transaction_key, true );
+      $data = get_post_meta( $order_id, $this->meta_transaction_key, true );
+
+      return $this->transform_transaction_data( $data, false, false );
+    }
+
+    public function transform_transaction_data( $data, $encode = true, $sanitize = true ) {
+      if ( $data['payment_method'] === 'integrai_creditcard' ) {
+        $data['cc_card_hashs']  = $encode ? json_encode($data['cc_card_hashs']) : json_decode($data['cc_card_hashs']);
+        $data['cc_card_brands'] = $encode ? json_encode($data['cc_card_brands']) : json_decode($data['cc_card_brands']);
+      }
+
+      return $sanitize ? array_map( 'sanitize_text_field', $data ) : $data;
     }
 
     public function rest_is_pretty_link() {

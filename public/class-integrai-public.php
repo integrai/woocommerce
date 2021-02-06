@@ -114,6 +114,10 @@ class Integrai_Public {
 		return new Integrai_Model_Events();
 	}
 
+	private function get_payment_helper() {
+		return new Integrai_Payment_Method_Helper();
+	}
+
 	private function get_customer_sessions() {
 		global $wpdb;
 
@@ -173,7 +177,8 @@ class Integrai_Public {
 
 	private function get_customer( $customer_id ) {
 		$customer = new WC_Customer( $customer_id );
-    $doc_type = $customer->get_meta('billing_persontype') == '1' ? 'cpf' : 'cnpj';
+		$person_type = $customer->get_meta('billing_persontype');
+    $doc_type = isset($person_type) && $customer->get_meta('billing_persontype') == '2' ? 'cnpj' : 'cpf';
 		$doc_key  = $doc_type == 'cpf' ? 'billing_cpf' : 'billing_cnpj';
 
 		return array(
@@ -195,11 +200,12 @@ class Integrai_Public {
 	}
 
 	private function get_full_order( $order_id ) {
-	  $order = $this->get_order( $order_id );
+    $order = $this->get_order( $order_id );
+    $customer_id = $order['customer_id'];
 
-    $order['payment'] = $this->get_payment( $order_id );
-    $order['customer'] = $this->get_customer( $order['customer_id'] );
-    $order['items'] = $this->get_items( $order_id );
+    $order['payment']         = $this->get_payment( $order_id );
+    $order['customer']        = $this->get_customer( $customer_id );
+    $order['items']           = $this->get_items( $order_id );
     $order['shipping_method'] = $this->get_shipping_method();
 
     return $order;
@@ -273,7 +279,7 @@ class Integrai_Public {
 	}
 
 	private function get_payment( $order_id ) {
-    $data = get_post_meta( $order_id, '_integrai_transaction_data', true );
+    $data = $this->get_payment_helper()->get_transaction_data( $order_id );
 
     if ( !isset( $data ) || empty( $data ) ) {
       return array();
@@ -436,8 +442,8 @@ class Integrai_Public {
 	}
 
 	// NEW_ORDER
-	public function woocommerce_new_order( $order_id ) {
-		$order = $this->get_full_order( $order_id );
+	public function woocommerce_new_order( $order ) {
+		$order = $this->get_full_order( $order->get_id() );
 
 		return $this->get_api_helper()->send_event(self::NEW_ORDER, $order);
 	}
