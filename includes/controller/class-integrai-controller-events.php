@@ -35,11 +35,10 @@ class Integrai_Events_Controller extends WP_REST_Controller {
           try {
             foreach ($payload->models as $modelItem) {
               $model = new $modelItem->className(...$this->transformArgs($modelItem->modelArgs));
+              $methodItem = $modelItem->methods;
 
-              foreach ($modelItem->methods as $methodItem) {
-                if ( isset($methodItem->method) && isset($methodItem->args) ) {
-                  call_user_func_array(array($model, $methodItem->method), $this->transformArgs($methodItem->args));
-                }
+              if ( isset($methodItem->method) && isset($methodItem->args) ) {
+                call_user_func_array(array($model, $methodItem->method), $this->transformArgs($methodItem->args));
               }
 
               $this->_models[$modelItem->name] = $model;
