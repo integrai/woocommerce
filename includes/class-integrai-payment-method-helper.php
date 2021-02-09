@@ -73,7 +73,7 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
     }
 
     private function get_customer_data( $customer_id, $meta_key ) {
-        $data = get_user_meta( $customer_id, $meta_key );
+        $data = get_user_meta( $customer_id, $meta_key, true );
 
         return isset($data) && $data !== false ? $data : '';
     }
