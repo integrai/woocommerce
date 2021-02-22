@@ -1,0 +1,29 @@
+{
+  "name": "integrai/woocommerce",
+  "description": "WooCommerce Integrai Extension",
+  "type": "wordpress-plugin",
+  "license": [
+    "OSL-3.0",
+    "AFL-3.0"
+  ],
+  "keywords": [
+    "integrai",
+    "woocommerce",
+    "integrai woocommerce",
+    "woocommerce module",
+    "woocommerce-module",
+    "wordpress-plugin",
+    "wordpress"
+  ],
+  "authors": [
+    {
+      "name": "Integrai",
+      "email": "contato@integrai.com.br",
+      "homepage": "https://www.integrai.com.br",
+      "role": "Technical Support"
+    }
+  ],
+  "require": {
+    "php": ">=5.4"
+  }
+}

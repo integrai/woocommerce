@@ -15,6 +15,13 @@ Módulo para integrar sua loja com a Integrai, integrando com diversos parceiros
 2. Criar a seguinte estrutura de pastas `wp-content/plugins/integrai` na raiz da sua instalação.
 3. Descompacte o arquivo baixado e copie as pastas para dentro do diretório criado acima.
 
+### Instalar usando o [composer](https://getcomposer.org/)
+1. Entre na pasta raíz da sua instalação
+2. Digite o seguinte comando:
+```bash
+composer require integrai/woocommerce
+```
+
 ### Instalar usando o WordPress
 1. Acesse o painel administrativo da sua loja.
 2. Vá em `Plugins > Adicionar novo`.
