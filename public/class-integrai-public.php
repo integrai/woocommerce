@@ -242,6 +242,17 @@ class Integrai_Public {
     return $rate_table[WC()->session->get( 'chosen_shipping_methods' )[0]];
   }
 
+  private function get_product_by_id($id) {
+    $product = new WC_Product( $id );
+
+    return array(
+      'id' => $product->get_id(),
+      'sku' => $product->get_sku(),
+      'name' => $product->get_name(),
+      'description' => $product->get_description(),
+    );
+  }
+
   private function get_items( $order_id ) {
     $order = wc_get_order( $order_id );
     $products = array();
@@ -520,8 +531,6 @@ class Integrai_Public {
 
 	// ABANDONED_CART
 	public function integrai_cron_abandoned_cart() {
-		// TODO: Após enviar um carrinho abandonado, tirar ele da lista para evitar duplicados
-
 		if ( $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART) ) {
 			$cart_lifetime = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
 			$minutes = $cart_lifetime ? $cart_lifetime : 60;
@@ -548,11 +557,25 @@ class Integrai_Public {
           // Se a data de criação for mais antiga que a data de corte, considera como abandadono
           if ($cart_created < $from_date) {
             $item = array();
+            $products = array();
+
+            foreach ($cart as $cartItem) {
+              if ( isset($cartItem['product_id']) ) {
+                $productItem = $this->get_product_by_id($cartItem['product_id']);
+                $productItem['quantity'] = $cartItem['quantity'];
+                $productItem['price'] = $cartItem['line_total'];
+
+                $session['cart_totals']['quantity'] = $session['cart_totals']['quantity'] + $cartItem['quantity'];
+
+                array_push($products, $productItem);
+              }
+            }
 
             $item['created_at'] = $cart_created;
             $item['customer'] = $session['customer'];
             $item['cart'] = $session['cart'];
             $item['cart_totals'] = $session['cart_totals'];
+            $item['products'] = $products;
 
             array_push($abandoned_cart, $item);
           }
@@ -566,8 +589,8 @@ class Integrai_Public {
 	}
 
 	public function integrai_cron_resend_events() {
-		$options = get_option('woocommerce_integrai-settings_settings');
-		$is_enabled = $options['enable_integration'];
+    $options = get_option('woocommerce_integrai-settings_settings');
+		$is_enabled = $options['enabled'];
 
 		$pending_events = $this->get_events_helper()->get_pending_events();
 
@@ -578,8 +601,7 @@ class Integrai_Public {
 					$event_name = $event->event;
 					$payload = json_decode($event->payload, true);
 
-					$response = $this->get_api_helper()->send_event($event_name, $payload);
-
+					$this->get_api_helper()->send_event($event_name, $payload);
 					$this->get_events_helper()->delete_by_id( $event_id );
 
 				} catch (Exception $e) {

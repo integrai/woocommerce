@@ -39,7 +39,7 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
     private function is_enabled() {
       $options = get_option('woocommerce_integrai-settings_settings');
 
-		  return $options['enable_integration'];
+		  return $options['enabled'];
     }
 
     private function load_dependencies() {
