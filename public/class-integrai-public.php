@@ -88,6 +88,7 @@ class Integrai_Public {
 	const REFUND_INVOICE = 'REFUND_INVOICE';
 	const SAVE_ORDER = 'SAVE_ORDER';
 	const ABANDONED_CART = 'ABANDONED_CART';
+	const ABANDONED_CART_ITEM = 'ABANDONED_CART_ITEM';
 
 	public function __construct( $integrai, $version ) {
 
@@ -511,6 +512,7 @@ class Integrai_Public {
 		}
 
 		if ( ! wp_next_scheduled( 'integrai_cron_abandoned_cart' ) ) {
+		  Integrai_Helper::log('==> Schedule ABANDONED_CART');
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_abandoned_cart' );
 		}
 
@@ -531,21 +533,25 @@ class Integrai_Public {
 
 	// ABANDONED_CART
 	public function integrai_cron_abandoned_cart() {
-		if ( $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART) ) {
+	  $isEnabled = $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART);
+
+	  Integrai_Helper::log($isEnabled, '==> $isEnabled: ');
+
+		if ( $isEnabled ) {
 			$cart_lifetime = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
 			$minutes = $cart_lifetime ? $cart_lifetime : 60;
+      Integrai_Helper::log($minutes, '==> $cart_lifetime: ');
 			$from_date = date('Y-m-d H:i:s', strtotime('-' . $minutes . ' minutes'));
 			$cart_created = date('Y-m-d H:i:s', strtotime("now"));
 
 			$sessions = $this->get_customer_sessions();
-			$abandoned_cart = array();
 
 			foreach ($sessions as $session) {
-				$cart = $session['cart'];
+				$sessionCart = $session['cart'];
 
-				if (  isset( $cart ) && is_array($cart) && count($cart) > 0 ) {
+				if (  isset( $sessionCart ) && is_array($sessionCart) && count($sessionCart) > 0 ) {
           // Verifica qual dos produtos do carrinho tem a data de criação mais antiga
-          foreach ($cart as $product) {
+          foreach ($sessionCart as $product) {
             $created_at = $product['created_at'];
 
             // Pega a data mais antiga e considera a data da criação do carrinho
@@ -556,34 +562,48 @@ class Integrai_Public {
 
           // Se a data de criação for mais antiga que a data de corte, considera como abandadono
           if ($cart_created < $from_date) {
-            $item = array();
-            $products = array();
+            // Cria o carrinho
+            $date = new DateTime();
+            $cart['cart_id'] = $date->getTimestamp();
+            $cart['created_at'] = $cart_created;
+            $cart['customer'] = $session['customer'];
+            $cart['cart'] = $session['cart'];
+            $cart['cart_totals'] = $session['cart_totals'];
+            $cart['products'] = array();
+            $cart['total_items'] = 0;
 
-            foreach ($cart as $cartItem) {
+            // Cria os produtos e atualiza o count de quantidade
+            foreach ($sessionCart as $cartItem) {
               if ( isset($cartItem['product_id']) ) {
                 $productItem = $this->get_product_by_id($cartItem['product_id']);
+                $productItem['cart_id'] = $cart['cart_id'];
+                $productItem['customer'] = $cart['customer'];
                 $productItem['quantity'] = $cartItem['quantity'];
-                $productItem['price'] = $cartItem['line_total'];
+                $productItem['total_price'] = $cartItem['line_total'];
+                $productItem['subtotal_price'] = $cartItem['line_subtotal'];
+                $cart['total_items'] = $cart['total_items'] + $cartItem['quantity'];
 
-                $session['cart_totals']['quantity'] = $session['cart_totals']['quantity'] + $cartItem['quantity'];
-
-                array_push($products, $productItem);
+                array_push($cart['products'], $productItem);
               }
             }
 
-            $item['created_at'] = $cart_created;
-            $item['customer'] = $session['customer'];
-            $item['cart'] = $session['cart'];
-            $item['cart_totals'] = $session['cart_totals'];
-            $item['products'] = $products;
+            if (!empty($cart)) {
+              // Envia o Carrinho para a Integrai
+              Integrai_Helper::log($cart, '==> ABANDONED_CART $cart: ');
+              $response = $this->get_api_helper()->send_event(self::ABANDONED_CART, $cart);
+              Integrai_Helper::log($response, '==> ABANDONED_CART $response: ');
 
-            array_push($abandoned_cart, $item);
+              if (!empty($response)) {
+                foreach ($cart['products'] as $product) {
+                  Integrai_Helper::log($product, '==> ABANDONED_CART_ITEM $product: ');
+
+                  // Envia os produtos do Carrinho para a Integrai
+                  $this->get_api_helper()->send_event(self::ABANDONED_CART_ITEM, $product);
+                }
+              }
+            }
           }
         }
-			}
-
-			if ( !empty($abandoned_cart) ) {
-				return $this->get_api_helper()->send_event(self::ABANDONED_CART, $abandoned_cart);
 			}
 		}
 	}
