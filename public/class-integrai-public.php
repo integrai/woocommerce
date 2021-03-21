@@ -512,7 +512,6 @@ class Integrai_Public {
 		}
 
 		if ( ! wp_next_scheduled( 'integrai_cron_abandoned_cart' ) ) {
-		  Integrai_Helper::log('==> Schedule ABANDONED_CART');
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_abandoned_cart' );
 		}
 
@@ -535,12 +534,9 @@ class Integrai_Public {
 	public function integrai_cron_abandoned_cart() {
 	  $isEnabled = $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART);
 
-	  Integrai_Helper::log($isEnabled, '==> $isEnabled: ');
-
 		if ( $isEnabled ) {
 			$cart_lifetime = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
 			$minutes = $cart_lifetime ? $cart_lifetime : 60;
-      Integrai_Helper::log($minutes, '==> $cart_lifetime: ');
 			$from_date = date('Y-m-d H:i:s', strtotime('-' . $minutes . ' minutes'));
 			$cart_created = date('Y-m-d H:i:s', strtotime("now"));
 
@@ -588,16 +584,10 @@ class Integrai_Public {
             }
 
             if (!empty($cart)) {
-              // Envia o Carrinho para a Integrai
-              Integrai_Helper::log($cart, '==> ABANDONED_CART $cart: ');
               $response = $this->get_api_helper()->send_event(self::ABANDONED_CART, $cart);
-              Integrai_Helper::log($response, '==> ABANDONED_CART $response: ');
 
               if (!empty($response)) {
                 foreach ($cart['products'] as $product) {
-                  Integrai_Helper::log($product, '==> ABANDONED_CART_ITEM $product: ');
-
-                  // Envia os produtos do Carrinho para a Integrai
                   $this->get_api_helper()->send_event(self::ABANDONED_CART_ITEM, $product);
                 }
               }

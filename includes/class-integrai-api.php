@@ -57,7 +57,7 @@ class Integrai_API {
       'body' => $body,
     );
 
-    Integrai_Helper::log("REQUEST ==> $url: ");
+    Integrai_Helper::log($body, "REQUEST ==> $url: ");
 
     $response = wp_remote_request($url, $options);
 
