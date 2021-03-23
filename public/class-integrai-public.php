@@ -52,13 +52,6 @@ class Integrai_Public {
 	 * @param      string    $version    The version of this plugin.
 	 */
 
-	// EVENTOS PARA MAPEAR
-	// const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
-	// const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART';
-	// const NEW_ORDER = 'NEW_ORDER';
-	// const SAVE_ORDER = 'SAVE_ORDER';
-	// const CANCEL_ORDER = 'CANCEL_ORDER';
-
 	// TO CHECK
 
 	/** NEWSLETTER_SUBSCRIBER: ***********************************
@@ -533,6 +526,7 @@ class Integrai_Public {
 	// ABANDONED_CART
 	public function integrai_cron_abandoned_cart() {
 	  $isEnabled = $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART);
+	  $isEnabledCartItem = $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART_ITEM);
 
 		if ( $isEnabled ) {
 			$cart_lifetime = $this->get_config_helper()->get_minutes_abandoned_cart_lifetime();
@@ -586,7 +580,7 @@ class Integrai_Public {
             if (!empty($cart)) {
               $response = $this->get_api_helper()->send_event(self::ABANDONED_CART, $cart);
 
-              if (!empty($response)) {
+              if ( $isEnabledCartItem && !empty($response) ) {
                 foreach ($cart['products'] as $product) {
                   $this->get_api_helper()->send_event(self::ABANDONED_CART_ITEM, $product);
                 }
