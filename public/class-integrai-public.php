@@ -77,6 +77,7 @@ class Integrai_Public {
 	const NEW_CUSTOMER = 'NEW_CUSTOMER';
 	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART';
 	const NEW_ORDER = 'NEW_ORDER';
+	const NEW_ORDER_ITEM = 'NEW_ORDER_ITEM';
 	const CANCEL_ORDER = 'CANCEL_ORDER';
 	const REFUND_INVOICE = 'REFUND_INVOICE';
 	const SAVE_ORDER = 'SAVE_ORDER';
@@ -448,9 +449,29 @@ class Integrai_Public {
 
 	// NEW_ORDER
 	public function woocommerce_new_order( $order ) {
-		$order = $this->get_full_order( $order->get_id() );
+	  $order_enabled = $this->get_config_helper()->event_is_enabled(self::NEW_ORDER);
+	  $order_item_enabled = $this->get_config_helper()->event_is_enabled(self::NEW_ORDER_ITEM);
 
-		return $this->get_api_helper()->send_event(self::NEW_ORDER, $order);
+    if ( isset($order) && $order_enabled ) {
+      $full_order = $this->get_full_order( $order->get_id() );
+      $response = $this->get_api_helper()->send_event(self::NEW_ORDER, $full_order);
+
+      if (isset($response) && $order_item_enabled) {
+        $has_items = isset($full_order['items']) && !empty($full_order['items']);
+        $has_customer = isset($full_order['customer']) && !empty($full_order['customer']);
+
+        if ( $has_items && $has_customer ) {
+          foreach ($full_order['items'] as $item) {
+            $item['order_id'] = $full_order['id'];
+            $item['customer'] = $full_order['customer'];
+            $item['payment'] = $full_order['payment'];
+            $item['shipping_method'] = $full_order['shipping_method'];
+
+            $this->get_api_helper()->send_event(self::NEW_ORDER_ITEM, $item);
+          }
+        }
+      }
+    }
 	}
 
 	// SAVE_ORDER
