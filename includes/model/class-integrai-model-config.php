@@ -10,22 +10,30 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   public function setup() {
     $this->create_table();
 
-    $data = $this->get_default_config();
-    $action = $this->config_exists() ? 'update_many' : 'insert_many';
-
-    $ids = $this->{$action}($data);
-
-    return $ids;
+    return $this->update_config(
+      $this->get_default_config(),
+    );
   }
 
   public function update_config($data) {
-    if ( !$data || empty( $data ) ) return false;
+    if ( !isset( $data ) || empty( $data ) ) return false;
 
-    $table_exists = $this->table_exists();
-    $config_exists = $this->config_exists();
-    $action = $config_exists ? 'update_many' : 'insert_many';
+    if ( $this->table_exists() ) {
+      foreach ( $data as $item ) {
+        $name = is_array( $item ) ? $item['name'] : $item->name;
+        $values = is_array( $item ) ? $item['values'] : $item->values;
 
-    return $table_exists ? $this->{$action}($data) : false;
+        try {
+          $this->insert_or_update($name, array(
+            'name' => $name,
+            'values' => $values,
+            )
+          );
+        } catch (Exception $e) {
+          Integrai_Helper::log($e->getMessage(), 'Erro ao atualizar configurações: ');
+        }
+      }
+    }
   }
 
   public function create_table() {
@@ -145,6 +153,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         'GLOBAL',
         'SHIPPING',
         'PAYMENT_CREDITCARD',
+        'PAYMENT_BOLETO',
         'EVENTS_ENABLED',
       );
 
