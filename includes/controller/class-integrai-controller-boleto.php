@@ -24,12 +24,12 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
 
       $api = new Integrai_API();
       $response_boleto = $api->request( '/store/boleto', 'GET', null, array(
-        'order_id'     => strval( trim($_GET['order_id']) ),
-        'is_duplicate' => isset( $_GET['is_duplicate'] ) ? $_GET['is_duplicate'] : 'false',
+        'orderId'     => strval( trim($_GET['orderId']) ),
+        'isDuplicate' => isset( $_GET['isDuplicate'] ) ? $_GET['isDuplicate'] : 'false',
       ) );
 
       $body = json_decode( wp_remote_retrieve_body( $response_boleto ) );
-      $url = isset($body) && isset($body->boleto_url) ? $body->boleto_url : '/' ;
+      $url = isset($body) && isset($body->boletoUrl) ? $body->boletoUrl : '/' ;
 
       $response = new WP_REST_Response( array( "ok" => true ));
       $response->header( 'Content-type', 'application/json' );

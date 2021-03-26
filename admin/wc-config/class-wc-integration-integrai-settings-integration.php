@@ -51,8 +51,8 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
 
     // Define user set variables.
     $this->enabled          = $this->get_option( 'enabled' );
-    $this->api_key          = $this->get_option( 'api_key' );
-    $this->secret_key       = $this->get_option( 'secret_key' );
+    $this->api_key          = $this->get_option( 'apiKey' );
+    $this->secret_key       = $this->get_option( 'secretKey' );
 
     // Actions.
     add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
@@ -117,14 +117,14 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
           'false' => 'Não',
         ),
       ),
-      'api_key' => array(
+      'apiKey' => array(
         'title'             => __( 'Chave da API', 'woocommerce-integrai-settings' ),
         'type'              => 'text',
         'description'       => __( 'Sua API Key criadas no painel da Integrai', 'woocommerce-integrai-settings' ),
         'desc_tip'          => true,
         'default'           => ''
       ),
-      'secret_key' => array(
+      'secretKey' => array(
         'title'             => __( 'Segredo da Chave', 'woocommerce-integrai-settings' ),
         'type'              => 'password',
         'description'       => __( 'Seu Segredo da Chave criado no painel da Integrai', 'woocommerce-integrai-settings' ),

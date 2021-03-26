@@ -35,9 +35,7 @@ class Integrai_Config_Controller extends WP_REST_Controller {
       return $response;
 
     } catch (Exception $e) {
-
       Integrai_Helper::log($e->getMessage(), 'Error ao atualizar configs');
-
     }
   }
 }

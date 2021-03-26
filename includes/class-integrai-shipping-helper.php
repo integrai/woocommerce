@@ -59,15 +59,6 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
     }
 
     public function quote($order) {
-      /***
-       * 1. [ok] Verificar se a Integrai está ativa
-       * 2. [ok] Verificar se os metodos de entrega estão ativos
-       * 3. [ok] Pegar os dados do produto e o CEP para fazer a cotação
-       * 4. [ok] Preparar os parametros para enviar para a API /shipping/quote
-       * 5. Transformar o retorno da API para exibir no resultado da cotação
-       * 6. Tratar erro
-      */
-
       if ( $this->is_enabled() ) {
         try {
 
@@ -117,10 +108,10 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
       $cart_total_price = $order['cart_subtotal'];
 
       $quote_order = array(
-        'destination_zipcode' => $destination_zipcode,
-        'cart_total_price'    => $cart_total_price,
-        "cart_total_quantity" => WC()->cart->get_cart_contents_count(),
-        "cart_total_weight"   => WC()->cart->get_cart_contents_weight(),
+        'destinationZipCode' => $destination_zipcode,
+        'cartTotalPrice'    => $cart_total_price,
+        "cartTotalQuantity" => WC()->cart->get_cart_contents_count(),
+        "cartTotalWeight"   => WC()->cart->get_cart_contents_weight(),
         'items'               => $this->transform_items($items),
       );
 

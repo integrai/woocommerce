@@ -42,8 +42,8 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         id int(10) unsigned NOT NULL AUTO_INCREMENT,
         name text NOT NULL,
         `values` text NOT NULL,
-        created_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-        updated_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+        createdAt timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+        updatedAt timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
         PRIMARY KEY (id)
       ) $this->collate;
     ";
@@ -76,25 +76,25 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   public function get_api_url() {
     $configs = $this->get_global();
 
-    return isset( $configs['api_url'] ) ? $configs['api_url'] : false;
+    return isset( $configs['apiUrl'] ) ? $configs['apiUrl'] : false;
   }
 
   public function get_api_key() {
     $options = $this->get_options();
 
-    return isset( $options['api_key'] ) ? $options['api_key'] : false;
+    return isset( $options['apiKey'] ) ? $options['apiKey'] : false;
   }
 
   public function get_secret_key() {
     $options = $this->get_options();
 
-    return isset( $options['secret_key'] ) ? $options['secret_key'] : false;
+    return isset( $options['secretKey'] ) ? $options['secretKey'] : false;
   }
 
   public function get_api_timeout_seconds() {
     $configs = $this->get_global();
 
-    return $configs['api_timeout_seconds'] ? $configs['api_timeout_seconds'] : false;
+    return $configs['apiTimeoutSeconds'] ? $configs['apiTimeoutSeconds'] : false;
   }
 
   public function get_global_config( $name ) {
@@ -106,8 +106,8 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   public function get_minutes_abandoned_cart_lifetime() {
     $configs = $this->get_global();
 
-    return $configs['minutes_abandoned_cart_lifetime']
-      ? $configs['minutes_abandoned_cart_lifetime']
+    return $configs['minutesAbandonedCartLifetime']
+      ? $configs['minutesAbandonedCartLifetime']
       : false;
   }
 
@@ -122,15 +122,15 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   }
 
   public function get_payment_success() {
-    return $this->get_by_name('payment_success');
+    return $this->get_by_name('paymentSuccess');
   }
 
   public function get_payment_boleto() {
-    return $this->get_by_name('payment_boleto');
+    return $this->get_by_name('paymentBoleto');
   }
 
   public function get_payment_creditcard() {
-    return $this->get_by_name('payment_creditcard');
+    return $this->get_by_name('paymentCreditcard');
   }
 
   public function get_creditcard_scripts() {
@@ -146,8 +146,6 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   }
 
   public function config_exists() {
-    $table_exists = $this->table_exists();
-
     if ( $this->table_exists() ) {
       $configs = array(
         'GLOBAL',
@@ -185,31 +183,31 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
           "CANCEL_ORDER",
           "FINALIZE_CHECKOUT"
         ]',
-        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
-        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'createdAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updatedAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
       array(
         'name' => 'GLOBAL',
         'values' => '{
-          "minutes_abandoned_cart_lifetime": 60,
-          "api_url": "http://host.docker.internal:3000/v1",
-          "api_timeout_seconds": 3
+          "minutesAbandonedCartLifetime": 60,
+          "apiUrl": "https://api.integrai.com.br",
+          "apiTimeoutSeconds": 3
         }',
-        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
-        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'createdAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updatedAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
       array(
         'name' => 'SHIPPING',
         'values' => '{
-          "attribute_width": "width",
-          "attribute_height": "height",
-          "attribute_length": "length",
-          "width_default": 11,
-          "height_default": 2,
-          "length_default": 16
+          "attributeWidth": "width",
+          "attributeHeight": "height",
+          "attributeLength": "length",
+          "widthDefault": 11,
+          "heightDefault": 2,
+          "lengthDefault": 16
         }',
-        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
-        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'createdAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updatedAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
       array(
         'name' => 'PAYMENT_CREDITCARD',
@@ -225,12 +223,12 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
               "number": "Número do cartão de crédito ",
               "expiration": "Data de expiração",
               "cvv": "Código de segurança",
-              "holder_name": "Nome no cartão",
-              "doc_type": "Tipo de documento",
-              "doc_number": "Número do documento",
+              "holderName": "Nome no cartão",
+              "docType": "Tipo de documento",
+              "docNumber": "Número do documento",
               "installments": "Número de parcelas",
-              "installments_placeholder": "Informe o número de parcelas",
-              "installments_replace": "%sx de %s (%s)"
+              "installmentsPlaceholder": "Informe o número de parcelas",
+              "installmentsReplace": "%sx de %s (%s)"
             },
             "beforeForm": "%3Ch1%3E%3Cbr%3E%3C/h1%3E",
             "afterForm": "%3Cp%3E%20%3C/p%3E",
@@ -247,10 +245,10 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
                 "isMain": false,
                 "credentials": {
                   "publicKey": "ek_test_sGN33foESLLWjyuGXNMv9NQxgaJ0cP",
-                  "free_installments": "1",
-                  "max_installments": "12",
-                  "interest_rate": "1,8",
-                  "min_value": "5,50"
+                  "freeInstallments": "1",
+                  "maxInstallments": "12",
+                  "interestRate": "1,8",
+                  "minValue": "5,50"
                 }
               },
               {
@@ -258,17 +256,17 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
                 "isMain": false,
                 "credentials": {
                   "publicKey": "-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAobunyDlls7veMBaxxDTormHS17p/RA6IQMlBlM9VIFQ8U4Uwdd5Wwua2qZNomaIfequ1+lOPNby+eykyn9K76EFzIYVTuQJRfMCLqrEj/XbfCP8GhJAY07hCSlizkllI7JAIwKCfPhJ8c7MrsTcXg59Qgt9Wbv0sr2RCYpbkaXRFwPADcA42l7nOZONYxw3/5ZQ6HFzZ+8FmM4gIjPKD4Ly2STcoi3a03p2nxhg9+7rOwn36n1dexD+fOmdciF1v6KBkaMlQABMFIZV7fjg5HU54FeGHggWBObB2wg4riWbTNQumUY2murxWKecbOCaozvocm0mCUzo30dxvzRK+zwIDAQAB-----END PUBLIC KEY-----",
-                  "free_installments": "1",
-                  "max_installments": "12",
-                  "interest_rate": "1,8",
-                  "min_value": "5"
+                  "freeInstallments": "1",
+                  "maxInstallments": "12",
+                  "interestRate": "1,8",
+                  "minValue": "5"
                 }
               }
             ]
           }
         }',
-        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
-        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'createdAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updatedAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
     );
   }

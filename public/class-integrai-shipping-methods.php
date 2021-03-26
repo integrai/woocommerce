@@ -46,8 +46,8 @@ if ( ! class_exists( 'Integrai_Shipping_Methods' ) ) :
 
       // Define user set variables.
       $this->enabled          = $this->get_option( 'enabled' );
-      $this->api_key          = $this->get_option( 'api_key' );
-      $this->secret_key       = $this->get_option( 'secret_key' );
+      $this->api_key          = $this->get_option( 'apiKey' );
+      $this->secret_key       = $this->get_option( 'secretKey' );
 
       // Save settings in admin if you have any defined
       add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );

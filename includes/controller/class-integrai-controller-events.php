@@ -55,7 +55,7 @@ class Integrai_Events_Controller extends WP_REST_Controller {
         // Delete events with success
         if(count($success) > 0){
           $api->request('/store/event', 'DELETE', array(
-            'event_ids' => $success
+            'eventIds' => $success
           ));
         }
 
