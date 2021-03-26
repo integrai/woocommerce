@@ -90,9 +90,7 @@ class Integrai_Model_Helper {
     $raw_data = $this->get("WHERE name = '$lower_name'");
 
     try {
-
       return json_decode( $raw_data->values, 2 );
-
     } catch (Exception $e) {
       Integrai_Helper::log( $e->getMessage() );
     }
