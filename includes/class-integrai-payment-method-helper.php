@@ -111,7 +111,7 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
 
       return get_rest_url(
         null,
-        'integrai/boleto' . $query_concat_params . 'order_id=' . $order_number . '&' . $is_duplicated_str,
+        'integrai/boleto' . $query_concat_params . 'orderId=' . $order_number . '&isDuplicate=' . $is_duplicated_str,
       );
     }
   }
