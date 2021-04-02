@@ -188,6 +188,24 @@ class Integrai_Public {
 		);
 	}
 
+	private function get_customer_from_order( $order_id ) {
+    $date = new DateTime();
+    $orderInstance = new WC_Order( $order_id );
+    $orderData = $orderInstance->get_data();
+    $billing = $orderData['billing'];
+    $payment = $this->get_payment( $order_id, true );
+
+    return array(
+      'id' => $date->getTimestamp(),
+      'email' => $billing['email'],
+      'first_name' => isset($billing['first_name']) ? $billing['first_name'] : $payment['first_name'],
+      'last_name' => isset($billing['last_name']) ? $billing['last_name'] : $payment['last_name'],
+      'document_type' => $payment['doc_type'],
+      'document_number' => $payment['document_number'],
+      'billing' => $billing,
+    );
+  }
+
 	private function get_order( $order_id ) {
 		$order = new WC_Order( $order_id );
 
@@ -195,13 +213,15 @@ class Integrai_Public {
 	}
 
 	private function get_full_order( $order_id ) {
-    $order = $this->get_order( $order_id );
-    $customer_id = $order['customer_id'];
+    $orderInstance = new WC_Order( $order_id );
+    $order = $orderInstance->get_data();
 
     $order['payment']         = $this->get_payment( $order_id );
-    $order['customer']        = $this->get_customer( $customer_id );
     $order['items']           = $this->get_items( $order_id );
     $order['shipping_method'] = $this->get_shipping_method();
+    $order['customer'] = isset( $order['customer_id'] ) && $order['customer_id']
+      ? $this->get_customer( $order['customer_id'] )
+      : $this->get_customer_from_order( $order_id );
 
     return $order;
   }
@@ -284,7 +304,7 @@ class Integrai_Public {
 		);
 	}
 
-	private function get_payment( $order_id ) {
+	private function get_payment( $order_id, $raw = false ) {
     $data = $this->get_payment_helper()->get_transaction_data( $order_id );
 
     if ( !isset( $data ) || empty( $data ) ) {
@@ -292,37 +312,47 @@ class Integrai_Public {
     }
 
     if ($data['payment_method'] === 'integrai_boleto') {
-      return array(
-        'boleto' => array(
-          'doc_type'        => $data['boleto_doc_type'],
-          'doc_number'      => $data['boleto_doc_number'],
-          'first_name'      => $data['boleto_first_name'],
-          'last_name'       => $data['boleto_last_name'],
-          'company_name'    => $data['boleto_company_name'],
-          'address_zipcode' => $data['boleto_address_zipcode'],
-          'address_street'  => $data['boleto_address_street'],
-          'address_number'  => $data['boleto_address_number'],
-          'address_city'    => $data['boleto_address_city'],
-          'address_state'   => $data['boleto_address_state'],
-        ),
+      $transformed_data = array(
+        'doc_type'        => $data['boleto_doc_type'],
+        'doc_number'      => $data['boleto_doc_number'],
+        'first_name'      => $data['boleto_first_name'],
+        'last_name'       => $data['boleto_last_name'],
+        'company_name'    => $data['boleto_company_name'],
+        'address_zipcode' => $data['boleto_address_zipcode'],
+        'address_street'  => $data['boleto_address_street'],
+        'address_number'  => $data['boleto_address_number'],
+        'address_city'    => $data['boleto_address_city'],
+        'address_state'   => $data['boleto_address_state'],
       );
+
+      if ( $raw ) {
+        $transformed_data['payment_method'] = $data['payment_method'];
+        return $transformed_data;
+      }
+
+      return array( 'boleto' => $transformed_data );
     }
 
     if ($data['payment_method'] === 'integrai_creditcard') {
-      return array(
-        'creditcard' => array(
-          'doc_type'                 => $data['cc_doc_type'],
-          'doc_number'               => $data['cc_doc_number'],
-          'birth_date'               => $data['cc_birth_date'],
-          'holder_name'              => $data['cc_holder_name'],
-          'installments'             => $data['cc_installments'],
-          'installment_amount'       => $data['cc_installment_amount'],
-          'installment_total_amount' => $data['cc_installment_total_amount'],
-          'card_hashs'               => $data['cc_card_hashs'],
-          'card_brands'              => $data['cc_card_brands'],
-          'card_brand'               => $data['cc_card_brand'],
-        ),
+      $transformed_data = array(
+        'doc_type'                 => $data['cc_doc_type'],
+        'doc_number'               => $data['cc_doc_number'],
+        'birth_date'               => $data['cc_birth_date'],
+        'holder_name'              => $data['cc_holder_name'],
+        'installments'             => $data['cc_installments'],
+        'installment_amount'       => $data['cc_installment_amount'],
+        'installment_total_amount' => $data['cc_installment_total_amount'],
+        'card_hashs'               => $data['cc_card_hashs'],
+        'card_brands'              => $data['cc_card_brands'],
+        'card_brand'               => $data['cc_card_brand'],
       );
+
+      if ( $raw ) {
+        $transformed_data['payment_method'] = $data['payment_method'];
+        return $transformed_data;
+      }
+
+      return array( 'creditcard' => $transformed_data );
     }
   }
 

@@ -142,12 +142,10 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         return false;
 
       global $woocommerce;
-      $order = new WC_Order( $order_id );
 
-      // Mark as on-hold (we're awaiting the cheque)
+      $order = new WC_Order( $order_id );
       $order->update_status('on-hold', __( 'Integrai: Aguardando pagamento do boleto', 'woocommerce' ));
 
-      // Remove cart
       $woocommerce->cart->empty_cart();
 
       // Return thankyou redirect
