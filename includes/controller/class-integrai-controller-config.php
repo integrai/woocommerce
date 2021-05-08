@@ -23,10 +23,10 @@ class Integrai_Config_Controller extends WP_REST_Controller {
     try {
       $api = new Integrai_API();
       $response = $api->request('/store/config');
-      $configs = json_decode( $response['body'] );
+      $configs = json_decode( $response['body'], true );
 
       $integrai_config = new Integrai_Model_Config();
-      $integrai_config->update_config( $configs );
+      $integrai_config->update_configs( $configs );
 
       $response = new WP_REST_Response( array( "ok" => true ) );
       $response->header( 'Content-type', 'application/json' );

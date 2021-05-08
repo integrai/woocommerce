@@ -37,13 +37,28 @@ class Integrai_Model_Helper {
     return $this->wpdb->insert($this->table, $data);
   }
 
-  public function insert_or_update($name = '', $data = array()) {
+  public function insert_or_update($name = '', $data = array(), $where = array()) {
     if ( !isset($name) || !isset($data) ) return false;
 
     if ( is_null( $this->get_by_name($name) ) ) {
       return $this->insert( $data );
     } else {
-      return $this->update( $data, $name );
+      return $this->update( $data, $where );
+    }
+  }
+
+  public function insert_batch($place_holders = array(), $values = array()) {
+    $query = "
+        INSERT INTO {$this->table} 
+            (`option_name`, `option_value`, `option_created`, `option_edit`, `option_user`) 
+        VALUES {implode( ', ', $place_holders)}";
+
+    $sql = $this->wpdb->prepare( "$query ", $values);
+
+    if ( $this->wpdb->query( $sql ) ) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -102,7 +117,11 @@ class Integrai_Model_Helper {
     $format = null,
     $where_format = null
   ) {
-    $this->wpdb->update($this->table, $data, $where, $format, $where_format);
+    try {
+      $this->wpdb->update($this->table, $data, $where, $format, $where_format);
+    } catch (Exception $e) {
+      Integrai_Helper::log( $e->getMessage() );
+    }
 
     return $this->wpdb->insert_id;
   }

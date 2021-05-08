@@ -10,12 +10,22 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   public function setup() {
     $this->create_table();
 
-    return $this->update_config(
+    return $this->update_configs(
       $this->get_default_config(),
     );
   }
 
-  public function update_config($data) {
+  public function update_config($name, $value) {
+    if ( !isset( $name ) || !isset( $value ) ) return false;
+
+    try {
+      $this->insert_or_update($name, $value);
+    } catch (Exception $e) {
+      Integrai_Helper::log($e->getMessage(), 'Erro ao atualizar configurações: ');
+    }
+  }
+
+  public function update_configs($data) {
     if ( !isset( $data ) || empty( $data ) ) return false;
 
     if ( $this->table_exists() ) {
@@ -24,10 +34,10 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         $values = is_array( $item ) ? $item['values'] : $item->values;
 
         try {
-          $this->insert_or_update($name, array(
-            'name' => $name,
-            'values' => $values,
-            )
+          $this->insert_or_update(
+            $name,
+            array( 'name' => $name, 'values' => $values ),
+            array( 'name' => $name ),
           );
         } catch (Exception $e) {
           Integrai_Helper::log($e->getMessage(), 'Erro ao atualizar configurações: ');
@@ -53,6 +63,11 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
 
   public function get_enabled_events() {
     return $this->get_by_name('events_enabled');
+  }
+
+  public function is_enabled() {
+    $options = get_option('woocommerce_integrai-settings_settings');
+    return isset($options['enabled']) ? $options['enabled'] : false;
   }
 
   public function event_is_enabled($name = '') {
@@ -153,6 +168,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         'PAYMENT_CREDITCARD',
         'PAYMENT_BOLETO',
         'EVENTS_ENABLED',
+        'SCRIPTS',
       );
 
       $count = 0;
@@ -172,17 +188,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return array(
       array(
         'name' => 'EVENTS_ENABLED',
-        'values' => '[
-          "NEW_CUSTOMER",
-          "CUSTOMER_BIRTHDAY",
-          "NEWSLETTER_SUBSCRIBER",
-          "ADD_PRODUCT_CART",
-          "ABANDONED_CART",
-          "NEW_ORDER",
-          "SAVE_ORDER",
-          "CANCEL_ORDER",
-          "FINALIZE_CHECKOUT"
-        ]',
+        'values' => '[]',
         'createdAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
         'updatedAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
@@ -191,7 +197,8 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         'values' => '{
           "minutesAbandonedCartLifetime": 60,
           "apiUrl": "https://api.integrai.com.br",
-          "apiTimeoutSeconds": 3
+          "apiTimeoutSeconds": 15,
+          "processEventsLimit": 50
         }',
         'createdAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
         'updatedAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
@@ -210,63 +217,10 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         'updatedAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
       array(
-        'name' => 'PAYMENT_CREDITCARD',
-        'values' => '{
-          "scripts": [
-            "https://assets.integrai.com.br/payment-form/creditcard/magento.js",
-            "https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js",
-            "https://assets.pagar.me/pagarme-js/4.11/pagarme.min.js",
-            "https://assets.integrai.com.br/gateways/scripts/moip-sdk-min.js"
-          ],
-          "formOptions": {
-            "labels": {
-              "number": "Número do cartão de crédito ",
-              "expiration": "Data de expiração",
-              "cvv": "Código de segurança",
-              "holderName": "Nome no cartão",
-              "docType": "Tipo de documento",
-              "docNumber": "Número do documento",
-              "installments": "Número de parcelas",
-              "installmentsPlaceholder": "Informe o número de parcelas",
-              "installmentsReplace": "%sx de %s (%s)"
-            },
-            "beforeForm": "%3Ch1%3E%3Cbr%3E%3C/h1%3E",
-            "afterForm": "%3Cp%3E%20%3C/p%3E",
-            "gateways": [
-              {
-                "name": "mercadopago",
-                "isMain": true,
-                "credentials": {
-                  "publicKey": "TEST-089dddcf-8cb5-448e-aa5d-56ffc180bd4d"
-                }
-              },
-              {
-                "name": "pagarme",
-                "isMain": false,
-                "credentials": {
-                  "publicKey": "ek_test_sGN33foESLLWjyuGXNMv9NQxgaJ0cP",
-                  "freeInstallments": "1",
-                  "maxInstallments": "12",
-                  "interestRate": "1,8",
-                  "minValue": "5,50"
-                }
-              },
-              {
-                "name": "wirecard",
-                "isMain": false,
-                "credentials": {
-                  "publicKey": "-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAobunyDlls7veMBaxxDTormHS17p/RA6IQMlBlM9VIFQ8U4Uwdd5Wwua2qZNomaIfequ1+lOPNby+eykyn9K76EFzIYVTuQJRfMCLqrEj/XbfCP8GhJAY07hCSlizkllI7JAIwKCfPhJ8c7MrsTcXg59Qgt9Wbv0sr2RCYpbkaXRFwPADcA42l7nOZONYxw3/5ZQ6HFzZ+8FmM4gIjPKD4Ly2STcoi3a03p2nxhg9+7rOwn36n1dexD+fOmdciF1v6KBkaMlQABMFIZV7fjg5HU54FeGHggWBObB2wg4riWbTNQumUY2murxWKecbOCaozvocm0mCUzo30dxvzRK+zwIDAQAB-----END PUBLIC KEY-----",
-                  "freeInstallments": "1",
-                  "maxInstallments": "12",
-                  "interestRate": "1,8",
-                  "minValue": "5"
-                }
-              }
-            ]
-          }
-        }',
-        'createdAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
-        'updatedAt' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'name' => 'SCRIPTS',
+        'values' => '[]',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
     );
   }
