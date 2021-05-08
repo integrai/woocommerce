@@ -1,9 +1,5 @@
 <?php
 
-include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-api.php';
-include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
-include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.php';
-
 class Integrai_Events_Controller extends WP_REST_Controller {
 
   protected $namespace = 'integrai';
@@ -23,72 +19,68 @@ class Integrai_Events_Controller extends WP_REST_Controller {
   public function get_items( $request ) {
     try {
       $api = new Integrai_API();
-      $response = $api->request('/store/event');
+      $batchId = isset($_GET['batchId']) ? trim($_GET['batchId']) : "";
+      $response = $api->request(
+        '/store/event',
+        'GET',
+        null,
+        array("batchId" => $batchId),
+      );
+
       $events = json_decode( $response['body'] );
-      $success = [];
+      Integrai_Helper::log(count($events), 'Total de eventos carregados: ');
 
       if ( isset($events) && !empty($events) ) {
+        // Pega os IDs do retorno da api
+        $eventIds = array_map(function ($event) {
+          return $event['_id'];
+        }, $events);
+
+        $eventsModel = new Integrai_Model_Events();
+        $actualEvents = $eventsModel->get("select * where $eventIds in 'event_id'");
+        Integrai_Helper::log($actualEvents, '$actualEvents');
+
+        // Pega os IDs dos eventos que vieram do banco da Loja
+        $actualEventIds = array();
+        foreach ($actualEvents as $actualEvent) {
+          $actualEventIds[] = $actualEvent['event_id'];
+        }
+
+        $data = array();
         foreach ($events as $event) {
+          Integrai_Helper::log($event, '$event');
           $eventId = $event->_id;
           $payload = $event->payload;
 
-          try {
-            foreach ($payload->models as $modelItem) {
-              $model = new $modelItem->className(...$this->transformArgs($modelItem->modelArgs));
-              $methodItem = $modelItem->methods;
-
-              if ( isset($methodItem->method) && isset($methodItem->args) ) {
-                call_user_func_array(array($model, $methodItem->method), $this->transformArgs($methodItem->args));
-              }
-
-              $this->_models[$modelItem->name] = $model;
-            }
-
-            array_push($success, $eventId);
-
-          } catch (Exception $e) {
-            Integrai_Helper::log($event, 'Erro ao processar o evento');
-            Integrai_Helper::log($e->getMessage(), 'Erro');
+          if (!in_array($eventId, $actualEventIds)) {
+            // Formata o evento
+            $data[] = array(
+              'event_id' => $eventId,
+              'event' => $event->event,
+              'payload' => json_encode($payload),
+              'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+            );
           }
+
+          Integrai_Helper::log(count($data), 'Total de eventos agendados para processar: ');
         }
 
-        // Delete events with success
-        if(count($success) > 0){
-          $api->request('/store/event', 'DELETE', array(
-            'eventIds' => $success
-          ));
+        $success = false;
+
+        if (count($data) > 0) {
+          $processEventsModel = new Integrai_Model_Process_Events();
+          $success = $processEventsModel->insert_batch($data);
         }
 
-        $response = new WP_REST_Response( array( "ok" => true ) );
+        $response = new WP_REST_Response( array( "ok" => $success ) );
         $response->header( 'Content-type', 'application/json' );
-        $response->set_status( 201 );
+        $response->set_status( 200 );
 
         return $response;
       }
 
     } catch (Exception $e) {
-
       Integrai_Helper::log($e->getMessage(), 'Error ao solicitar eventos');
-
     }
-  }
-
-
-  private function get_other_model($modelName) {
-    return $this->_models[$modelName];
-  }
-
-  private function transformArgs($args = array()) {
-    $newArgs = array();
-
-    foreach($args as $arg) {
-      if(is_array($arg) && $arg["otherModelName"]){
-        array_push($newArgs, $this->get_other_model($arg["otherModelName"]));
-      } else {
-        array_push($newArgs, $arg);
-      }
-    }
-
-    return $newArgs;
   }
 }

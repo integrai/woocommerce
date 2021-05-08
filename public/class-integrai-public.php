@@ -168,6 +168,10 @@ class Integrai_Public {
 			include_once INTEGRAI__PLUGIN_DIR . '/includes/model/class-integrai-model-events.php';
 		endif;
 
+		if ( ! class_exists( 'Integrai_Cron_Process_Events' ) ) :
+      include_once INTEGRAI__PLUGIN_DIR . 'includes/cron/class-integrai-cron-proccess-events.php';
+		endif;
+
 	}
 
 	private function get_customer( $customer_id ) {
@@ -508,6 +512,8 @@ class Integrai_Public {
 	public function woocommerce_update_order( $order_id ) {
     $order = $this->get_full_order( $order_id );
 
+    Integrai_Helper::log(json_encode($order), '==> SAVE_ORDER :: $order: ');
+
 		return $this->get_api_helper()->send_event(self::SAVE_ORDER, $order);
 	}
 
@@ -551,6 +557,8 @@ class Integrai_Public {
 	}
 
 	public function integrai_cron_activation() {
+    Integrai_Helper::log('==> trigger crons');
+
 		if ( ! wp_next_scheduled( 'integrai_cron_resend_events' ) ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_resend_events' );
 		}
@@ -559,10 +567,21 @@ class Integrai_Public {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_abandoned_cart' );
 		}
 
+		if ( ! wp_next_scheduled( 'integrai_cron_proccess_events' ) ) {
+      Integrai_Helper::log('==> trigger proccess_events');
+		 	wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_proccess_events' );
+		}
+
 		// if ( ! wp_next_scheduled( 'integrai_check_dob' ) ) {
 		// 	wp_schedule_event( time(), 'daily', 'integrai_check_dob' );
 		// }
 	}
+
+	public function integrai_cron_proccess_events() {
+	  Integrai_Helper::log('==> run integrai_cron_proccess_events');
+    $CronProcessEvents = new Integrai_Cron_Process_Events();
+    $CronProcessEvents->execute();
+  }
 
 	public function integrai_cron_deactivation() {
 		// Resend Events
