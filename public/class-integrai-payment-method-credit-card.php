@@ -195,6 +195,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
         $meta_data = array(
           __( 'Método de Pagamento', 'integrai' ) => 'Cartão de Crédito (Integrai)',
+          __( 'Processado por', 'integrai' )      => sanitize_text_field( $data['payment_response']['module_name'] ),
           __( 'Bandeira do Cartão', 'integrai' )  => sanitize_text_field( ucfirst( $data['cc_card_brand'] ) ),
           __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper( $data['cc_doc_type'] ) ),
           __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $data['cc_doc_number'] ),

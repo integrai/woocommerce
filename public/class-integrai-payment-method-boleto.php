@@ -198,8 +198,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       ) {
 
         $meta_data = array(
-          __('Pagamento', 'integrai') => 'Boleto (Integrai)',
-          __('Documento', 'integrai') => sanitize_text_field(strtoupper($data['boleto_doc_type'])),
+          __('Pagamento', 'integrai')           => 'Boleto (Integrai)',
+          __( 'Processado por', 'integrai' )    => sanitize_text_field( $data['payment_response']['module_name'] ),
+          __('Documento', 'integrai')           => sanitize_text_field(strtoupper($data['boleto_doc_type'])),
           __('Número do Documento', 'integrai') => sanitize_text_field($data['boleto_doc_number']),
         );
 
