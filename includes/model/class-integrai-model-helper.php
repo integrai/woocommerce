@@ -47,21 +47,6 @@ class Integrai_Model_Helper {
     }
   }
 
-  public function insert_batch($place_holders = array(), $values = array()) {
-    $query = "
-        INSERT INTO {$this->table} 
-            (`option_name`, `option_value`, `option_created`, `option_edit`, `option_user`) 
-        VALUES {implode( ', ', $place_holders)}";
-
-    $sql = $this->wpdb->prepare( "$query ", $values);
-
-    if ( $this->wpdb->query( $sql ) ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   public function insert_many($data = array()) {
     if ( $data && !empty( $data ) ) {
       $ids = array();

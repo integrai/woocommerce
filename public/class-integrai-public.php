@@ -169,7 +169,7 @@ class Integrai_Public {
 		endif;
 
 		if ( ! class_exists( 'Integrai_Cron_Process_Events' ) ) :
-      include_once INTEGRAI__PLUGIN_DIR . 'includes/cron/class-integrai-cron-proccess-events.php';
+      include_once INTEGRAI__PLUGIN_DIR . 'includes/cron/class-integrai-cron-process-events.php';
 		endif;
 
 	}

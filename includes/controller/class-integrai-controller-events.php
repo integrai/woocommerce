@@ -6,6 +6,10 @@ class Integrai_Events_Controller extends WP_REST_Controller {
   protected $path = 'event';
   protected $_models = array();
 
+  public function get_process_events() {
+    return new Integrai_Model_Process_Events();
+  }
+
   public function register_routes() {
     register_rest_route( $this->namespace, '/' . $this->path, [
       array(
@@ -23,7 +27,7 @@ class Integrai_Events_Controller extends WP_REST_Controller {
       $response = $api->request(
         '/store/event',
         'GET',
-        null,
+        array(),
         array("batchId" => $batchId),
       );
 
@@ -33,22 +37,22 @@ class Integrai_Events_Controller extends WP_REST_Controller {
       if ( isset($events) && !empty($events) ) {
         // Pega os IDs do retorno da api
         $eventIds = array_map(function ($event) {
-          return $event['_id'];
+          return $event->_id;
         }, $events);
 
-        $eventsModel = new Integrai_Model_Events();
-        $actualEvents = $eventsModel->get("select * where $eventIds in 'event_id'");
-        Integrai_Helper::log($actualEvents, '$actualEvents');
+        $ids = implode(', ', array_map(function ($id) { return "'$id'"; }, $eventIds) );
+        $actualEvents = $this->get_process_events()->get("where `event_id` in ($ids)", true);
 
         // Pega os IDs dos eventos que vieram do banco da Loja
         $actualEventIds = array();
-        foreach ($actualEvents as $actualEvent) {
-          $actualEventIds[] = $actualEvent['event_id'];
+        if (!empty($actualEvents)) {
+          foreach ($actualEvents as $actualEvent) {
+            $actualEventIds[] = $actualEvent->event_id;
+          }
         }
 
         $data = array();
         foreach ($events as $event) {
-          Integrai_Helper::log($event, '$event');
           $eventId = $event->_id;
           $payload = $event->payload;
 
@@ -61,15 +65,20 @@ class Integrai_Events_Controller extends WP_REST_Controller {
               'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
             );
           }
-
-          Integrai_Helper::log(count($data), 'Total de eventos agendados para processar: ');
         }
+
+        Integrai_Helper::log(count($data), 'Total de eventos agendados para processar: ');
 
         $success = false;
 
         if (count($data) > 0) {
-          $processEventsModel = new Integrai_Model_Process_Events();
-          $success = $processEventsModel->insert_batch($data);
+          Integrai_Helper::log('OK');
+          try {
+            $processEventsModel = $this->get_process_events();
+            $success = $processEventsModel->save_events($data);
+          } catch (Exception $e) {
+            Integrai_Helper::log($e->getMessage(), 'Error Integrai_Model_Process_Events: ');
+          }
         }
 
         $response = new WP_REST_Response( array( "ok" => $success ) );

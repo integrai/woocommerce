@@ -36,7 +36,7 @@ class Integrai_API {
 		endif;
   }
 
-  public function request($endpoint, $method = 'GET', $body = '', $params = array()) {
+  public function request($endpoint, $method = 'GET', $body = array(), $params = array()) {
 
     try {
       $body = json_encode($body);

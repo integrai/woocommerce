@@ -14,7 +14,7 @@ class Integrai_Model_Process_Events extends Integrai_Model_Helper {
 
   public function create_table() {
     $sql = "
-      CREATE TABLE IF NOT EXISTS `{$this->prefix}integrai_events` (
+      CREATE TABLE IF NOT EXISTS `{$this->prefix}integrai_process_events` (
         id int(10) unsigned NOT NULL AUTO_INCREMENT,
         event_id text NOT NULL,
         event text NOT NULL,
@@ -43,23 +43,35 @@ class Integrai_Model_Process_Events extends Integrai_Model_Helper {
   }
 
   public function save_events($events = array()) {
-    $values = array();
     $place_holders = array();
 
-    if(count($events) > 0) {
+    if (count($events) > 0) {
       foreach($events as $data) {
-        array_push(
-          $values,
-          $data['event_id'],
-          $data['event'],
-          json_encode($data['payload']),
-          strftime('%Y-%m-%d %H:%M:%S', time()),
-        );
-
-        $place_holders[] = "( %s, %s, %s, %s, %s)";
+        $place_holders[] = "( %s, %s, %s, %s)";
       }
 
-      $this->insert_batch( $place_holders, $values );
+      return $this->insert_batch( $place_holders, $events );
+    }
+  }
+
+  public function insert_batch($place_holders = array(), $values = array()) {
+    $queryPlaceholders = implode( ', ', $place_holders);
+    $query = "
+        INSERT INTO {$this->table} 
+            (`event_id`, `event`, `payload`, `created_at`) 
+        VALUES {$queryPlaceholders}";
+
+    try {
+      foreach ($values as $value) {
+        $query = $this->wpdb->prepare( $query, array_values($value));
+
+        $this->wpdb->query( $query );
+      }
+
+      return true;
+    } catch (Exception $e) {
+      Integrai_Helper::log($e->getMessage(), 'Error ao salvar eventos: ');
+      return false;
     }
   }
 }
