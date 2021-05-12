@@ -197,6 +197,7 @@ class Integrai {
 		$this->loader->add_action( 'integrai_cron_deactivation', $plugin_public, 'integrai_cron_deactivation' );
 		$this->loader->add_action( 'integrai_cron_resend_events', $plugin_public, 'integrai_cron_resend_events' );
 		$this->loader->add_action( 'integrai_cron_abandoned_cart', $plugin_public, 'integrai_cron_abandoned_cart' );
+		$this->loader->add_action( 'integrai_cron_proccess_events', $plugin_public, 'integrai_cron_proccess_events' );
 
 		/** WOOCOMMERCE */
 

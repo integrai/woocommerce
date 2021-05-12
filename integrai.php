@@ -76,11 +76,6 @@ register_deactivation_hook( __FILE__, 'deactivate_integrai' );
  */
 require INTEGRAI__PLUGIN_DIR . 'includes/class-integrai.php';
 
-function integrai_cron_resend_events_call() {
-	do_action( 'integrai_cron_resend_events' );
-}
-
-add_action('integrai_cron_resend_events_call', 'integrai_cron_resend_events_call');
 
 /**
  * Begins execution of the plugin.

@@ -21,17 +21,17 @@ class Integrai_Cron_Process_Events {
       $this->log('Iniciando processamento dos eventos...');
 
       $limit = $this->get_config_helper()->get_global_config('processEventsLimit') || 50;
-      $isRunning = $this->get_config_helper()->get_global_config('PROCESS_EVENTS_RUNNING') ?? 'NOT_RUNNING';
-
-      Integrai_Helper::log($isRunning, '==> $isRunning');
+      $isRunning = $this->get_config_helper()->get_by_name('PROCESS_EVENTS_RUNNING') || 'NOT_RUNNING';
 
       if ($isRunning === 'RUNNING') {
         $this->log('Já existe um processo rodando');
       } else {
+        global $woocommerce;
+
         $this->get_config_helper()->update_config('PROCESS_EVENTS_RUNNING', 'RUNNING');
 
         $ProcessEventsModel = new Integrai_Model_Process_Events();
-        $events = $ProcessEventsModel->get("LIMIT 0, $limit");
+        $events = $ProcessEventsModel->get("LIMIT 0, $limit", true);
 
         $this->log(count($events), 'Total de eventos a processar: ');
 
@@ -40,13 +40,13 @@ class Integrai_Cron_Process_Events {
         $eventIds = [];
 
         foreach ($events as $event) {
-          $eventIds[] = $event->_id;
+          $eventIds[] = $event->id;
 
           $eventId = $event->event_id;
-          $payload = json_decode($event->payload, true);
+          $payload = json_decode($event->payload);
 
           try {
-            if (!isset($payload) || !isset($payload->models) || !is_array($payload->models)) {
+            if (!isset($payload) || !isset($payload->models)) {
               throw new Exception('Evento sem payload');
             }
 
@@ -57,8 +57,14 @@ class Integrai_Cron_Process_Events {
               $modelRun = (bool) $modelItem->run;
 
               if ($modelRun) {
+                $this->log($modelItem->className, '$modelItem->className: ');
+                $this->log($modelItem->modelArgs, '$modelItem->modelArgs: ');
+                $this->log($this->transform_args($modelItem->modelArgs), '$this->transform_args($modelItem->modelArgs): ');
+
                 $model = new $modelItem->className(...$this->transform_args($modelItem->modelArgs));
+                $this->log($model, '$model: ');
                 $methods = $modelItem->methods;
+                $this->log($methods, '$methods: ');
 
                 if ( isset($methods->method) && isset($methods->args) ) {
                   call_user_func_array(array($model, $methods->method), $this->transform_args($methods->args));
@@ -69,6 +75,7 @@ class Integrai_Cron_Process_Events {
             }
 
             array_push($success, $eventId);
+            $this->log($success, '$success: ');
 
           } catch (Exception $e) {
             $this->log($event, 'Erro ao processar o evento');
@@ -83,20 +90,20 @@ class Integrai_Cron_Process_Events {
           }
 
           // Delete events
-          if (count($success) > 0 || count($errors) > 0) {
-            $this->get_api_helper()->send_event('DELETE', array(
-              'eventIds' => $success,
-              'errors' => $errors
-            ));
-
-            $eventIdsRemove = implode(', ', $eventIds);
-            $ProcessEventsModel->delete("id in ($eventIdsRemove)");
-
-            $this->log('Eventos processados: ', array(
-              'success' => $success,
-              'errors' => $errors
-            ));
-          }
+//          if (count($success) > 0 || count($errors) > 0) {
+//            $this->get_api_helper()->send_event('DELETE', array(
+//              'eventIds' => $success,
+//              'errors' => $errors
+//            ));
+//
+//            $eventIdsRemove = implode(', ', $eventIds);
+//            $ProcessEventsModel->delete("id in ($eventIdsRemove)");
+//
+//            $this->log('Eventos processados: ', array(
+//              'success' => $success,
+//              'errors' => $errors
+//            ));
+//          }
 
           $this->get_config_helper()->update_config('PROCESS_EVENTS_RUNNING', 'NOT_RUNNING');
         }

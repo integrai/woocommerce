@@ -512,8 +512,6 @@ class Integrai_Public {
 	public function woocommerce_update_order( $order_id ) {
     $order = $this->get_full_order( $order_id );
 
-    Integrai_Helper::log(json_encode($order), '==> SAVE_ORDER :: $order: ');
-
 		return $this->get_api_helper()->send_event(self::SAVE_ORDER, $order);
 	}
 
@@ -559,16 +557,16 @@ class Integrai_Public {
 	public function integrai_cron_activation() {
     Integrai_Helper::log('==> trigger crons');
 
-		if ( ! wp_next_scheduled( 'integrai_cron_resend_events' ) ) {
+		if ( wp_next_scheduled( 'integrai_cron_resend_events' ) !== false ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_resend_events' );
 		}
 
-		if ( ! wp_next_scheduled( 'integrai_cron_abandoned_cart' ) ) {
+		if ( wp_next_scheduled( 'integrai_cron_abandoned_cart' ) !== false ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_abandoned_cart' );
 		}
 
-		if ( ! wp_next_scheduled( 'integrai_cron_proccess_events' ) ) {
-      Integrai_Helper::log('==> trigger proccess_events');
+		if ( wp_next_scheduled( 'integrai_cron_proccess_events' ) !== false ) {
+      Integrai_Helper::log('==> scheduled proccess_events');
 		 	wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_proccess_events' );
 		}
 
@@ -581,6 +579,7 @@ class Integrai_Public {
 	  Integrai_Helper::log('==> run integrai_cron_proccess_events');
     $CronProcessEvents = new Integrai_Cron_Process_Events();
     $CronProcessEvents->execute();
+	  Integrai_Helper::log('==> executed integrai_cron_proccess_events');
   }
 
 	public function integrai_cron_deactivation() {
@@ -595,6 +594,7 @@ class Integrai_Public {
 
 	// ABANDONED_CART
 	public function integrai_cron_abandoned_cart() {
+    Integrai_Helper::log('==> executed integrai_cron_abandoned_cart');
 	  $isEnabled = $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART);
 	  $isEnabledCartItem = $this->get_config_helper()->event_is_enabled(self::ABANDONED_CART_ITEM);
 

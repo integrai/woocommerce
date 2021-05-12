@@ -114,8 +114,9 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
 
   public function get_global_config( $name ) {
     $configs = $this->get_global();
+    Integrai_Helper::log($configs, '==> $configs: ');
 
-    return $configs[$name] ? $configs[$name] : false;
+    return isset($configs) && $configs[$name] ? $configs[$name] : false;
   }
 
   public function get_minutes_abandoned_cart_lifetime() {
@@ -219,6 +220,12 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
       array(
         'name' => 'SCRIPTS',
         'values' => '[]',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+      ),
+      array(
+        'name' => 'PROCESS_EVENTS_RUNNING',
+        'values' => 'NOT_RUNNING',
         'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
         'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
