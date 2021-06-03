@@ -51,7 +51,6 @@ class Integrai_Admin {
 
 		$this->integrai = $integrai;
 		$this->version = $version;
-
 	}
 
 	/**
@@ -104,6 +103,13 @@ class Integrai_Admin {
 		return ( class_exists( 'woocommerce' ) );
 	}
 
+	private function dangerAlert() {
+        require_once INTEGRAI__PLUGIN_DIR . '/includes/model/class-integrai-model-config.php';
+
+        $Config = new Integrai_Model_Config();
+		return $Config->get_danger_alert();
+	}
+
 	public function admin_notices() {
 		if ( !$this->check_woocommerce() ) {
 			?>
@@ -112,6 +118,14 @@ class Integrai_Admin {
 				</div>
 			<?php
 		}
+
+        if ( $this->dangerAlert() ) {
+            ?>
+            <div class="notice notice-error is-dismissible">
+                <p><strong>ATENÇÃO: </strong> <?php echo $this->dangerAlert() ?></p>
+            </div>
+            <?php
+        }
 	}
 
 	public function woocommerce_integrations( $integrations ) {

@@ -94,6 +94,12 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return isset( $configs['apiUrl'] ) ? $configs['apiUrl'] : false;
   }
 
+  public function get_danger_alert() {
+    $configs = $this->get_global();
+
+    return isset( $configs['dangerAlert'] ) ? $configs['dangerAlert'] : false;
+  }
+
   public function get_api_key() {
     $options = $this->get_options();
 
