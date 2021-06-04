@@ -16,7 +16,7 @@
       target="_blank"
       title="<?php __( 'Acessar boleto' ) ?>"
       href="<?php echo $boleto_url ?>">
-      <?php echo __( ' clique aqui ' ) ?>
+      <?php echo __( ' Imprimir boleto ' ) ?>
     </a>
   </p>
 </div>

@@ -138,6 +138,10 @@ class Integrai_Model_Helper {
     return $this->update($data, "WHERE name = '$name'");
   }
 
+  public function delete_query($where = '') {
+      return $this->wpdb->query("DELETE FROM $this->table WHERE $where");
+  }
+
   public function delete($where = array(), $where_format = null) {
     return $this->wpdb->delete($this->table, $where, $where_format);
   }

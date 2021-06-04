@@ -557,16 +557,15 @@ class Integrai_Public {
 	public function integrai_cron_activation() {
     Integrai_Helper::log('==> trigger crons');
 
-		if ( wp_next_scheduled( 'integrai_cron_resend_events' ) !== false ) {
+		if ( !wp_next_scheduled( 'integrai_cron_resend_events' ) ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_resend_events' );
 		}
 
-		if ( wp_next_scheduled( 'integrai_cron_abandoned_cart' ) !== false ) {
+		if ( !wp_next_scheduled( 'integrai_cron_abandoned_cart' ) ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_abandoned_cart' );
 		}
 
-		if ( wp_next_scheduled( 'integrai_cron_proccess_events' ) !== false ) {
-      Integrai_Helper::log('==> scheduled proccess_events');
+		if ( !wp_next_scheduled( 'integrai_cron_proccess_events' ) ) {
 		 	wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_proccess_events' );
 		}
 

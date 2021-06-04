@@ -16,7 +16,6 @@ class Integrai_Cron_Process_Events {
   }
 
   public function execute() {
-    Integrai_Helper::log($this->get_config_helper()->is_enabled(), '==> Integrai_Cron_Process_Events :: isEnabled?');
     if ($this->get_config_helper()->is_enabled()) {
       $this->log('Iniciando processamento dos eventos...');
 
@@ -50,36 +49,25 @@ class Integrai_Cron_Process_Events {
               throw new Exception('Evento sem payload');
             }
 
-            array_push($success, $eventId);
-
             foreach ($payload->models as $modelItem) {
               $modelName = $modelItem->name;
               $modelRun = (bool) $modelItem->run;
 
               if ($modelRun) {
-                $this->log($modelItem->className, '$modelItem->className: ');
-                $this->log($modelItem->modelArgs, '$modelItem->modelArgs: ');
-                $this->log($this->transform_args($modelItem->modelArgs), '$this->transform_args($modelItem->modelArgs): ');
+                  $modelArgs = $this->transform_args($modelItem);
+                  $modelMethods = $modelItem->methods;
 
-                $model = new $modelItem->className(...$this->transform_args($modelItem->modelArgs));
-                $this->log($model, '$model: ');
-                $methods = $modelItem->methods;
-                $this->log($methods, '$methods: ');
+                  $model = new $modelItem->className(...$modelArgs);
+                  $this->run_methods($model, $modelMethods);
 
-                if ( isset($methods->method) && isset($methods->args) ) {
-                  call_user_func_array(array($model, $methods->method), $this->transform_args($methods->args));
-                }
-
-                $this->_models[$modelName] = $model;
+                  $this->_models[$modelName] = $model;
               }
             }
 
             array_push($success, $eventId);
-            $this->log($success, '$success: ');
-
           } catch (Exception $e) {
-            $this->log($event, 'Erro ao processar o evento');
             $this->log($e->getMessage(), 'Erro');
+            $this->log($event, 'Erro ao processar o evento');
 
             if ($eventId) {
               array_push($errors, array(
@@ -88,25 +76,25 @@ class Integrai_Cron_Process_Events {
               ));
             }
           }
-
-          // Delete events
-//          if (count($success) > 0 || count($errors) > 0) {
-//            $this->get_api_helper()->send_event('DELETE', array(
-//              'eventIds' => $success,
-//              'errors' => $errors
-//            ));
-//
-//            $eventIdsRemove = implode(', ', $eventIds);
-//            $ProcessEventsModel->delete("id in ($eventIdsRemove)");
-//
-//            $this->log('Eventos processados: ', array(
-//              'success' => $success,
-//              'errors' => $errors
-//            ));
-//          }
-
-          $this->get_config_helper()->update_config('PROCESS_EVENTS_RUNNING', 'NOT_RUNNING');
         }
+
+        // Delete events
+        if (count($success) > 0 || count($errors) > 0) {
+            $this->get_api_helper()->request('/store/event', 'DELETE', array(
+              'eventIds' => $success,
+              'errors' => $errors
+            ));
+
+            $eventIdsRemove = implode(', ', $eventIds);
+            $ProcessEventsModel->delete_query("id in ($eventIdsRemove)");
+
+            $this->log(array(
+                'success' => $success,
+                'errors' => $errors
+            ), 'Eventos processados: ');
+        }
+
+        $this->get_config_helper()->update_config('PROCESS_EVENTS_RUNNING', 'NOT_RUNNING');
       }
     }
   }
@@ -115,17 +103,57 @@ class Integrai_Cron_Process_Events {
     return $this->_models[$modelName];
   }
 
-  private function transform_args($args = array()) {
+  private function transform_args($itemValue) {
     $newArgs = array();
 
-    foreach($args as $arg) {
-      if(is_array($arg) && $arg["otherModelName"]){
-        array_push($newArgs, $this->get_other_model($arg["otherModelName"]));
-      } else {
-        array_push($newArgs, $arg);
-      }
+    $args = isset($itemValue->args) ? (array)$itemValue->args : null;
+
+    if (is_array($args)) {
+        $argsFormatted = array_values($args);
+
+        foreach($argsFormatted as $arg) {
+            if (is_array($arg) && $arg['otherModelName']) {
+                $model = $this->get_other_model($arg["otherModelName"]);
+                if (isset($arg['otherModelMethods'])) {
+                    array_push($newArgs, $this->run_methods($model, $arg['otherModelMethods']));
+                } else {
+                    array_push($newArgs, $model);
+                }
+            } else {
+                array_push($newArgs, $arg);
+            }
+        }
     }
 
     return $newArgs;
+  }
+
+  private function run_methods($model, $modelMethods) {
+      $result = null;
+      foreach ($modelMethods as $methodValue) {
+          $methodName = $methodValue->name;
+          $methodRun = (bool)$methodValue->run;
+          $methodCheckReturnType = isset($methodValue->checkReturnType) ? $methodValue->checkReturnType : null;
+
+          if ($methodRun && $model) {
+              $methodArgs = $this->transform_args($methodValue);
+
+              try {
+                  $result = call_user_func_array(array($model, $methodName), $methodArgs);
+              } catch (Exception $e) {
+                  $this->log($e->getMessage(), 'err');
+              }
+
+              if ($methodCheckReturnType) {
+                  $types = (array) $methodCheckReturnType->types;
+                  $errorMessage = $methodCheckReturnType->errorMessage;
+                  if (!in_array(gettype($model), $types)) {
+                      throw new Exception($errorMessage);
+                  }
+              }
+          }
+      }
+
+      return $result;
   }
 }

@@ -184,6 +184,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         return;
 
       $data = get_post_meta( $order->get_id(), '_integrai_transaction_data', true );
+      $payment_response = (array) get_post_meta( $order->get_id(), 'payment_response', true );
 
       if (
         isset($data)
@@ -193,13 +194,23 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         && isset($data['cc_installments'])
       ) {
 
+        $card = isset($payment_response['card']) ? (array) $payment_response['card'] : array();
+        $card_number = $card['last_four_digits'];
+        $card_installments = $payment_response['installments'] ? $payment_response['installments'] : $data['cc_installments'];
+        $card_brand = $card['brand'] ? $card['brand'] : $data['cc_card_brand'];
+        $card_holder = $card['holder'];
+
         $meta_data = array(
-          __( 'Método de Pagamento', 'integrai' ) => 'Cartão de Crédito (Integrai)',
-          __( 'Processado por', 'integrai' )      => sanitize_text_field( $data['payment_response']['module_name'] ),
-          __( 'Bandeira do Cartão', 'integrai' )  => sanitize_text_field( ucfirst( $data['cc_card_brand'] ) ),
+          __( 'Pagamento', 'integrai' ) => 'Cartão de Crédito',
+          __( 'Processado por', 'integrai' )     => sanitize_text_field($payment_response['module_name']),
+          __( 'Identificação da transação', 'integrai' )     => sanitize_text_field($payment_response['transaction_id']),
+          __( 'Data de pagamento', 'integrai' )     => sanitize_text_field($payment_response['date_approved']),
+          __( 'Número de Parcelas', 'integrai' )  => sanitize_text_field( $card_installments ),
+          __( 'Número do cartão', 'integrai' )  => sanitize_text_field( "**** **** **** $card_number" ),
+          __( 'Nome do titular', 'integrai' )  => sanitize_text_field( $card_holder ),
+          __( 'Bandeira', 'integrai' )  => sanitize_text_field( strtoupper( $card_brand ) ),
           __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper( $data['cc_doc_type'] ) ),
-          __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $data['cc_doc_number'] ),
-          __( 'Número de Parcelas', 'integrai' )  => sanitize_text_field( $data['cc_installments'] ),
+          __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $data['cc_doc_number'] )
         );
 
         $this->get_helper()->get_template(

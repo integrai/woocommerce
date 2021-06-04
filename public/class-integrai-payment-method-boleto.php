@@ -187,8 +187,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ( $payment_method !== $this->id )
         return;
 
-      $data = get_post_meta( $order->get_id(), '_integrai_transaction_data',       true );
-      $boleto_url = $this->get_helper()->get_boleto_url( $order->get_order_number() );
+      $data = get_post_meta( $order->get_id(), '_integrai_transaction_data', true );
+      $payment_response = (array) get_post_meta( $order->get_id(), 'payment_response', true );
+      $boleto_url = isset($payment_response['boleto_url']) ? $payment_response['boleto_url'] : $this->get_helper()->get_boleto_url( $order->get_order_number() );
 
       if (
         isset($data)
@@ -196,10 +197,11 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         && isset($data['boleto_doc_type'])
         && isset($data['boleto_doc_number'])
       ) {
-
         $meta_data = array(
-          __('Pagamento', 'integrai')           => 'Boleto (Integrai)',
-          __( 'Processado por', 'integrai' )    => sanitize_text_field( $data['payment_response']['module_name'] ),
+          __('Pagamento', 'integrai')           => 'Boleto',
+          __('Processado por', 'integrai' )     => sanitize_text_field($payment_response['module_name']),
+          __('Identificação da transação', 'integrai' )     => sanitize_text_field($payment_response['transaction_id']),
+          __('Data de pagamento', 'integrai' )     => sanitize_text_field($payment_response['date_approved']),
           __('Documento', 'integrai')           => sanitize_text_field(strtoupper($data['boleto_doc_type'])),
           __('Número do Documento', 'integrai') => sanitize_text_field($data['boleto_doc_number']),
         );

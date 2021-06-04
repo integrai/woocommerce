@@ -69,27 +69,33 @@ class Integrai_Events_Controller extends WP_REST_Controller {
 
         Integrai_Helper::log(count($data), 'Total de eventos agendados para processar: ');
 
-        $success = false;
-
         if (count($data) > 0) {
-          Integrai_Helper::log('OK');
           try {
             $processEventsModel = $this->get_process_events();
-            $success = $processEventsModel->save_events($data);
+            $processEventsModel->save_events($data);
           } catch (Exception $e) {
             Integrai_Helper::log($e->getMessage(), 'Error Integrai_Model_Process_Events: ');
+            throw new Exception($e);
           }
         }
-
-        $response = new WP_REST_Response( array( "ok" => $success ) );
-        $response->header( 'Content-type', 'application/json' );
-        $response->set_status( 200 );
-
-        return $response;
       }
 
+      $response = new WP_REST_Response( array( "ok" => true ) );
+      $response->header( 'Content-type', 'application/json' );
+      $response->set_status( 200 );
+
+      return $response;
     } catch (Exception $e) {
-      Integrai_Helper::log($e->getMessage(), 'Error ao solicitar eventos');
+        Integrai_Helper::log($e->getMessage(), 'Error ao solicitar eventos');
+
+        $response = new WP_REST_Response( array(
+            "ok" => false,
+            "error" => $e->getMessage()
+        ) );
+        $response->header( 'Content-type', 'application/json' );
+        $response->set_status( 500 );
+
+        return $response;
     }
   }
 }

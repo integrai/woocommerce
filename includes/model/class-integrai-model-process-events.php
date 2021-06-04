@@ -26,7 +26,7 @@ class Integrai_Model_Process_Events extends Integrai_Model_Helper {
 
     $eventIdIndex = "
         CREATE INDEX my_index 
-        ON {$this->prefix}integrai_events (event_id)
+        ON {$this->prefix}integrai_process_events (event_id)
     ";
 
     $this->run_query( $sql );
