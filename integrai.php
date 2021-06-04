@@ -14,15 +14,17 @@
  *
  * @integrai
  * Plugin Name:       Integrai
- * Plugin URI:        https://integrai.com.br/
- * Description: Integração com os principais meios de pagamento e cálculo de frete para a sua plataforma de e-commerce WP WooCommerce.
- * Version:           1.0.0
+ * Plugin URI:        https://github.com/integrai/woocommerce
+ * Description:       Integração com os principais meios de pagamento e cálculo de frete para a sua plataforma de e-commerce WP WooCommerce.
+ * Version:           1.0.3
  * Author:            Integrai
- * Author URI:        https://integrai.com.br/
+ * Author URI:        https://integrai.com.br
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       integrai
  * Domain Path:       /languages
+ * WC requires at least: 3.0.0
+ * WC tested up to:   4.8.0
  */
 
 /** GERAL
