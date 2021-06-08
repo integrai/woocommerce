@@ -1,43 +1,22 @@
 <?php
 
-/**
- * Integration Demo Integration.
- *
- * @package  WC_Integration_Integrai_Settings_Integration
- * @category Integration
- * @author   Integrai
- */
-
-
 if ( ! defined( 'ABSPATH' ) ) {
   exit; // Exit if accessed directly.
 }
 
-// TODO: Arrumar os imports para serem dinamicos. Assim é muito arriscado, caso o diretorio do plugin mude.
-
 if ( ! class_exists('WC_Settings_API' )) {
-    require_once ABSPATH . 'wp-content/plugins/woocommerce/includes/abstracts/abstract-wc-settings-api.php';
+    require_once __FILE__ . 'wp-content/plugins/woocommerce/includes/abstracts/abstract-wc-settings-api.php';
 }
 
 if ( ! class_exists( 'WC_Integration' )) {
-    require_once ABSPATH . 'wp-content/plugins/woocommerce/includes/abstracts/abstract-wc-integration.php';
+    require_once __FILE__ . 'wp-content/plugins/woocommerce/includes/abstracts/abstract-wc-integration.php';
 }
 
 if ( ! class_exists( 'WC_Integration_Integrai_Settings_Integration' ) ) :
 class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
-  /**
-   * @var string
-   */
   private $api_key;
-
-  /**
-   * @var string
-   */
   private $secret_key;
 
-  /**
-  * Init and hook in the integration.
-  */
   public function __construct() {
     global $woocommerce;
 
@@ -88,10 +67,6 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
     return $value;
   }
 
-  /**
-   * Display errors by overriding the display_errors() method
-   * @see display_errors()
-   */
   public function display_errors( ) {
     foreach ( $this->errors as $key => $value ) {
       ?>
@@ -102,9 +77,6 @@ class WC_Integration_Integrai_Settings_Integration extends WC_Integration {
     }
   }
 
-  /**
-   * Initialize integration settings form fields.
-   */
   public function init_form_fields() {
     $this->form_fields = array(
       'enabled' => array(
