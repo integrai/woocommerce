@@ -5,10 +5,15 @@
 </div>
 
 <script>
-    window.integraiBoletoData = JSON.parse('<?php echo json_encode( $options ) ?>');
+    <?php
+        $jsonOptions  = json_encode( isset($options) && !empty($options) ? $options : array() );
+        $jsonCustomer = json_encode( isset($customer) && !empty($customer) ? $customer : array() );
+    ?>
+
+    window.integraiBoletoData = JSON.parse('<?php echo $jsonOptions ?>');
 
     window.IntegraiBoleto = Object.assign({}, integraiBoletoData.formOptions, {
-        boletoModel: JSON.parse('<?php echo json_encode( $customer ) ?>'),
+        boletoModel: JSON.parse('<?php echo $jsonCustomer ?>'),
     });
 
     integraiBoletoData.scripts.forEach(function (script) {
