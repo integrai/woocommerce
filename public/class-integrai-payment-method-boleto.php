@@ -69,58 +69,65 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function validate_fields() {
-      $payment          = $_POST['payment'];
-      $payment_method   = $_POST['payment_method'];
+      try {
+        $payment          = $_POST['payment']; // Sanitize obj
+        $payment_method   = sanitize_text_field($_POST['payment_method']);
 
-      if ( $payment_method !== $this->id )
+        if ( $payment_method !== $this->id )
+          return true;
+
+        if( !isset( $payment['boleto_doc_number'] ) || empty( $payment['boleto_doc_number'] ) )
+          wc_add_notice( __( 'Informe o número do documento (CPF / CNPJ)', $this->id ), 'error' );
+
+        if( !isset( $payment['boleto_address_street'] ) || empty( $payment['boleto_address_street'] ) )
+          wc_add_notice( __( 'Informe o endereço', $this->id ), 'error' );
+
+        if( !isset( $payment['boleto_address_zipcode'] ) || empty( $payment['boleto_address_zipcode'] ) )
+          wc_add_notice( __( 'Informe o CEP', $this->id ), 'error' );
+
+        if( !isset( $payment['boleto_address_number'] ) || empty( $payment['boleto_address_number'] ) )
+          wc_add_notice( __( 'Informe o número do endereço', $this->id ), 'error' );
+
+        if( !isset( $payment['boleto_address_city'] ) || empty( $payment['boleto_address_city'] ) )
+          wc_add_notice( __( 'Informe a cidade', $this->id ), 'error' );
+
+        if( !isset( $payment['boleto_address_state'] ) || empty( $payment['boleto_address_state'] ) )
+          wc_add_notice( __( 'Informe o estado', $this->id ), 'error' );
+
+        if( !isset( $payment['boleto_doc_type'] ) || empty( $payment['boleto_doc_type'] ) )
+          wc_add_notice( __( 'Informe o Tipo do documento (CPF / CNPJ)', $this->id ), 'error' );
+
+        // Person
+        if ( $payment['boleto_doc_type'] === 'cpf' ) {
+          if( !isset( $payment['boleto_first_name'] ) || empty( $payment['boleto_first_name'] ) )
+            wc_add_notice( __( 'Informe o Primeiro nome', $this->id ), 'error' );
+
+          if( !isset( $payment['boleto_last_name'] ) || empty( $payment['boleto_last_name'] ) )
+            wc_add_notice( __( 'Informe o sobrenome', $this->id ), 'error' );
+        }
+
+        // Company
+        if ( $payment['boleto_doc_type'] === 'cnpj' ) {
+          if( !isset( $payment['boleto_company_name'] ) || empty( $payment['boleto_company_name'] ) )
+            wc_add_notice( __( 'Informe o nome da empresa', $this->id ), 'error' );
+        }
+
+        // Validate DOCUMENT:
+        if ( $payment['boleto_doc_type'] === 'cpf' || $payment['boleto_doc_type'] === 'cnpj' && isset( $payment['boleto_doc_number'] ) ) {
+          $is_valid = Integrai_Validator::{$payment['boleto_doc_type']}( $payment['boleto_doc_number'] );
+
+          if ( !$is_valid )
+            wc_add_notice( __( 'Número de ' . strtoupper($payment['boleto_doc_type']) . ' inválido', $this->id ), 'error' );
+        }
+
         return true;
 
-      if( !isset( $payment['boleto_doc_number'] ) || empty( $payment['boleto_doc_number'] ) )
-        wc_add_notice( __( 'Informe o número do documento (CPF / CNPJ)', $this->id ), 'error' );
+      } catch (Exception $e) {
+        Integrai_Helper::log($e->getMessage(), 'Error ao validar campos no checkout de boleto');
+        wc_add_notice( __( 'Ocorreu um erro ao validar os campos do formulário. Recarregue a página e tente novamente.', $this->id ), 'error' );
 
-      if( !isset( $payment['boleto_address_street'] ) || empty( $payment['boleto_address_street'] ) )
-        wc_add_notice( __( 'Informe o endereço', $this->id ), 'error' );
-
-      if( !isset( $payment['boleto_address_zipcode'] ) || empty( $payment['boleto_address_zipcode'] ) )
-        wc_add_notice( __( 'Informe o CEP', $this->id ), 'error' );
-
-      if( !isset( $payment['boleto_address_number'] ) || empty( $payment['boleto_address_number'] ) )
-        wc_add_notice( __( 'Informe o número do endereço', $this->id ), 'error' );
-
-      if( !isset( $payment['boleto_address_city'] ) || empty( $payment['boleto_address_city'] ) )
-        wc_add_notice( __( 'Informe a cidade', $this->id ), 'error' );
-
-      if( !isset( $payment['boleto_address_state'] ) || empty( $payment['boleto_address_state'] ) )
-        wc_add_notice( __( 'Informe o estado', $this->id ), 'error' );
-
-      if( !isset( $payment['boleto_doc_type'] ) || empty( $payment['boleto_doc_type'] ) )
-        wc_add_notice( __( 'Informe o Tipo do documento (CPF / CNPJ)', $this->id ), 'error' );
-
-      // Person
-      if ( $payment['boleto_doc_type'] === 'cpf' ) {
-        if( !isset( $payment['boleto_first_name'] ) || empty( $payment['boleto_first_name'] ) )
-          wc_add_notice( __( 'Informe o Primeiro nome', $this->id ), 'error' );
-
-        if( !isset( $payment['boleto_last_name'] ) || empty( $payment['boleto_last_name'] ) )
-          wc_add_notice( __( 'Informe o sobrenome', $this->id ), 'error' );
+        return false;
       }
-
-      // Company
-      if ( $payment['boleto_doc_type'] === 'cnpj' ) {
-        if( !isset( $payment['boleto_company_name'] ) || empty( $payment['boleto_company_name'] ) )
-          wc_add_notice( __( 'Informe o nome da empresa', $this->id ), 'error' );
-      }
-
-      // Validate DOCUMENT:
-      if ( $payment['boleto_doc_type'] === 'cpf' || $payment['boleto_doc_type'] === 'cnpj' && isset( $payment['boleto_doc_number'] ) ) {
-        $is_valid = Integrai_Validator::{$payment['boleto_doc_type']}( $payment['boleto_doc_number'] );
-
-        if ( !$is_valid )
-          wc_add_notice( __( 'Número de ' . strtoupper($payment['boleto_doc_type']) . ' inválido', $this->id ), 'error' );
-      }
-
-      return true;
-
     }
 
     public function payment_fields() {

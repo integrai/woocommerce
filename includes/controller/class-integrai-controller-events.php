@@ -22,13 +22,14 @@ class Integrai_Events_Controller extends WP_REST_Controller {
 
   public function get_items( $request ) {
     try {
+      $batchId = sanitize_text_field($_GET['batchId']);
       $api = new Integrai_API();
-      $batchId = isset($_GET['batchId']) ? trim($_GET['batchId']) : "";
+
       $response = $api->request(
         '/store/event',
         'GET',
         array(),
-        array("batchId" => $batchId),
+        array("batchId" => isset($batchId) ? trim($batchId) : ""),
       );
 
       $events = json_decode( $response['body'] );
