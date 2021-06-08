@@ -2,6 +2,7 @@
 
 if ( class_exists( 'WC_Payment_Gateway' ) ) :
   class Integrai_Payment_Method_Boleto extends WC_Payment_Gateway {
+    public $boleto_props = array();
 
     public function __construct() {
       $this->id                 = 'integrai_boleto';
@@ -10,7 +11,18 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->title              = __( 'Integrai', 'woocommerce' );
       $this->method_title       = __( 'Integrai', 'woocommerce' );  // Title shown in admin
       $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento via Boleto.', 'woocommerce' );  // Title shown in admin
-
+      $this->boleto_props       = array(
+        'boleto_doc_type',
+        'boleto_doc_number',
+        'boleto_address_street',
+        'boleto_address_zipcode',
+        'boleto_address_number',
+        'boleto_address_city',
+        'boleto_address_state',
+        'boleto_first_name',
+        'boleto_last_name',
+        'boleto_company_name',
+      );
 
       $this->init();
     }
@@ -70,54 +82,65 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
     public function validate_fields() {
       try {
-        $payment          = $_POST['payment']; // Sanitize obj
-        $payment_method   = sanitize_text_field($_POST['payment_method']);
+        $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
+        $payment        = $this->get_helper()->sanitize_fields($this->boleto_props, $_POST['payment']);
 
-        if ( $payment_method !== $this->id )
+        if ( $payment_method !== $this->id || !$payment )
           return true;
 
-        if( !isset( $payment['boleto_doc_number'] ) || empty( $payment['boleto_doc_number'] ) )
+        $doc_type        = $payment['boleto_doc_type'];
+        $doc_number      = $payment['boleto_doc_number'];
+        $address_street  = $payment['boleto_address_street'];
+        $address_zipcode = $payment['boleto_address_zipcode'];
+        $address_number  = $payment['boleto_address_number'];
+        $address_city    = $payment['boleto_address_city'];
+        $address_state   = $payment['boleto_address_state'];
+        $first_name      = $payment['boleto_first_name'];
+        $last_name       = $payment['boleto_last_name'];
+        $company_name    = $payment['boleto_company_name'];
+
+        if( !$doc_number )
           wc_add_notice( __( 'Informe o número do documento (CPF / CNPJ)', $this->id ), 'error' );
 
-        if( !isset( $payment['boleto_address_street'] ) || empty( $payment['boleto_address_street'] ) )
+        if( !$address_street )
           wc_add_notice( __( 'Informe o endereço', $this->id ), 'error' );
 
-        if( !isset( $payment['boleto_address_zipcode'] ) || empty( $payment['boleto_address_zipcode'] ) )
+        if( !$address_zipcode )
           wc_add_notice( __( 'Informe o CEP', $this->id ), 'error' );
 
-        if( !isset( $payment['boleto_address_number'] ) || empty( $payment['boleto_address_number'] ) )
+        if( !$address_number )
           wc_add_notice( __( 'Informe o número do endereço', $this->id ), 'error' );
 
-        if( !isset( $payment['boleto_address_city'] ) || empty( $payment['boleto_address_city'] ) )
+        if( !$address_city )
           wc_add_notice( __( 'Informe a cidade', $this->id ), 'error' );
 
-        if( !isset( $payment['boleto_address_state'] ) || empty( $payment['boleto_address_state'] ) )
+        if( !$address_state )
           wc_add_notice( __( 'Informe o estado', $this->id ), 'error' );
 
-        if( !isset( $payment['boleto_doc_type'] ) || empty( $payment['boleto_doc_type'] ) )
+        if( !$doc_type )
           wc_add_notice( __( 'Informe o Tipo do documento (CPF / CNPJ)', $this->id ), 'error' );
 
         // Person
-        if ( $payment['boleto_doc_type'] === 'cpf' ) {
-          if( !isset( $payment['boleto_first_name'] ) || empty( $payment['boleto_first_name'] ) )
+        if ( $doc_type === 'cpf' ) {
+          if( !$first_name )
             wc_add_notice( __( 'Informe o Primeiro nome', $this->id ), 'error' );
 
-          if( !isset( $payment['boleto_last_name'] ) || empty( $payment['boleto_last_name'] ) )
+          if( !$last_name )
             wc_add_notice( __( 'Informe o sobrenome', $this->id ), 'error' );
         }
 
         // Company
-        if ( $payment['boleto_doc_type'] === 'cnpj' ) {
-          if( !isset( $payment['boleto_company_name'] ) || empty( $payment['boleto_company_name'] ) )
+        if ( $doc_type === 'cnpj' ) {
+          if( !$company_name )
             wc_add_notice( __( 'Informe o nome da empresa', $this->id ), 'error' );
         }
 
         // Validate DOCUMENT:
-        if ( $payment['boleto_doc_type'] === 'cpf' || $payment['boleto_doc_type'] === 'cnpj' && isset( $payment['boleto_doc_number'] ) ) {
-          $is_valid = Integrai_Validator::{$payment['boleto_doc_type']}( $payment['boleto_doc_number'] );
+        if ( $doc_type === 'cpf' || $doc_type === 'cnpj' && $doc_number ) {
+          $is_valid = Integrai_Validator::{$doc_type}( $doc_number );
 
           if ( !$is_valid )
-            wc_add_notice( __( 'Número de ' . strtoupper($payment['boleto_doc_type']) . ' inválido', $this->id ), 'error' );
+            wc_add_notice( __( 'Número de ' . strtoupper($doc_type) . ' inválido', $this->id ), 'error' );
         }
 
         return true;
@@ -145,7 +168,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function process_payment( $order_id ) {
-      if ($_POST['payment_method'] != $this->id)
+      $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
+
+      if ($payment_method != $this->id)
         return false;
 
       global $woocommerce;
@@ -177,10 +202,12 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function update_order_meta( $order_id ) {
-      $payment_data = $_POST['payment'];
-      $payment_data['payment_method'] = $_POST['payment_method'];
+      $payment_data   = $this->get_helper()->sanitize_fields($this->boleto_props, $_POST['payment']);
+      $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
 
-      if ( $_POST['payment_method'] != $this->id || empty( $payment_data ) )
+      $payment_data['payment_method'] = $payment_method;
+
+      if ( $payment_method != $this->id || empty( $payment_data ) )
         return;
 
       // Save data on order

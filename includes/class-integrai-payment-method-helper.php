@@ -114,6 +114,28 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
         'integrai/boleto' . $query_concat_params . 'orderId=' . $order_number . '&isDuplicate=' . $is_duplicated_str,
       );
     }
+
+    public function get_sanitized($fieldName, $object = array()) {
+      if (!isset($fieldName) || !is_array($object) || empty($object) || !isset($object[$fieldName])) {
+        return false;
+      }
+
+      return sanitize_text_field( $object[$fieldName] );
+    }
+
+    public function sanitize_fields($fields, $object) {
+      if (!isset($fields) || empty($fields) || !isset($object) || empty($object)) {
+        return false;
+      }
+
+      $accumulator = array();
+
+      foreach ( $fields as $key ) {
+        $accumulator[$key] = $this->get_sanitized($key, $object);
+      }
+
+      return $accumulator;
+    }
   }
 }
 
