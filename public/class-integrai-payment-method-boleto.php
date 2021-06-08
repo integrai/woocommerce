@@ -2,7 +2,7 @@
 
 if ( class_exists( 'WC_Payment_Gateway' ) ) :
   class Integrai_Payment_Method_Boleto extends WC_Payment_Gateway {
-    public $boleto_props = array();
+    public $fields_list = array();
 
     public function __construct() {
       $this->id                 = 'integrai_boleto';
@@ -11,7 +11,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->title              = __( 'Integrai', 'woocommerce' );
       $this->method_title       = __( 'Integrai', 'woocommerce' );  // Title shown in admin
       $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento via Boleto.', 'woocommerce' );  // Title shown in admin
-      $this->boleto_props       = array(
+      $this->fields_list       = array(
         'boleto_doc_type',
         'boleto_doc_number',
         'boleto_address_street',
@@ -83,38 +83,30 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     public function validate_fields() {
       try {
         $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
-        $payment        = $this->get_helper()->sanitize_fields($this->boleto_props, $_POST['payment']);
+        $payment        = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
 
         if ( $payment_method !== $this->id || !$payment )
           return true;
 
         $doc_type        = $payment['boleto_doc_type'];
         $doc_number      = $payment['boleto_doc_number'];
-        $address_street  = $payment['boleto_address_street'];
-        $address_zipcode = $payment['boleto_address_zipcode'];
-        $address_number  = $payment['boleto_address_number'];
-        $address_city    = $payment['boleto_address_city'];
-        $address_state   = $payment['boleto_address_state'];
-        $first_name      = $payment['boleto_first_name'];
-        $last_name       = $payment['boleto_last_name'];
-        $company_name    = $payment['boleto_company_name'];
 
         if( !$doc_number )
           wc_add_notice( __( 'Informe o número do documento (CPF / CNPJ)', $this->id ), 'error' );
 
-        if( !$address_street )
+        if( !$payment['boleto_address_street'] )
           wc_add_notice( __( 'Informe o endereço', $this->id ), 'error' );
 
-        if( !$address_zipcode )
+        if( !$payment['boleto_address_zipcode'] )
           wc_add_notice( __( 'Informe o CEP', $this->id ), 'error' );
 
-        if( !$address_number )
+        if( !$payment['boleto_address_number'] )
           wc_add_notice( __( 'Informe o número do endereço', $this->id ), 'error' );
 
-        if( !$address_city )
+        if( !$payment['boleto_address_city'] )
           wc_add_notice( __( 'Informe a cidade', $this->id ), 'error' );
 
-        if( !$address_state )
+        if( !$payment['boleto_address_state'] )
           wc_add_notice( __( 'Informe o estado', $this->id ), 'error' );
 
         if( !$doc_type )
@@ -122,16 +114,16 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
         // Person
         if ( $doc_type === 'cpf' ) {
-          if( !$first_name )
+          if( !$payment['boleto_first_name'] )
             wc_add_notice( __( 'Informe o Primeiro nome', $this->id ), 'error' );
 
-          if( !$last_name )
+          if( !$payment['boleto_last_name'] )
             wc_add_notice( __( 'Informe o sobrenome', $this->id ), 'error' );
         }
 
         // Company
         if ( $doc_type === 'cnpj' ) {
-          if( !$company_name )
+          if( !$payment['boleto_company_name'] )
             wc_add_notice( __( 'Informe o nome da empresa', $this->id ), 'error' );
         }
 
@@ -202,17 +194,16 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function update_order_meta( $order_id ) {
-      $payment_data   = $this->get_helper()->sanitize_fields($this->boleto_props, $_POST['payment']);
       $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
-
-      $payment_data['payment_method'] = $payment_method;
+      $payment_data   = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
 
       if ( $payment_method != $this->id || empty( $payment_data ) )
         return;
 
+      $payment_data['payment_method'] = $payment_method;
+
       // Save data on order
       $this->get_helper()->save_transaction_data( $order_id, $payment_data );
-
     }
 
     public function display_admin_order_meta( $order ) {

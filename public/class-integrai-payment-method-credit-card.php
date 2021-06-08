@@ -2,6 +2,7 @@
 
 if ( class_exists( 'WC_Payment_Gateway' ) ) :
   class Integrai_Payment_Method_Credit_Card extends WC_Payment_Gateway {
+    public $fields_list = array();
 
     public function __construct() {
       $this->id                 = 'integrai_creditcard';
@@ -10,6 +11,18 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->title              = __( 'Integrai', 'woocommerce' );
       $this->method_title       = __( 'Integrai', 'woocommerce' );
       $this->method_description = __( 'Método de pagamento da Integrai. Permite fazer pagamento com plataformas como MercadoPago, Wirecard, PagarMe.', 'woocommerce' );
+      $this->fields_list        = array(
+        'cc_card_number',
+        'cc_expiration_month',
+        'cc_expiration_year',
+        'cc_card_cvc',
+        'cc_holder_name',
+        'cc_doc_type',
+        'cc_doc_number',
+        'cc_birth_date',
+        'cc_installments',
+        'cc_card_hashs',
+      );
 
       $this->init();
     }
@@ -67,48 +80,53 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function validate_fields() {
-      $payment          = $_POST['payment'];
-      $payment_method   = $_POST['payment_method'];
+      $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
+      $payment        = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
 
-      if ( $payment_method !== $this->id )
+      if ( $payment_method !== $this->id || !$payment )
         return false;
 
-      if( !isset( $payment['cc_card_number'] ) || empty( $payment['cc_card_number'] ) )
+      $doc_type   = $payment['cc_doc_type'];
+      $doc_number = $payment['cc_doc_number'];
+
+      if( !$payment['cc_card_number'] )
         wc_add_notice( __( 'Informe o Número do cartão de crédito.', $this->id ), 'error' );
 
-      if( !isset( $payment['cc_expiration_month'] ) || empty( $payment['cc_expiration_month'] ) )
+      if( !$payment['cc_expiration_month'] )
         wc_add_notice( __( 'Informe o mês de expiração do cartão de crédito.', $this->id ), 'error' );
 
-      if( !isset( $payment['cc_expiration_year'] ) || empty( $payment['cc_expiration_year'] ) )
+      if( !$payment['cc_expiration_year'] )
         wc_add_notice( __( 'Informe o ano de expiração do cartão de crédito.', $this->id ), 'error' );
 
-      if( !isset( $payment['cc_card_cvc'] ) || empty( $payment['cc_card_cvc'] ) )
+      if( !$payment['cc_card_cvc'] )
         wc_add_notice( __( 'Informe o CVC do cartão de crédito.', $this->id ), 'error' );
 
-      if( !isset( $payment['cc_holder_name'] ) || empty( $payment['cc_holder_name'] ) )
+      if( !$payment['cc_holder_name'] )
         wc_add_notice( __( 'Informe o nome do titular do cartão de crédito.', $this->id ), 'error' );
 
-      if( !isset( $payment['cc_doc_type'] ) || empty( $payment['cc_doc_type'] ) )
+      if( !$doc_type )
         wc_add_notice( __( 'Selecione o tipo do documento (CPF ou CNPJ).', $this->id ), 'error' );
 
-      if( !isset( $payment['cc_doc_number'] ) || empty( $payment['cc_doc_number'] ) )
+      if( !$doc_number )
         wc_add_notice( __( 'Informe o documento (CPF ou CNPJ).', $this->id ), 'error' );
 
-      if( !isset( $payment['cc_birth_date'] ) || empty( $payment['cc_birth_date'] ) )
+      if( !$payment['cc_birth_date'] )
         wc_add_notice( __( 'Informe a data de nascimento.', $this->id ), 'error' );
 
-      if( !isset( $payment['cc_installments'] ) || empty( $payment['cc_installments'] ) )
+      if( !$payment['cc_installments'] )
         wc_add_notice( __( 'Selecione o número de parcelas.', $this->id ), 'error' );
 
       // Validate DOCUMENT:
-      if ( $payment['cc_doc_type'] === 'cpf' || $payment['cc_doc_type'] === 'cnpj' && isset($payment['cc_doc_number']) ) {
-        $is_valid = Integrai_Validator::{$payment['cc_doc_type']}( $payment['cc_doc_number'] );
+      if ( $doc_type === 'cpf' || $doc_type === 'cnpj' && isset($doc_number) ) {
+        $is_valid = Integrai_Validator::{$doc_type}( $doc_number );
 
-        if ( !$is_valid )
-          wc_add_notice( __( strtoupper('O ' . $payment['cc_doc_type']) . ' informado é inválido. Verifique e tente novamente.', $this->id ), 'error' );
+        if ( !$is_valid ) {
+          $message = strtoupper('O ' . $doc_type) . ' informado é inválido. Verifique e tente novamente.';
+          wc_add_notice( __($message, $this->id), 'error' );
+        }
       }
 
-      if( !isset( $payment['cc_card_hashs'] ) || empty( $payment['cc_card_hashs'] || count( $payment['cc_card_hashs'] ) === 0 ) )
+      if( !$payment['cc_card_hashs'] )
         wc_add_notice( __( 'Ocorreu um erro. Aguarde alguns segundos e tente novamente.', $this->id ), 'error' );
 
       return true;
@@ -132,7 +150,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function process_payment( $order_id ) {
-      if ($_POST['payment_method'] != $this->id)
+      $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
+
+      if ($payment_method != $this->id)
         return false;
 
       global $woocommerce;
@@ -166,15 +186,16 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function update_order_meta( $order_id ) {
-      $payment_data = $_POST['payment'];
-      $payment_data['payment_method'] = $_POST['payment_method'];
+      $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
+      $payment_data   = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
 
-      if ( $_POST['payment_method'] != $this->id || empty( $payment_data ) )
+      if ( $payment_method != $this->id || empty( $payment_data ) )
         return;
+
+      $payment_data['payment_method'] = $payment_method;
 
       // Save data on order
       $this->get_helper()->save_transaction_data( $order_id, $payment_data );
-
     }
 
     public function display_admin_order_meta( $order ) {
@@ -196,21 +217,21 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
         $card = isset($payment_response['card']) ? (array) $payment_response['card'] : array();
         $card_number = $card['last_four_digits'];
-        $card_installments = $payment_response['installments'] ? $payment_response['installments'] : $data['cc_installments'];
-        $card_brand = $card['brand'] ? $card['brand'] : $data['cc_card_brand'];
+        $card_installments = $payment_response['installments'] || $data['cc_installments'];
+        $card_brand = $card['brand'] || $data['cc_card_brand'];
         $card_holder = $card['holder'];
 
         $meta_data = array(
-          __( 'Pagamento', 'integrai' ) => 'Cartão de Crédito',
-          __( 'Processado por', 'integrai' )     => sanitize_text_field($payment_response['module_name']),
-          __( 'Identificação da transação', 'integrai' )     => sanitize_text_field($payment_response['transaction_id']),
-          __( 'Data de pagamento', 'integrai' )     => sanitize_text_field($payment_response['date_approved']),
-          __( 'Número de Parcelas', 'integrai' )  => sanitize_text_field( $card_installments ),
-          __( 'Número do cartão', 'integrai' )  => sanitize_text_field( "**** **** **** $card_number" ),
-          __( 'Nome do titular', 'integrai' )  => sanitize_text_field( $card_holder ),
-          __( 'Bandeira', 'integrai' )  => sanitize_text_field( strtoupper( $card_brand ) ),
-          __( 'Documento', 'integrai' )           => sanitize_text_field( strtoupper( $data['cc_doc_type'] ) ),
-          __( 'Número do Documento', 'integrai' ) => sanitize_text_field( $data['cc_doc_number'] )
+          __( 'Pagamento', 'integrai' )                  => 'Cartão de Crédito',
+          __( 'Processado por', 'integrai' )             => sanitize_text_field($payment_response['module_name']),
+          __( 'Identificação da transação', 'integrai' ) => sanitize_text_field($payment_response['transaction_id']),
+          __( 'Data de pagamento', 'integrai' )          => sanitize_text_field($payment_response['date_approved']),
+          __( 'Número de Parcelas', 'integrai' )         => sanitize_text_field( $card_installments ),
+          __( 'Número do cartão', 'integrai' )           => sanitize_text_field( "**** **** **** $card_number" ),
+          __( 'Nome do titular', 'integrai' )            => sanitize_text_field( $card_holder ),
+          __( 'Bandeira', 'integrai' )                   => sanitize_text_field( strtoupper( $card_brand ) ),
+          __( 'Documento', 'integrai' )                  => sanitize_text_field( strtoupper( $data['cc_doc_type'] ) ),
+          __( 'Número do Documento', 'integrai' )        => sanitize_text_field( $data['cc_doc_number'] )
         );
 
         $this->get_helper()->get_template(
