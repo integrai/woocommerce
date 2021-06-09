@@ -3,77 +3,22 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       http://integrai.com.br
- * @since      1.0.0
- *
- * @package    Integrai
- * @subpackage Integrai/public
- */
-
-/**
- * The public-facing functionality of the plugin.
- *
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
  * @package    Integrai
  * @subpackage Integrai/public
- * @author     Your Name <contato@integrai.com.br>
+ * @author     Integrai <contato@integrai.com.br>
  */
+
 class Integrai_Public {
-
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $integrai    The ID of this plugin.
-	 */
 	private $integrai;
-
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
 	private $version;
 
 	private $api;
 	private $config;
 	private $events;
 
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param      string    $integrai       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
-	 */
-
-	// TO CHECK
-
-	/** NEWSLETTER_SUBSCRIBER: ***********************************
-	 * Não tem nativamente. Só via plugin.
-	 * Podemos procurar os hooks dos mais populares pra integrar.
-	 * Vale a pena?
-	 * Ou criar uma feature para fazer isso.
-	*************************************************************/
-	const NEWSLETTER_SUBSCRIBER = 'NEWSLETTER_SUBSCRIBER';
-
-	/** CUSTOMER_BIRTHDAY: ***********************************
-	 * WP e WC não oferecem esse campo nativamente.
-	 * Podemos adicionar via plugin, como uma user_meta e usar
-	 * para integrar o evento.
-	 * Vale a pena?
-	*************************************************************/
-	const CUSTOMER_BIRTHDAY = 'CUSTOMER_BIRTHDAY';
-
-
-	// EVENT OK
-
-	// DONE
 	const NEW_CUSTOMER = 'NEW_CUSTOMER';
 	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART';
 	const NEW_ORDER = 'NEW_ORDER';
@@ -85,12 +30,10 @@ class Integrai_Public {
 	const ABANDONED_CART_ITEM = 'ABANDONED_CART_ITEM';
 
 	public function __construct( $integrai, $version ) {
-
 		$this->integrai = $integrai;
 		$this->version = $version;
 
 		$this->load_dependencies();
-
 	}
 
 	private function try_serialize($list, $key) {
@@ -360,11 +303,6 @@ class Integrai_Public {
     }
   }
 
-	/**
-	 * Register the stylesheets for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
 	public function enqueue_styles() {
 
 		/**
@@ -383,11 +321,6 @@ class Integrai_Public {
 
 	}
 
-	/**
-	 * Register the JavaScript for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
 	public function enqueue_scripts() {
 
 		/**
@@ -439,7 +372,6 @@ class Integrai_Public {
 
 	}
 
-	// Filter on ADD_CART to add created_at
 	public function woocommerce_add_cart_item_data( $cart_item_data ) {
 		$cart_item_data['created_at'] = date('Y-m-d H:i:s', strtotime("now"));
 
@@ -555,8 +487,6 @@ class Integrai_Public {
 	}
 
 	public function integrai_cron_activation() {
-    Integrai_Helper::log('==> trigger crons');
-
 		if ( !wp_next_scheduled( 'integrai_cron_resend_events' ) ) {
 			wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_resend_events' );
 		}
@@ -568,10 +498,6 @@ class Integrai_Public {
 		if ( !wp_next_scheduled( 'integrai_cron_proccess_events' ) ) {
 		 	wp_schedule_event( time(), 'integrai_every_minute', 'integrai_cron_proccess_events' );
 		}
-
-		// if ( ! wp_next_scheduled( 'integrai_check_dob' ) ) {
-		// 	wp_schedule_event( time(), 'daily', 'integrai_check_dob' );
-		// }
 	}
 
 	public function integrai_cron_proccess_events() {
@@ -582,13 +508,8 @@ class Integrai_Public {
   }
 
 	public function integrai_cron_deactivation() {
-		// Resend Events
 		$events_timestamp = wp_next_scheduled( 'integrai_cron_resend_events' );
-		wp_unschedule_event ($events_timestamp, 'integrai_cron_resend_events');
-
-		// Check the date of birth
-		// $dob_timestamp = wp_next_scheduled( 'integrai_check_dob' );
-		// wp_unschedule_event ($dob_timestamp, 'integrai_check_dob');
+		wp_unschedule_event($events_timestamp, 'integrai_cron_resend_events');
 	}
 
 	// ABANDONED_CART
@@ -609,17 +530,14 @@ class Integrai_Public {
 				$sessionCart = $session['cart'];
 
 				if (  isset( $sessionCart ) && is_array($sessionCart) && count($sessionCart) > 0 ) {
-          // Verifica qual dos produtos do carrinho tem a data de criação mais antiga
           foreach ($sessionCart as $product) {
             $created_at = $product['created_at'];
 
-            // Pega a data mais antiga e considera a data da criação do carrinho
             if ($created_at < $cart_created) {
               $cart_created = $created_at;
             }
           }
 
-          // Se a data de criação for mais antiga que a data de corte, considera como abandadono
           if ($cart_created < $from_date) {
             // Cria o carrinho
             $date = new DateTime();
@@ -631,7 +549,6 @@ class Integrai_Public {
             $cart['products'] = array();
             $cart['total_items'] = 0;
 
-            // Cria os produtos e atualiza o count de quantidade
             foreach ($sessionCart as $cartItem) {
               if ( isset($cartItem['product_id']) ) {
                 $productItem = $this->get_product_by_id($cartItem['product_id']);

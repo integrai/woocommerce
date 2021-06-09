@@ -85,6 +85,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
         $payment        = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
 
+        Integrai_Helper::log($payment, '$payment: ');
+        Integrai_Helper::log($payment_method, '$payment_method: ');
+
         if ( $payment_method !== $this->id || !$payment )
           return true;
 
@@ -135,6 +138,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
             wc_add_notice( __( 'Número de ' . strtoupper($doc_type) . ' inválido', $this->id ), 'error' );
         }
 
+        Integrai_Helper::log('==> Validate OK');
+
         return true;
 
       } catch (Exception $e) {
@@ -166,6 +171,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         return false;
 
       global $woocommerce;
+
 
       $order = new WC_Order( $order_id );
       $order->update_status('on-hold', __( 'Integrai: Aguardando pagamento do boleto', 'woocommerce' ));

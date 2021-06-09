@@ -1,13 +1,6 @@
 <?php
 
 class Integrai_Validator {
-  /**
-   * Checks if the CPF is valid.
-   *
-   * @param  string $cpf CPF to validate.
-   *
-   * @return bool
-   */
   public static function cpf( $cpf ) {
     $cpf = preg_replace( '/[^0-9]/', '', $cpf );
 
@@ -31,13 +24,6 @@ class Integrai_Validator {
     return intval( $digit[9] ) === intval( $cpf[9] ) && intval( $digit[10] ) === intval( $cpf[10] );
   }
 
-  /**
-   * Checks if the CNPJ is valid.
-   *
-   * @param  string $cnpj CNPJ to validate.
-   *
-   * @return bool
-   */
   public static function cnpj( $cnpj ) {
     $cnpj = sprintf( '%014s', preg_replace( '{\D}', '', $cnpj ) );
 

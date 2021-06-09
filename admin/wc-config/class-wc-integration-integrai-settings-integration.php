@@ -5,11 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists('WC_Settings_API' )) {
-    require_once __FILE__ . 'wp-content/plugins/woocommerce/includes/abstracts/abstract-wc-settings-api.php';
+    require_once WP_PLUGIN_DIR . '/woocommerce/includes/abstracts/abstract-wc-settings-api.php';
 }
 
 if ( ! class_exists( 'WC_Integration' )) {
-    require_once __FILE__ . 'wp-content/plugins/woocommerce/includes/abstracts/abstract-wc-integration.php';
+    require_once WP_PLUGIN_DIR . '/woocommerce/includes/abstracts/abstract-wc-integration.php';
 }
 
 if ( ! class_exists( 'WC_Integration_Integrai_Settings_Integration' ) ) :

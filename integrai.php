@@ -23,20 +23,10 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       integrai
  * Domain Path:       /languages
- * WC requires at least: 3.0.0
- * WC tested up to:   4.8.0
+ * WC requires at least: 5.0.0
+ * WC tested up to:   5.7
  */
 
-/** GERAL
- * 1. Banco Dados [OK]
- * 2. Logs [OK]
- * 3. Requests com API [OK]
- * 4. Injeção de configs [OK]
- * 5. Retentativa (Backup) de Eventos
- * 6. Events
- * 7. Shipping (Verificar como o woocommerce chama)
- * 8. Checkout
- */
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
