@@ -150,7 +150,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function process_payment( $order_id ) {
-      $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
+      $payment_method = $this->get_helper()->get_sanitized('payment_method', $_POST);
 
       if ($payment_method != $this->id)
         return false;
@@ -186,7 +186,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function update_order_meta( $order_id ) {
-      $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
+      $payment_method = $this->get_helper()->get_sanitized('payment_method', $_POST);
       $payment_data   = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
 
       if ( $payment_method != $this->id || empty( $payment_data ) )
