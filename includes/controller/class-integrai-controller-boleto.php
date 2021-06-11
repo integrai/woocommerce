@@ -31,28 +31,36 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
       ) );
 
       $body = json_decode( wp_remote_retrieve_body( $response_boleto ) );
-      $url = isset($body) && isset($body->boletoUrl) ? $body->boletoUrl : '/' ;
+      $url = isset($body) && isset($body->boletoUrl) ? $body->boletoUrl : false;
 
-      $response = new WP_REST_Response( array( "ok" => true ));
-      $response->header( 'Content-type', 'application/json' );
-      $response->set_status( 201 );
+      Integrai_Helper::log($url, '$url: ');
 
-      wp_redirect( $url );
-      exit;
+      // Pq não redireciona quando eu dou um throw new error?
+      if (!$url) {
+        throw new Exception('Boleto não encontrado');
+      } else {
+        new WP_REST_Response(
+          array( "ok" => true ),
+          201,
+          array('Content-type', 'application/json'),
+        );
+
+        wp_redirect( $url );
+        exit;
+      }
 
     } catch (Exception $e) {
-
-      $response = new WP_REST_Response( array(
-        "ok" => false,
-        "error" => $e->getMessage()
-      ));
-
-      $response->header( 'Content-type', 'application/json' );
-      $response->set_status( 400 );
+      new WP_REST_Response(
+        array(
+          "ok" => false,
+          "error" => $e->getMessage()
+        ),
+        404,
+        array( 'Content-type', 'application/json' ),
+      );
 
       wp_redirect( '/' );
       exit;
-
     }
   }
 }

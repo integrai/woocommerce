@@ -82,17 +82,14 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
     public function validate_fields() {
       try {
-        $payment_method = $this->get_helper()->get_sanitized($_POST['payment_method']);
-        $payment        = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
-
-        Integrai_Helper::log($payment, '$payment: ');
-        Integrai_Helper::log($payment_method, '$payment_method: ');
+        $payment_method = $this->get_helper()->get_sanitized('payment_method', $_POST);
+        $payment = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
 
         if ( $payment_method !== $this->id || !$payment )
           return true;
 
-        $doc_type        = $payment['boleto_doc_type'];
-        $doc_number      = $payment['boleto_doc_number'];
+        $doc_type = $payment['boleto_doc_type'];
+        $doc_number = $payment['boleto_doc_number'];
 
         if( !$doc_number )
           wc_add_notice( __( 'Informe o número do documento (CPF / CNPJ)', $this->id ), 'error' );
@@ -138,8 +135,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
             wc_add_notice( __( 'Número de ' . strtoupper($doc_type) . ' inválido', $this->id ), 'error' );
         }
 
-        Integrai_Helper::log('==> Validate OK');
-
         return true;
 
       } catch (Exception $e) {
@@ -170,15 +165,12 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ($payment_method !== $this->id)
         return false;
 
-      global $woocommerce;
-
-
       $order = new WC_Order( $order_id );
       $order->update_status('on-hold', __( 'Integrai: Aguardando pagamento do boleto', 'woocommerce' ));
 
+      global $woocommerce;
       $woocommerce->cart->empty_cart();
 
-      // Return thankyou redirect
       return array(
         'result' => 'success',
         'redirect' => $this->get_return_url( $order )
@@ -201,14 +193,14 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
     public function update_order_meta( $order_id ) {
       $payment_method = $this->get_helper()->get_sanitized('payment_method', $_POST);
-      $payment_data   = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
+      $payment = $this->get_helper()->sanitize_fields($this->fields_list, $_POST['payment']);
 
-      if ( $payment_method != $this->id || empty( $payment_data ) )
+      if ( $payment_method != $this->id || empty( $payment ) )
         return;
 
-      $payment_data['payment_method'] = $payment_method;
+      $payment['payment_method'] = $payment_method;
 
-      $this->get_helper()->save_transaction_data( $order_id, $payment_data );
+      $this->get_helper()->save_transaction_data( $order_id, $payment );
     }
 
     public function display_admin_order_meta( $order ) {
@@ -228,11 +220,11 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         && isset($data['boleto_doc_number'])
       ) {
         $meta_data = array(
-          __('Pagamento', 'integrai')           => 'Boleto',
-          __('Processado por', 'integrai' )     => sanitize_text_field($payment_response['module_name']),
-          __('Identificação da transação', 'integrai' )     => sanitize_text_field($payment_response['transaction_id']),
-          __('Data de pagamento', 'integrai' )     => sanitize_text_field($payment_response['date_approved']),
-          __('Documento', 'integrai')           => sanitize_text_field(strtoupper($data['boleto_doc_type'])),
+          __('Pagamento', 'integrai') => 'Boleto',
+          __('Processado por', 'integrai' ) => sanitize_text_field($payment_response['module_name']),
+          __('Identificação da transação', 'integrai' ) => sanitize_text_field($payment_response['transaction_id']),
+          __('Data de pagamento', 'integrai' ) => sanitize_text_field($payment_response['date_approved']),
+          __('Documento', 'integrai') => sanitize_text_field(strtoupper($data['boleto_doc_type'])),
           __('Número do Documento', 'integrai') => sanitize_text_field($data['boleto_doc_number']),
         );
 
@@ -247,7 +239,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
-      if ( $sent_to_admin || ! in_array( $order->get_status(), array( 'processing', 'on-hold' ), true ) || $this->id !== $order->get_payment_method() ) {
+      $shouldReceiveInstructions = in_array( $order->get_status(), array( 'processing', 'on-hold' ), true );
+
+      if ($sent_to_admin || !$shouldReceiveInstructions || $this->id !== $order->get_payment_method()) {
         return;
       }
 

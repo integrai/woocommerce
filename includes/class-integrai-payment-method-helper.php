@@ -22,8 +22,7 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
       );
     }
 
-    public function get_person_type( $person_type ): string
-    {
+    public function get_person_type( $person_type ): string {
       if ( !isset($person_type) || empty($person_type) ) {
         return 'cpf';
       }

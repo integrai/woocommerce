@@ -155,16 +155,12 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ($payment_method != $this->id)
         return false;
 
-      global $woocommerce;
       $order = wc_get_order( $order_id );
-
-      // Mark as on-hold (we're awaiting the cheque)
       $order->update_status('on-hold', __( 'Integrai: Transação sendo processada', 'integrai' ));
 
-      // Remove cart
+      global $woocommerce;
       $woocommerce->cart->empty_cart();
 
-      // Return thank you redirect
       return array(
         'result' => 'success',
         'redirect' => $this->get_return_url( $order )
@@ -194,7 +190,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
       $payment_data['payment_method'] = $payment_method;
 
-      // Save data on order
       $this->get_helper()->save_transaction_data( $order_id, $payment_data );
     }
 
@@ -244,7 +239,9 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
     }
 
     public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
-      if ( $sent_to_admin || ! in_array( $order->get_status(), array( 'processing', 'on-hold' ), true ) || $this->id !== $order->get_payment_method() ) {
+      $shouldReceiveInstructions = in_array( $order->get_status(), array( 'processing', 'on-hold' ), true );
+
+      if ($sent_to_admin || !$shouldReceiveInstructions || $this->id !== $order->get_payment_method()) {
         return;
       }
 
