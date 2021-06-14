@@ -1,5 +1,4 @@
 <?php
-
 include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-api.php';
 include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
 include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.php';
@@ -22,7 +21,7 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
   public function get_items( $request ) {
     try {
       $orderId = isset($_GET['orderId']) ? sanitize_text_field( strval( trim($_GET['orderId']) ) ) : '';
-      $isDuplicate = isset($_GET['orderId']) ? sanitize_text_field( strval( trim($_GET['isDuplicate']) ) ) : 'false';
+      $isDuplicate = isset($_GET['isDuplicate']) ? sanitize_text_field( strval( trim($_GET['isDuplicate']) ) ) : 'false';
 
       $api = new Integrai_API();
       $response_boleto = $api->request( '/store/boleto', 'GET', null, array(
