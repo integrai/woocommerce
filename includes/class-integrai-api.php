@@ -37,7 +37,6 @@ class Integrai_API {
   }
 
   public function request($endpoint, $method = 'GET', $body = array(), $params = array()) {
-
     try {
       $body = json_encode($body);
     } catch (Exception $e) {
@@ -46,7 +45,7 @@ class Integrai_API {
 
     $url = $this->api_url . $endpoint;
 
-    if (isset($params) && is_array($params) && count($params) > 0) {
+    if (isset($params) && is_array($params) && count($params) > 0 && !is_string($params)) {
       $url = $url . '?' . http_build_query($params);
     }
 
@@ -93,28 +92,20 @@ class Integrai_API {
   public function send_event( $event_name, $payload, $resend = false ) {
 
     try {
-      $response = $this->request('/store/event/woocommerce', 'POST', array(
+      return $this->request('/store/event/woocommerce', 'POST', array(
         'event' => $event_name,
         'payload' => $payload,
       ));
-
-      Integrai_Helper::log(json_encode($payload), "==> $event_name: ");
-
-      return $response;
-
     } catch (Exception $e) {
-
-      if(!$resend) {
+      if (!$resend) {
         $this->_backup_event($event_name, $payload);
       } else {
         throw new Exception($e);
       }
-
     }
   }
 
   private function _backup_event( $event_name, $payload ) {
-
     $data = array(
       'event' => $event_name,
       'payload' => json_encode($payload),
