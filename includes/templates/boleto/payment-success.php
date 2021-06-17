@@ -8,56 +8,70 @@
 
 <?php
 
-function printData($data) {
-  is_array($data) ? print_r($data) : print($data);
-  echo '<br/>';
-}
-
-function loopMap($key, $value) {
-  $htmlFields = array( 'message', 'afterMessage', 'beforeMessage' );
-
-  return in_array($key, $htmlFields)
-    ? esc_html($value)
-    : sanitize_text_field($value);
-
-}
-
 function sanitizeFields($fields) {
-    $keys = array_keys($fields);
+    $newFields = array();
 
-    return array_map('loopMap', $fields, $keys);
+    foreach ($fields as $key => $value) {
+      $newFields[$key] = !empty($value)
+        ? esc_html( sanitize_text_field( $value ) )
+        : '';
+    }
+
+    return $newFields;
 }
 
 function sanitizeScripts($scripts) {
-    return json_encode(
-      array_map('sanitize_text_field', $scripts)
-    );
+    $newFields = array();
+
+    foreach ($scripts as $item) {
+      array_push($newFields, esc_url( sanitize_text_field($item) ));
+    }
+
+    return $newFields;
 }
 
 function sanitizePageOptions($options) {
-    $scripts = $options['scripts'];
+  if (isset($options)) {
+    $result = [];
 
+    $scripts = $options['scripts'];
     $pageOptions = $options['pageOptions'];
 
     $boleto = $pageOptions['boleto'];
     $creditcard = $pageOptions['creditcard'];
 
-    return json_encode(
-      array(
-        'scripts' => sanitizeScripts($scripts),
-        'boleto' => sanitizeFields($boleto),
-        'creditcard' => sanitizeFields($creditcard),
-      )
-    );
+    $result['scripts'] = isset($scripts) ? sanitizeScripts($scripts) : array();
+    $result['boleto'] = isset($boleto) ? sanitizeFields($boleto) : array();
+    $result['creditcard'] = isset($creditcard) ? sanitizeFields($creditcard) : array();
+
+    try {
+      return json_encode($result);
+    } catch (Exception $e) {
+      Integrai_Helper::log( $e->getMessage() );
+    }
+  }
+}
+
+function sanitizeOrder($order) {
+  try {
+    return json_encode( sanitizeFields($order) );
+  } catch (Exception $e) {
+    Integrai_Helper::log( $e->getMessage() );
+  }
 }
 
 ?>
 
 <script>
-    const integraiSuccessData = JSON.parse('<?php echo sanitizePageOptions( $options ) ?>');
+    function getJson(json) {
+        return JSON.parse(JSON.stringify( json ));
+    }
+
+    const integraiSuccessData = getJson( <?php echo sanitizePageOptions( $options ) ?> );
+    const order = getJson(<?php echo sanitizeOrder( $order ) ?>);
 
     window.IntegraiSuccess = Object.assign({}, integraiSuccessData.pageOptions, {
-        order: JSON.parse('<?php echo sanitizeFields( $order ) ?>'),
+        order: order,
     });
 
     integraiSuccessData.scripts.forEach(function (script) {
