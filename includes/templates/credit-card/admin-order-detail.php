@@ -6,7 +6,7 @@
     <p>
       <?php
           foreach ($data as $key => $value) {
-            echo '<strong>' . $key . ':</strong> ' . $value . '<br />';
+            echo '<strong>' . esc_html($key) . ':</strong> ' . esc_html($value) . '<br />';
           }
       ?>
     </p>
