@@ -6,7 +6,7 @@
   <p>
     <?php
       foreach ($data as $key => $value) {
-        echo '<strong>' . $key . ':</strong> ' . $value . '<br />';
+        echo '<strong>' . esc_html($key) . ':</strong> ' . esc_html($value) . '<br />';
       }
     ?>
 
@@ -15,7 +15,7 @@
       id="integrai_printBoleto"
       target="_blank"
       title="<?php __( 'Acessar boleto' ) ?>"
-      href="<?php echo ($boleto_url || '') ?>">
+      href="<?php echo esc_url($boleto_url || '') ?>">
       <?php echo __( ' Imprimir boleto ' ) ?>
     </a>
   </p>
