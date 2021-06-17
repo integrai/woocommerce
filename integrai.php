@@ -16,7 +16,7 @@
  * Plugin Name:       Integrai
  * Plugin URI:        https://github.com/integrai/woocommerce
  * Description:       Integração com os principais meios de pagamento e cálculo de frete para a sua plataforma de e-commerce WP WooCommerce.
- * Version:           1.0.4
+ * Version:           1.0.5
  * Author:            Integrai
  * Author URI:        https://integrai.com.br
  * License:           GPL-2.0+
@@ -38,7 +38,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-if ( ! defined( 'INTEGRAI__PLUGIN_DIR' ) ) define( 'INTEGRAI_VERSION', '1.0.4' );
+if ( ! defined( 'INTEGRAI__PLUGIN_DIR' ) ) define( 'INTEGRAI_VERSION', '1.0.5' );
 if ( ! defined( 'INTEGRAI__PLUGIN_DIR' ) ) define( 'INTEGRAI__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 /**

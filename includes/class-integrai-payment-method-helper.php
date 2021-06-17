@@ -80,6 +80,8 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
     public function save_transaction_data( $order_id, $payment_data = array() ) {
       $transformed_data = $this->transform_transaction_data( $payment_data );
 
+      Integrai_Helper::log($transformed_data, '==> Saving $transformed_data: ');
+
       return update_post_meta( $order_id, $this->meta_transaction_key, $transformed_data );
     }
 
