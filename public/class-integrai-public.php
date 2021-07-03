@@ -19,7 +19,7 @@ class Integrai_Public {
 	private $config;
 	private $events;
 
-	const NEW_CUSTOMER = 'NEW_CUSTOMER';
+	const SAVE_CUSTOMER = 'SAVE_CUSTOMER';
 	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART';
 	const NEW_ORDER = 'NEW_ORDER';
 	const NEW_ORDER_ITEM = 'NEW_ORDER_ITEM';
@@ -359,17 +359,16 @@ class Integrai_Public {
 
 	/** EVENTS */
 
-	// NEW_CUSTOMER
+	// SAVE_CUSTOMER
 	public function woocommerce_created_customer( $customer_id, $new_customer_data = null, $password_generated = null ) {
 
-		if ( isset($customer_id) && $this->get_config_helper()->event_is_enabled(self::NEW_CUSTOMER) ) {
-
+		if ( isset($customer_id) && $this->get_config_helper()->event_is_enabled(self::SAVE_CUSTOMER) ) {
 			$customer = $this->get_customer( $customer_id );
 
 			return $this->get_api_helper()->send_event(self::NEW_CUSTOMER, $customer);
 
+			return $this->get_api_helper()->send_event(self::SAVE_CUSTOMER, $customer);
 		}
-
 	}
 
 	public function woocommerce_add_cart_item_data( $cart_item_data ) {
@@ -539,7 +538,6 @@ class Integrai_Public {
           }
 
           if ($cart_created < $from_date) {
-            // Cria o carrinho
             $date = new DateTime();
             $cart['cart_id'] = $date->getTimestamp();
             $cart['created_at'] = $cart_created;
