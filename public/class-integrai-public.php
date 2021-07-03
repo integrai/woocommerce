@@ -539,6 +539,7 @@ class Integrai_Public {
 
           if ($cart_created < $from_date) {
             $date = new DateTime();
+
             $cart['cart_id'] = $date->getTimestamp();
             $cart['created_at'] = $cart_created;
             $cart['customer'] = $session['customer'];
@@ -558,17 +559,15 @@ class Integrai_Public {
                 $cart['total_items'] = $cart['total_items'] + $cartItem['quantity'];
 
                 array_push($cart['products'], $productItem);
+
+                if ( $isEnabledCartItem ) {
+                  $this->get_api_helper()->send_event(self::ABANDONED_CART_ITEM, $productItem);
+                }
               }
             }
 
-            if (!empty($cart)) {
-              $response = $this->get_api_helper()->send_event(self::ABANDONED_CART, $cart);
-
-              if ( $isEnabledCartItem && !empty($response) ) {
-                foreach ($cart['products'] as $product) {
-                  $this->get_api_helper()->send_event(self::ABANDONED_CART_ITEM, $product);
-                }
-              }
+            if ( !empty($cart) ) {
+              $this->get_api_helper()->send_event(self::ABANDONED_CART, $cart);
             }
           }
         }
