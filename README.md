@@ -32,5 +32,6 @@ composer require integrai/woocommerce
 ## Configuração
 1. Acesse o painel administrativo da sua loja
 2. Vá em `Woocommerce > Configurações > Integrações > Integrai`
-3. Informe sua **API Key** e sua **Secret Key**, que são informadas [aqui](https://manage.integrai.com.br/settings/account)
+3. Informe sua **API Key** e sua **Secret Key** que podem ser encontradas [aqui](https://manage.integrai.com.br/settings/account)
+   na sua conta Integrai
 4. Salve as configurações
