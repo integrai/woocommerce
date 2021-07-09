@@ -37,10 +37,12 @@ class Integrai_Model_Helper {
     return $this->wpdb->insert($this->table, $data);
   }
 
-  public function insert_or_update($name = '', $data = array(), $where = array()) {
+  public function insert_or_update($name = '', $data = array(), $where = array(), $parseJson = true) {
     if ( !isset($name) || !isset($data) ) return false;
 
-    if ( is_null( $this->get_by_name($name) ) ) {
+      Integrai_Helper::log( $this->get_by_name($name, $parseJson) , 'insert_or_update get_by_name');
+
+    if ( is_null( $this->get_by_name($name, $parseJson) ) ) {
       return $this->insert( $data );
     } else {
       return $this->update( $data, $where );
@@ -85,12 +87,14 @@ class Integrai_Model_Helper {
     return $this->get('', true);
   }
 
-  public function get_by_name($name) {
+  public function get_by_name($name, $parseJson = true) {
     $lower_name = strtolower( $name );
     $raw_data = $this->get("WHERE name = '$lower_name'");
 
     try {
-      return json_decode( $raw_data->values, 2 );
+      return $parseJson ? json_decode( $raw_data->values, 2 ) : $raw_data->values;
+    } catch (Throwable $e) {
+      Integrai_Helper::log( $e->getMessage() );
     } catch (Exception $e) {
       Integrai_Helper::log( $e->getMessage() );
     }
@@ -104,6 +108,8 @@ class Integrai_Model_Helper {
   ) {
     try {
       $this->wpdb->update($this->table, $data, $where, $format, $where_format);
+    } catch (Throwable $e) {
+      Integrai_Helper::log( $e->getMessage() );
     } catch (Exception $e) {
       Integrai_Helper::log( $e->getMessage() );
     }

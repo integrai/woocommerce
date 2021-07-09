@@ -46,6 +46,8 @@ function sanitizePageOptions($options) {
 
     try {
       return json_encode($result);
+    } catch (Throwable $e) {
+      Integrai_Helper::log( $e->getMessage() );
     } catch (Exception $e) {
       Integrai_Helper::log( $e->getMessage() );
     }
@@ -55,6 +57,8 @@ function sanitizePageOptions($options) {
 function sanitizeOrder($order) {
   try {
     return json_encode( sanitizeFields($order) );
+  } catch (Throwable $e) {
+    Integrai_Helper::log( $e->getMessage() );
   } catch (Exception $e) {
     Integrai_Helper::log( $e->getMessage() );
   }

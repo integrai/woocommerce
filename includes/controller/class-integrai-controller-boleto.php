@@ -37,17 +37,23 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
         200,
         array('Content-type', 'application/json'),
       );
+    } catch (Throwable $e) {
+      return $this->error_handling($e);
     } catch (Exception $e) {
-      Integrai_Helper::log($e->getMessage(), 'Error ao buscar boleto');
-
-      return new WP_REST_Response(
-        array(
-          "boletoUrl" => null,
-          "error" => $e->getMessage()
-        ),
-        404,
-        array( 'Content-type', 'application/json' ),
-      );
+      return $this->error_handling($e);
     }
   }
+
+    private function error_handling($e) {
+        Integrai_Helper::log($e->getMessage(), 'Error ao buscar boleto');
+
+        return new WP_REST_Response(
+            array(
+                "boletoUrl" => null,
+                "error" => $e->getMessage()
+            ),
+            404,
+            array( 'Content-type', 'application/json' ),
+      );
+    }
 }

@@ -19,7 +19,14 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     if ( !isset( $name ) || !isset( $value ) ) return false;
 
     try {
-      $this->insert_or_update($name, $value);
+        $this->insert_or_update(
+            $name,
+            array( "values" => $value ),
+            array( "name" => $name ),
+            false
+        );
+    } catch (Throwable $e) {
+       Integrai_Helper::log($e->getMessage(), 'Erro ao atualizar configurações: ');
     } catch (Exception $e) {
       Integrai_Helper::log($e->getMessage(), 'Erro ao atualizar configurações: ');
     }
@@ -39,6 +46,8 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
             array( 'name' => $name, 'values' => $values ),
             array( 'name' => $name ),
           );
+        } catch (Throwable $e) {
+            Integrai_Helper::log($e->getMessage(), 'Erro ao atualizar configurações: ');
         } catch (Exception $e) {
           Integrai_Helper::log($e->getMessage(), 'Erro ao atualizar configurações: ');
         }
@@ -118,11 +127,10 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return $configs['apiTimeoutSeconds'] ? $configs['apiTimeoutSeconds'] : false;
   }
 
-  public function get_global_config( $name ) {
+  public function get_global_config( $name, $defaultValue = null ) {
     $configs = $this->get_global();
-    Integrai_Helper::log($configs, '==> $configs: ');
 
-    return isset($configs) && $configs[$name] ? $configs[$name] : false;
+    return isset($configs) && $configs[$name] ? $configs[$name] : $defaultValue;
   }
 
   public function get_minutes_abandoned_cart_lifetime() {

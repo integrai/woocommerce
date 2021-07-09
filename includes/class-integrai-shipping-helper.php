@@ -68,6 +68,8 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
           return $this->transform_response($response);
 
+        } catch(Throwable $e) {
+          Integrai_Helper::log($e, 'QUOTE :: ERROR: ');
         } catch(Exception $e) {
           Integrai_Helper::log($e, 'QUOTE :: ERROR: ');
         }
