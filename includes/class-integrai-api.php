@@ -39,6 +39,8 @@ class Integrai_API {
   public function request($endpoint, $method = 'GET', $body = array(), $params = array()) {
     try {
       $body = json_encode($body);
+    } catch (Throwable $e) {
+      Integrai_Helper::log($e->getMessage(), 'Error ao transformar em JSON no request');
     } catch (Exception $e) {
       Integrai_Helper::log($e->getMessage(), 'Error ao transformar em JSON no request');
     }
@@ -96,13 +98,19 @@ class Integrai_API {
         'event' => $event_name,
         'payload' => $payload,
       ));
+    } catch (Throwable $e) {
+      $this->error_handling($e, $resend, $event_name, $payload);
     } catch (Exception $e) {
-      if (!$resend) {
-        $this->_backup_event($event_name, $payload);
-      } else {
-        throw new Exception($e);
-      }
+      $this->error_handling($e, $resend, $event_name, $payload);
     }
+  }
+
+  private function error_handling($e, $resend, $event_name, $payload) {
+      if (!$resend) {
+          $this->_backup_event($event_name, $payload);
+      } else {
+          throw new Exception($e);
+      }
   }
 
   private function _backup_event( $event_name, $payload ) {

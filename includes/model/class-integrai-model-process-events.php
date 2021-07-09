@@ -69,6 +69,9 @@ class Integrai_Model_Process_Events extends Integrai_Model_Helper {
       }
 
       return true;
+    } catch (Throwable $e) {
+      Integrai_Helper::log($e->getMessage(), 'Error ao salvar eventos: ');
+      return false;
     } catch (Exception $e) {
       Integrai_Helper::log($e->getMessage(), 'Error ao salvar eventos: ');
       return false;

@@ -591,6 +591,8 @@ class Integrai_Public {
 					$this->get_api_helper()->send_event($event_name, $payload);
 					$this->get_events_helper()->delete_by_id( $event_id );
 
+				} catch (Throwable $e) {
+					Integrai_helper::log('Error ao reenviar o evento', $event_name);
 				} catch (Exception $e) {
 					Integrai_helper::log('Error ao reenviar o evento', $event_name);
 				}

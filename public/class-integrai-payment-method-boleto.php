@@ -137,6 +137,11 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
         return true;
 
+      } catch (Throwable $e) {
+        Integrai_Helper::log($e->getMessage(), 'Error ao validar campos no checkout de boleto');
+        wc_add_notice( __( 'Ocorreu um erro ao validar os campos do formulário. Recarregue a página e tente novamente.', $this->id ), 'error' );
+
+        return false;
       } catch (Exception $e) {
         Integrai_Helper::log($e->getMessage(), 'Error ao validar campos no checkout de boleto');
         wc_add_notice( __( 'Ocorreu um erro ao validar os campos do formulário. Recarregue a página e tente novamente.', $this->id ), 'error' );

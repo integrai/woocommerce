@@ -19,14 +19,12 @@ class Integrai_Cron_Process_Events {
     if ($this->get_config_helper()->is_enabled()) {
       $this->log('Iniciando processamento dos eventos...');
 
-      $limit = $this->get_config_helper()->get_global_config('processEventsLimit') || 50;
-      $isRunning = $this->get_config_helper()->get_by_name('PROCESS_EVENTS_RUNNING') || 'NOT_RUNNING';
+      $limit = $this->get_config_helper()->get_global_config('processEventsLimit', 50);
+      $isRunning = $this->get_config_helper()->get_by_name('PROCESS_EVENTS_RUNNING', false);
 
       if ($isRunning === 'RUNNING') {
         $this->log('Já existe um processo rodando');
       } else {
-        global $woocommerce;
-
         $this->get_config_helper()->update_config('PROCESS_EVENTS_RUNNING', 'RUNNING');
 
         $ProcessEventsModel = new Integrai_Model_Process_Events();
@@ -65,16 +63,10 @@ class Integrai_Cron_Process_Events {
             }
 
             array_push($success, $eventId);
+          } catch (Throwable $e) {
+              $this->error_handling($e, $event, $eventId, $errors);
           } catch (Exception $e) {
-            $this->log($e->getMessage(), 'Erro');
-            $this->log($event, 'Erro ao processar o evento');
-
-            if ($eventId) {
-              array_push($errors, array(
-                "eventId" => $eventId,
-                "error" => $e->getMessage()
-              ));
-            }
+              $this->error_handling($e, $event, $eventId, $errors);
           }
         }
 
@@ -97,6 +89,18 @@ class Integrai_Cron_Process_Events {
         $this->get_config_helper()->update_config('PROCESS_EVENTS_RUNNING', 'NOT_RUNNING');
       }
     }
+  }
+
+  private function error_handling($e, $event, $eventId, $errors) {
+      $this->log($e->getMessage(), 'Erro');
+      $this->log($event, 'Erro ao processar o evento');
+
+      if ($eventId) {
+          array_push($errors, array(
+              "eventId" => $eventId,
+              "error" => $e->getMessage()
+          ));
+      }
   }
 
   private function get_other_model($modelName) {
@@ -140,6 +144,8 @@ class Integrai_Cron_Process_Events {
 
               try {
                   $result = call_user_func_array(array($model, $methodName), $methodArgs);
+              } catch (Throwable $e) {
+                  $this->log($e->getMessage(), 'err');
               } catch (Exception $e) {
                   $this->log($e->getMessage(), 'err');
               }

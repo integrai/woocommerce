@@ -48,18 +48,24 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
         exit;
       }
 
+    } catch (Throwable $e) {
+        $this->error_handling($e);
     } catch (Exception $e) {
+      $this->error_handling($e);
+    }
+  }
+
+  private function error_handling($e) {
       new WP_REST_Response(
-        array(
-          "ok" => false,
-          "error" => $e->getMessage()
-        ),
-        404,
-        array( 'Content-type', 'application/json' ),
+          array(
+              "ok" => false,
+              "error" => $e->getMessage()
+          ),
+          404,
+          array( 'Content-type', 'application/json' ),
       );
 
       wp_redirect( '/' );
       exit;
-    }
   }
 }
