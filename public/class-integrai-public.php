@@ -258,6 +258,28 @@ class Integrai_Public {
       return array();
     }
 
+    if ($data['payment_method'] === 'integrai_pix') {
+      $transformed_data = array(
+        'doc_type'        => $data['pix_doc_type'],
+        'doc_number'      => $data['pix_doc_number'],
+        'first_name'      => $data['pix_first_name'],
+        'last_name'       => $data['pix_last_name'],
+        'company_name'    => $data['pix_company_name'],
+        'address_zipcode' => $data['pix_address_zipcode'],
+        'address_street'  => $data['pix_address_street'],
+        'address_number'  => $data['pix_address_number'],
+        'address_city'    => $data['pix_address_city'],
+        'address_state'   => $data['pix_address_state'],
+      );
+
+      if ( $raw ) {
+        $transformed_data['payment_method'] = $data['payment_method'];
+        return $transformed_data;
+      }
+
+      return array( 'pix' => $transformed_data );
+    }
+
     if ($data['payment_method'] === 'integrai_boleto') {
       $transformed_data = array(
         'doc_type'        => $data['boleto_doc_type'],
@@ -342,6 +364,7 @@ class Integrai_Public {
 	public function rest_api_init() {
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-config.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-boleto.php';
+    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-pix.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-events.php';
 
     // CONFIG
@@ -355,6 +378,10 @@ class Integrai_Public {
     // BOLETO
     $integrai_boleto_controller = new Integrai_Boleto_Controller();
     $integrai_boleto_controller->register_routes();
+
+    // PIX
+    $integrai_pix_controller = new Integrai_Pix_Controller();
+        $integrai_pix_controller->register_routes();
 	}
 
 	/** EVENTS */
@@ -613,14 +640,19 @@ class Integrai_Public {
 	/** CHECKOUT */
 	// PAYMENT METHODS
 	public function woocommerce_payment_gateways($methods) {
-    if ( ! class_exists( 'Integrai_Payment_Method_Boleto' ) ) :
-      include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-boleto.php';
-    endif;
+        if ( ! class_exists( 'Integrai_Payment_Method_Pix' ) ) :
+          include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-pix.php';
+        endif;
 
-    if ( ! class_exists( 'Integrai_Payment_Method_Credit_Card' ) ) :
-      include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-credit-card.php';
-    endif;
+        if ( ! class_exists( 'Integrai_Payment_Method_Boleto' ) ) :
+          include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-boleto.php';
+        endif;
 
+        if ( ! class_exists( 'Integrai_Payment_Method_Credit_Card' ) ) :
+          include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-credit-card.php';
+        endif;
+
+		$methods[] = 'Integrai_Payment_Method_Pix';
 		$methods[] = 'Integrai_Payment_Method_Boleto';
 		$methods[] = 'Integrai_Payment_Method_Credit_Card';
 

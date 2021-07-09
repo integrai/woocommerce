@@ -147,6 +147,10 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
     return $this->get_by_name('payment_success');
   }
 
+  public function get_payment_pix() {
+    return $this->get_by_name('payment_pix');
+  }
+
   public function get_payment_boleto() {
     return $this->get_by_name('payment_boleto');
   }
@@ -174,6 +178,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         'SHIPPING',
         'PAYMENT_CREDITCARD',
         'PAYMENT_BOLETO',
+        'PAYMENT_PIX',
         'EVENTS_ENABLED',
         'SCRIPTS',
       );

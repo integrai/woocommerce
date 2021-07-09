@@ -3,10 +3,10 @@ include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-api.php';
 include_once INTEGRAI__PLUGIN_DIR . 'includes/class-integrai-helpers.php';
 include_once INTEGRAI__PLUGIN_DIR . 'includes/model/class-integrai-model-config.php';
 
-class Integrai_Boleto_Controller extends WP_REST_Controller {
+class Integrai_Pix_Controller extends WP_REST_Controller {
 
   protected $namespace = 'integrai';
-  protected $path = 'boleto';
+  protected $path = 'pix';
 
   public function register_routes() {
     register_rest_route( $this->namespace, '/' . $this->path, [
@@ -21,14 +21,12 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
   public function get_items( $request ) {
     try {
       $orderId = isset($_GET['orderId']) ? sanitize_text_field( strval( trim($_GET['orderId']) ) ) : '';
-      $isDuplicate = isset($_GET['isDuplicate']) ? sanitize_text_field( strval( trim($_GET['isDuplicate']) ) ) : 'false';
 
-      Integrai_Helper::log($orderId, 'Buscando boleto url do pedido: ');
+      Integrai_Helper::log($orderId, 'Buscando pix url do pedido: ');
 
       $api = new Integrai_API();
-      $response = $api->request( '/store/boleto', 'GET', null, array(
+      $response = $api->request( '/store/pix', 'GET', null, array(
         'orderId'     => $orderId,
-        'IsDuplicate' => $isDuplicate,
       ));
       $body = json_decode( $response['body'], true );
 
@@ -38,11 +36,12 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
         array('Content-type', 'application/json'),
       );
     } catch (Exception $e) {
-      Integrai_Helper::log($e->getMessage(), 'Error ao buscar boleto');
+      Integrai_Helper::log($e->getMessage(), 'Error ao buscar pix');
 
       return new WP_REST_Response(
         array(
-          "boletoUrl" => null,
+          "qrCode" => null,
+          "qrCodeBase64" => null,
           "error" => $e->getMessage()
         ),
         404,
