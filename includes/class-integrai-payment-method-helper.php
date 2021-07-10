@@ -19,6 +19,7 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
         "order_link_detail"   => $order->get_view_order_url(),
         "store_url"           => get_home_url(),
         "boleto_url"          => $this->get_boleto_url( $order->get_order_number() ),
+        "pix_url"          => $this->get_pix_url( $order->get_order_number() ),
       );
     }
 
@@ -111,6 +112,15 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
       return get_rest_url(
         null,
         'integrai/boleto' . $query_concat_params . 'orderId=' . $order_number . '&isDuplicate=' . $is_duplicated_str,
+      );
+    }
+
+    public function get_pix_url( $order_number ) {
+      $query_concat_params = $this->rest_is_pretty_link() ? '?' : '&';
+
+      return get_rest_url(
+        null,
+        'integrai/pix' . $query_concat_params . 'orderId=' . $order_number,
       );
     }
 
