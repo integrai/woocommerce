@@ -21,7 +21,11 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
         'cc_doc_number',
         'cc_birth_date',
         'cc_installments',
+        'cc_installment_amount',
+        'cc_installment_total_amount',
         'cc_card_hashs',
+        'cc_card_brands',
+        'cc_card_brand',
       );
 
       $this->init();
@@ -222,8 +226,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
 
         $card = isset($payment_response['card']) ? (array) $payment_response['card'] : array();
         $card_number = $card['last_four_digits'];
-        $card_installments = $payment_response['installments'] || $data['cc_installments'];
-        $card_brand = $card['brand'] || $data['cc_card_brand'];
+        $card_installments = isset($payment_response['installments']) ? $payment_response['installments'] : $data['cc_installments'];
+        $card_brand = isset($card['brand']) ? $card['brand'] : $data['cc_card_brand'];
         $card_holder = $card['holder'];
 
         $meta_data = array(

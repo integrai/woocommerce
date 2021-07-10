@@ -119,6 +119,10 @@ if (! class_exists( 'Integrai_Payment_Method_Helper' )) {
         return false;
       }
 
+      if (is_array($object[$fieldName])) {
+        return $object[$fieldName];
+      }
+
       return sanitize_text_field( $object[$fieldName] );
     }
 
