@@ -34,7 +34,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $this->init_settings();
 
       // Define user set variables.
-      $this->enabled      = $this->get_option( 'enabled' );
+      $this->enabled      = $this->is_enabled();
       $this->title        = $this->get_option( 'title' );
       $this->description  = $this->get_option( 'description' );
 
@@ -51,6 +51,16 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
       add_action( 'woocommerce_email_after_order_table', array( $this, 'email_instructions' ), 10, 3 );
 
+    }
+
+    private function is_enabled() {
+      $configHelper = new Integrai_Model_Config();
+      $options  = $configHelper->get_payment_pix();
+
+      $formOptions = isset($options) && isset($options['formOptions']) ? $options['formOptions'] : array();
+      $gateways = isset($formOptions) && is_array($formOptions) ? $formOptions['gateways'] : array();
+
+      return $configHelper->event_is_enabled('NEW_ORDER') && count($gateways) > 0 ? 'yes' : 'no';
     }
 
     public function init_form_fields() {

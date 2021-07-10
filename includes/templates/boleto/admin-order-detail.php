@@ -15,7 +15,7 @@
       id="integrai_printBoleto"
       target="_blank"
       title="<?php __( 'Acessar boleto' ) ?>"
-      href="<?php echo esc_url($boleto_url || '') ?>">
+      href="<?php echo esc_url($boleto_url) ?>">
       <?php echo __( ' Imprimir boleto ' ) ?>
     </a>
   </p>
