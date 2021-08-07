@@ -215,6 +215,17 @@ class Integrai_Public {
     );
   }
 
+  private function get_product_categories ( $product_id ) {
+    $product_categories = array();
+    $categories = get_the_terms( $product_id, 'product_cat' );
+
+    foreach ( $categories as $category ) {
+      array_push($product_categories, $category->to_array());
+    }
+
+    return $product_categories;
+  }
+
   private function get_items( $order_id ) {
     $order = wc_get_order( $order_id );
     $products = array();
@@ -223,13 +234,14 @@ class Integrai_Public {
       $product = new WC_Product( $item->get_product_id() );
 
       array_push($products, array(
-        'id' => $item->get_id(),
+        'id' => $item->get_product_id(),
         'sku' => $product->get_sku(),
         'name' => $product->get_name(),
         'description' => $product->get_description(),
         'qty' => $item->get_quantity(),
         'price' => $order->get_line_total( $item, true, false ),
         'weight' => $product->get_weight(),
+        'categories' => $this->get_product_categories( $item->get_product_id() ),
       ));
     }
 
@@ -392,8 +404,6 @@ class Integrai_Public {
 		if ( isset($customer_id) && $this->get_config_helper()->event_is_enabled(self::SAVE_CUSTOMER) ) {
 			$customer = $this->get_customer( $customer_id );
 
-			return $this->get_api_helper()->send_event(self::NEW_CUSTOMER, $customer);
-
 			return $this->get_api_helper()->send_event(self::SAVE_CUSTOMER, $customer);
 		}
 	}
@@ -446,9 +456,8 @@ class Integrai_Public {
 
     if ( isset($order) && $order_enabled ) {
       $full_order = $this->get_full_order( $order->get_id() );
-      $response = $this->get_api_helper()->send_event(self::NEW_ORDER, $full_order);
 
-      if (isset($response) && $order_item_enabled) {
+      if ($order_item_enabled) {
         $has_items = isset($full_order['items']) && !empty($full_order['items']);
         $has_customer = isset($full_order['customer']) && !empty($full_order['customer']);
 
@@ -463,6 +472,8 @@ class Integrai_Public {
           }
         }
       }
+
+      $this->get_api_helper()->send_event(self::NEW_ORDER, $full_order);
     }
 	}
 
