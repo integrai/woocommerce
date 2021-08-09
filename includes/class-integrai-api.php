@@ -38,7 +38,7 @@ class Integrai_API {
 
   public function request($endpoint, $method = 'GET', $body = array(), $params = array()) {
     try {
-      $body = json_encode($body);
+      $body = is_null($body) ? array() : json_encode($body);
     } catch (Throwable $e) {
       Integrai_Helper::log($e->getMessage(), 'Error ao transformar em JSON no request');
     } catch (Exception $e) {
@@ -65,9 +65,6 @@ class Integrai_API {
     if ( is_wp_error( $response ) ) {
       throw new Exception( $response->get_error_message() );
     }
-
-    $body = wp_remote_retrieve_body( $response );
-    $http_code = wp_remote_retrieve_response_code( $response );
 
     return $response;
   }
