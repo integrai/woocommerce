@@ -378,6 +378,7 @@ class Integrai_Public {
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-boleto.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-pix.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-events.php';
+    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-health.php';
 
     // CONFIG
     $integrai_config_controller = new Integrai_Config_Controller();
@@ -393,7 +394,11 @@ class Integrai_Public {
 
     // PIX
     $integrai_pix_controller = new Integrai_Pix_Controller();
-        $integrai_pix_controller->register_routes();
+    $integrai_pix_controller->register_routes();
+
+    // HEALTH
+    $integrai_health_controller = new Integrai_Health_Controller();
+    $integrai_health_controller->register_routes();
 	}
 
 	/** EVENTS */
