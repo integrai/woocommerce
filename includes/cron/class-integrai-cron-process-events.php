@@ -20,12 +20,18 @@ class Integrai_Cron_Process_Events {
       $this->log('Iniciando processamento dos eventos...');
 
       $limit = $this->get_config_helper()->get_global_config('processEventsLimit', 50);
+      $timeout = $this->get_config_helper()->get_global_config('processEventsTimeoutHours', 1);
       $isRunning = $this->get_config_helper()->get_by_name('PROCESS_EVENTS_RUNNING', false);
+      $lastRunning = $this->get_config_helper()->get_by_name('LAST_PROCESS_EVENTS_RUN', false);
+      $now = date('Y-m-d H:i:s');
+      $dateDiff = date_diff(date_create($now), date_create($lastRunning));
+      $interval = $dateDiff->format('%h');
 
-      if ($isRunning === 'RUNNING') {
+      if ($isRunning === 'RUNNING' && $lastRunning && $interval < $timeout) {
         $this->log('Já existe um processo rodando');
       } else {
         $this->get_config_helper()->update_config('PROCESS_EVENTS_RUNNING', 'RUNNING');
+        $this->get_config_helper()->update_config('LAST_PROCESS_EVENTS_RUN', $now);
 
         $ProcessEventsModel = new Integrai_Model_Process_Events();
         $events = $ProcessEventsModel->get("LIMIT 0, $limit", true);
