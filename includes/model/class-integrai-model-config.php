@@ -243,6 +243,24 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
         'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
       ),
       array(
+        'name' => 'PAYMENT_CREDITCARD',
+        'values' => '{"formOptions": {"gateways": []}}',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+      ),
+      array(
+        'name' => 'PAYMENT_PIX',
+        'values' => '{"formOptions": {"gateways": []}}',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+      ),
+      array(
+        'name' => 'PAYMENT_BOLETO',
+        'values' => '{"formOptions": {"gateways": []}}',
+        'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+        'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+      ),
+      array(
         'name' => 'PROCESS_EVENTS_RUNNING',
         'values' => 'NOT_RUNNING',
         'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),

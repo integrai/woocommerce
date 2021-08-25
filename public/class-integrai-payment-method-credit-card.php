@@ -61,7 +61,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $options  = $configHelper->get_payment_creditcard();
 
       $formOptions = isset($options) && isset($options['formOptions']) ? $options['formOptions'] : array();
-      $gateways = isset($formOptions) && is_array($formOptions) ? $formOptions['gateways'] : array();
+      $gateways = isset($formOptions) && is_array($formOptions) && isset($formOptions['gateways']) ? $formOptions['gateways'] : array();
 
       return $configHelper->event_is_enabled('NEW_ORDER') && count($gateways) > 0 ? 'yes' : 'no';
     }
