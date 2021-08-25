@@ -374,11 +374,16 @@ class Integrai_Public {
 	}
 
 	public function rest_api_init() {
+    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-attributes.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-config.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-boleto.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-pix.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-events.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-health.php';
+
+    // ATTRIBUTES
+    $integrai_attributes_controller = new Integrai_Attributes_Controller();
+    $integrai_attributes_controller->register_routes();
 
     // CONFIG
     $integrai_config_controller = new Integrai_Config_Controller();
