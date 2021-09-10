@@ -107,6 +107,7 @@ class Integrai {
     $this->loader->add_action( 'woocommerce_update_order', $plugin_public, 'woocommerce_update_order' );
     $this->loader->add_action( 'woocommerce_order_status_cancelled', $plugin_public, 'woocommerce_order_status_cancelled' );
     $this->loader->add_action( 'woocommerce_order_refunded', $plugin_public, 'woocommerce_order_refunded' );
+    $this->loader->add_action( 'save_post', $plugin_public, 'woocommerce_save_product', 10, 3 );
 
     // QUOTE
 		if ( class_exists( 'WC_Integration' ) ) {

@@ -28,6 +28,8 @@ class Integrai_Public {
 	const SAVE_ORDER = 'SAVE_ORDER';
 	const ABANDONED_CART = 'ABANDONED_CART';
 	const ABANDONED_CART_ITEM = 'ABANDONED_CART_ITEM';
+	const CREATE_PRODUCT = 'CREATE_PRODUCT';
+	const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
 
 	public function __construct( $integrai, $version ) {
 		$this->integrai = $integrai;
@@ -517,6 +519,27 @@ class Integrai_Public {
 
 		return $this->get_api_helper()->send_event(self::REFUND_INVOICE, $order);
 	}
+
+    // SAVE PRODUCT
+    public function woocommerce_save_product( $post_id, $post, $update ) {
+        if ($post->post_type != 'product') {
+            return;
+        }
+
+        $event = null;
+        if( ! $update && $post->post_status === "auto-draft" ) {
+            $event = self::CREATE_PRODUCT;
+        } else if ( $update && !strpos( wp_get_raw_referer(), 'post-new' ) ) {
+            $event = self::UPDATE_PRODUCT;
+        }
+
+        $product = wc_get_product( $post );
+
+        if (isset($product) && $this->get_config_helper()->event_is_enabled($event)) {
+            return $this->get_api_helper()->send_event($event, $product->get_data());
+        }
+    }
+
 
 	/** CRON - EVENTS: */
 	public function integrai_custom_cron_schedules( $schedules ) {
