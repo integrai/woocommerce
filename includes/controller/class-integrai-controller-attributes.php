@@ -38,9 +38,9 @@ class Integrai_Attributes_Controller extends WP_REST_Controller {
       return $response;
 
     } catch (Throwable $e) {
-      Integrai_Helper::log($e->getMessage(), 'Error ao atualizar configs');
+      Integrai_Helper::log($e->getMessage(), 'Error ao buscar atributos');
     } catch (Exception $e) {
-      Integrai_Helper::log($e->getMessage(), 'Error ao atualizar configs');
+      Integrai_Helper::log($e->getMessage(), 'Error ao buscar atributos');
     }
   }
 }

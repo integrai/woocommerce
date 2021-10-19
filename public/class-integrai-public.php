@@ -30,6 +30,7 @@ class Integrai_Public {
 	const ABANDONED_CART_ITEM = 'ABANDONED_CART_ITEM';
 	const CREATE_PRODUCT = 'CREATE_PRODUCT';
 	const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
+	const DELETE_PRODUCT = 'DELETE_PRODUCT';
 
 	public function __construct( $integrai, $version ) {
 		$this->integrai = $integrai;
@@ -382,6 +383,7 @@ class Integrai_Public {
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-pix.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-events.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-health.php';
+    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-categories.php';
 
     // ATTRIBUTES
     $integrai_attributes_controller = new Integrai_Attributes_Controller();
@@ -406,6 +408,10 @@ class Integrai_Public {
     // HEALTH
     $integrai_health_controller = new Integrai_Health_Controller();
     $integrai_health_controller->register_routes();
+
+    // CATEGORIES
+    $integrai_categories_controller = new Integrai_Categories_Controller();
+    $integrai_categories_controller->register_routes();
 	}
 
 	/** EVENTS */
@@ -522,21 +528,92 @@ class Integrai_Public {
 
     // SAVE PRODUCT
     public function woocommerce_save_product( $post_id, $post, $update ) {
+	    $ignored_status = array(
+	        "auto-draft",
+	        "draft",
+	        "trash",
+        );
+
+        if ($post->post_type != 'product' || in_array($post->post_status, $ignored_status)) {
+            return;
+        }
+
+        $event = strpos( wp_get_raw_referer(), 'post-new' ) ? self::CREATE_PRODUCT : self::UPDATE_PRODUCT;
+        $product = wc_get_product( $post );
+
+        if (isset($product) && $this->get_config_helper()->event_is_enabled($event)) {
+            $data = $this->enrichProductAttributes($product);
+            $data['type'] = $product->get_type();
+            $data['photos'] = $this->getProductPhotos($product);
+            $data['categories'] = $this->getProductCategories($product);
+
+            if ($product->get_type() == 'variable') {
+                $variations = $product->get_children();
+
+                $data['variations'] = array();
+                foreach ($variations as $variation) {
+                    $productVariation = wc_get_product( $variation );;
+                    $variationData = $this->enrichProductAttributes($productVariation);
+                    $variationData['photos'] = $this->getProductPhotos($productVariation);
+                    $variationData['categories'] = $this->getProductCategories($productVariation);
+                    array_push($data['variations'], $variationData);
+                }
+            }
+
+            return $this->get_api_helper()->send_event($event, $data);
+        }
+    }
+
+    private function enrichProductAttributes($product) {
+        $data = $product->get_data();
+        $attributesKeys = array_keys($product->get_attributes());
+
+        foreach($attributesKeys as $attributesKey) {
+            $data[str_replace('pa_', '', $attributesKey)] = $product->get_attribute($attributesKey);
+        }
+
+        return $data;
+    }
+
+    private function getProductPhotos($product) {
+        $photos = array(
+            wp_get_attachment_image_url( $product->get_image_id(), 'full' )
+        );
+
+        foreach ($product->get_gallery_image_ids() as $imageId) {
+            $photos[] = wp_get_attachment_image_url( $imageId, 'full' );
+        }
+
+        return $photos;
+    }
+
+    private function getProductCategories($product) {
+        $categoriesList = array();
+        $categoryIds = $product->get_category_ids();
+
+        if (is_array($categoryIds) && count($categoryIds) > 0) {
+            foreach ($categoryIds as $categoryId) {
+                $category = get_term_by( 'id', $categoryId, 'product_cat' );
+                $categoriesList[] = array(
+                    "id" => $category->term_id,
+                    "label" => $category->name
+                );
+            }
+        }
+
+        return $categoriesList;
+    }
+
+    // DELETE PRODUCT
+    public function woocommerce_delete_product( $post_id, $post ) {
         if ($post->post_type != 'product') {
             return;
         }
 
-        $event = null;
-        if( ! $update && $post->post_status === "auto-draft" ) {
-            $event = self::CREATE_PRODUCT;
-        } else if ( $update && !strpos( wp_get_raw_referer(), 'post-new' ) ) {
-            $event = self::UPDATE_PRODUCT;
-        }
-
         $product = wc_get_product( $post );
 
-        if (isset($product) && $this->get_config_helper()->event_is_enabled($event)) {
-            return $this->get_api_helper()->send_event($event, $product->get_data());
+        if (isset($product) && $this->get_config_helper()->event_is_enabled(self::DELETE_PRODUCT)) {
+            return $this->get_api_helper()->send_event(self::DELETE_PRODUCT, $product->get_data());
         }
     }
 
@@ -571,11 +648,9 @@ class Integrai_Public {
 	}
 
 	public function integrai_cron_proccess_events() {
-	  Integrai_Helper::log('==> run integrai_cron_proccess_events');
-    $CronProcessEvents = new Integrai_Cron_Process_Events();
-    $CronProcessEvents->execute();
-	  Integrai_Helper::log('==> executed integrai_cron_proccess_events');
-  }
+        $CronProcessEvents = new Integrai_Cron_Process_Events();
+        $CronProcessEvents->execute();
+    }
 
 	public function integrai_cron_deactivation() {
 		$events_timestamp = wp_next_scheduled( 'integrai_cron_resend_events' );
