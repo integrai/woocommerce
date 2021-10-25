@@ -106,6 +106,14 @@ class Integrai_Public {
 			include_once INTEGRAI__PLUGIN_DIR . '/includes/class-integrai-api.php';
 		endif;
 
+        if ( ! class_exists( 'Integrai_Process_Event' ) ) :
+            include_once INTEGRAI__PLUGIN_DIR . '/includes/class-integrai-process-event.php';
+        endif;
+
+        if ( ! class_exists( 'Integrai_Order' ) ) :
+            include_once INTEGRAI__PLUGIN_DIR . '/includes/class-integrai-order.php';
+        endif;
+
 		if ( ! class_exists( 'Integrai_Model_Config' ) ) :
 			include_once INTEGRAI__PLUGIN_DIR . '/includes/model/class-integrai-model-config.php';
 		endif;
@@ -384,6 +392,7 @@ class Integrai_Public {
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-events.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-health.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-categories.php';
+    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-send-event.php';
 
     // ATTRIBUTES
     $integrai_attributes_controller = new Integrai_Attributes_Controller();
@@ -412,6 +421,10 @@ class Integrai_Public {
     // CATEGORIES
     $integrai_categories_controller = new Integrai_Categories_Controller();
     $integrai_categories_controller->register_routes();
+
+    // SEND EVENT
+    $integrai_send_event_controller = new Integrai_Send_Event_Controller();
+    $integrai_send_event_controller->register_routes();
 	}
 
 	/** EVENTS */
@@ -761,6 +774,10 @@ class Integrai_Public {
 	/** CHECKOUT */
 	// PAYMENT METHODS
 	public function woocommerce_payment_gateways($methods) {
+        if ( ! class_exists( 'Integrai_Payment_Method_MarketPlace' ) ) :
+          include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-market-place.php';
+        endif;
+
         if ( ! class_exists( 'Integrai_Payment_Method_Pix' ) ) :
           include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-pix.php';
         endif;
@@ -773,6 +790,7 @@ class Integrai_Public {
           include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method-credit-card.php';
         endif;
 
+		$methods[] = 'Integrai_Payment_Method_MarketPlace';
 		$methods[] = 'Integrai_Payment_Method_Pix';
 		$methods[] = 'Integrai_Payment_Method_Boleto';
 		$methods[] = 'Integrai_Payment_Method_Credit_Card';
