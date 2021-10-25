@@ -6,7 +6,9 @@
   <p>
     <?php
       foreach ($data as $key => $value) {
-        echo '<strong>' . esc_html($key) . ':</strong> ' . esc_html($value) . '<br />';
+        if(!empty($value)) {
+            echo '<strong>' . esc_html($key) . ':</strong> ' . esc_html($value) . '<br />';
+        }
       }
     ?>
 

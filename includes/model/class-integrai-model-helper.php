@@ -40,8 +40,6 @@ class Integrai_Model_Helper {
   public function insert_or_update($name = '', $data = array(), $where = array(), $parseJson = true) {
     if ( !isset($name) || !isset($data) ) return false;
 
-      Integrai_Helper::log( $this->get_by_name($name, $parseJson) , 'insert_or_update get_by_name');
-
     if ( is_null( $this->get_by_name($name, $parseJson) ) ) {
       return $this->insert( $data );
     } else {
