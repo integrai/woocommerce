@@ -13,7 +13,6 @@ class Integrai_Process_Event {
             if ($modelRun) {
                 $modelArgs = $this->transform_args($modelItem);
                 $modelMethods = $modelItem->methods;
-
                 $model = $modelItem->functionName ? call_user_func_array($modelItem->functionName, $modelArgs) : new $modelItem->className(...$modelArgs);
                 $model = $this->run_methods($model, $modelMethods);
 
@@ -58,7 +57,7 @@ class Integrai_Process_Event {
     private function transform_args($itemValue) {
         $newArgs = array();
 
-        $args = isset($itemValue->args) ? (array)$itemValue->args : null;
+        $args = isset($itemValue->args) ? json_decode(json_encode($itemValue->args), true) : null;
 
         if (is_array($args)) {
             $argsFormatted = array_values($args);
