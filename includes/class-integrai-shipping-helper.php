@@ -137,10 +137,10 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
         array_push($transformed_items,
           array(
-            "weight"     => (float) number_format($product_data->get_weight(), 3),
-            "width"      => (float) number_format($width, 2),
-            "height"     => (float) number_format($height, 2),
-            "length"     => (float) number_format($length, 2),
+            "weight"     => (float) number_format((float)$product_data->get_weight(), 3),
+            "width"      => (float) number_format((float)$width, 2),
+            "height"     => (float) number_format((float)$height, 2),
+            "length"     => (float) number_format((float)$length, 2),
             "quantity"   => (int) max(1, $quantity),
             "sku"        => (string) $product_data->get_sku(),
             "unit_price" => (float) $product_data->get_sale_price(),
@@ -153,9 +153,9 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
     }
 
     private function get_value_or_default($attr, $data) {
-      $shipping_config = $this->get_config_helper()->get_shipping();
-
-      return $data->{"get_$attr"}() ?: $shipping_config["{$attr}_default"];
+        $shipping_config = $this->get_config_helper()->get_shipping();
+        $default = isset($shipping_config["{$attr}_default"]) ? $shipping_config["{$attr}_default"] : '';
+        return $data->{"get_$attr"}() ?: $default;
     }
 
     private function valide_item($item) {
