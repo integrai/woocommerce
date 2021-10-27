@@ -1,5 +1,7 @@
 <?php
 
+include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method.php';
+
 if ( class_exists( 'WC_Payment_Gateway' ) ) :
   class Integrai_Payment_Method_MarketPlace extends WC_Payment_Gateway {
     public $fields_list = array();
@@ -85,26 +87,16 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ( $payment_method !== $this->id )
         return;
 
-      $data = get_post_meta( $order->get_id(), '_integrai_transaction_data', true );
-      $payment_response = (array) get_post_meta( $order->get_id(), 'payment_response', true );
+      $payment_method_model = new Integrai_Payment_Method();
+      $admin_data = $payment_method_model->admin_order_meta($order->get_id());
 
-      if (isset($data)) {
-        $module_name = isset($payment_response['module_name']) ? sanitize_text_field($payment_response['module_name']) : '';
-        $transaction_id = isset($payment_response['transaction_id']) ? sanitize_text_field($payment_response['transaction_id']) : '';
-        $date_approved = isset($payment_response['date_approved']) ? sanitize_text_field($payment_response['date_approved']) : '';
-
-        $meta_data = array(
-          __('Pagamento', 'integrai') => 'Marketplace',
-          __('Processado por', 'integrai' ) => $module_name,
-          __('Identificação da transação', 'integrai' ) => $transaction_id,
-          __('Data de pagamento', 'integrai' ) => $date_approved,
-        );
-
+      if (!empty($admin_data['marketplace_data']) || !empty($admin_data['payments'])) {
         $this->get_helper()->get_template(
-          'marketplace/admin-order-detail.php',
-          array(
-            'data' => $meta_data,
-          ),
+            'admin-order-detail.php',
+            array(
+                'marketplace_data' => $admin_data['marketplace_data'],
+                'payments' => $admin_data['payments'],
+            ),
         );
       }
     }

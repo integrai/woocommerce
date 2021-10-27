@@ -1,5 +1,7 @@
 <?php
 
+include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method.php';
+
 if ( class_exists( 'WC_Payment_Gateway' ) ) :
   class Integrai_Payment_Method_Pix extends WC_Payment_Gateway {
     public $fields_list = array();
@@ -219,40 +221,16 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ( $payment_method !== $this->id )
         return;
 
-      $data = get_post_meta( $order->get_id(), '_integrai_transaction_data', true );
-      $payment_response = (array) get_post_meta( $order->get_id(), 'payment_response', true );
-      $qr_code = $payment_response['qr_code'] ?? $payment_response['qr_code'];
-      $qr_code_base64 = $payment_response['qr_code_base64'] ?? $payment_response['qr_code_base64'];
+      $payment_method_model = new Integrai_Payment_Method();
+      $admin_data = $payment_method_model->admin_order_meta($order->get_id());
 
-      if (
-        isset($data)
-        && $qr_code
-        && $qr_code_base64
-        && isset($data['pix_doc_type'])
-        && isset($data['pix_doc_number'])
-      ) {
-        $module_name = isset($payment_response['module_name']) ? sanitize_text_field($payment_response['module_name']) : '';
-        $transaction_id = isset($payment_response['transaction_id']) ? sanitize_text_field($payment_response['transaction_id']) : '';
-        $date_approved = isset($payment_response['date_approved']) ? sanitize_text_field($payment_response['date_approved']) : '';
-        $pix_doc_type = isset($payment_response['pix_doc_type']) ? sanitize_text_field($payment_response['pix_doc_type']) : '';
-        $pix_doc_number = isset($payment_response['pix_doc_number']) ? sanitize_text_field($payment_response['pix_doc_number']) : '';
-
-        $meta_data = array(
-          __('Pagamento', 'integrai') => 'Pix',
-          __('Processado por', 'integrai' ) => $module_name,
-          __('Identificação da transação', 'integrai' ) => $transaction_id,
-          __('Data de pagamento', 'integrai' ) => $date_approved,
-          __('Documento', 'integrai') => $pix_doc_type,
-          __('Número do Documento', 'integrai') => $pix_doc_number,
-        );
-
+      if (!empty($admin_data['marketplace_data']) || !empty($admin_data['payments'])) {
         $this->get_helper()->get_template(
-          'pix/admin-order-detail.php',
-          array(
-            'data' => $meta_data,
-            'qr_code' => $qr_code,
-            'qr_code_base64' => $qr_code_base64,
-          ),
+            'admin-order-detail.php',
+            array(
+                'marketplace_data' => $admin_data['marketplace_data'],
+                'payments' => $admin_data['payments'],
+            ),
         );
       }
     }

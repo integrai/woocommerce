@@ -77,6 +77,6 @@ class Integrai_Process_Event {
             }
         }
 
-        return $newArgs;
+        return json_decode(json_encode($newArgs), true);
     }
 }

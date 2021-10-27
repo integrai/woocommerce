@@ -1,5 +1,7 @@
 <?php
 
+include_once INTEGRAI__PLUGIN_DIR . 'public/class-integrai-payment-method.php';
+
 if ( class_exists( 'WC_Payment_Gateway' ) ) :
   class Integrai_Payment_Method_Credit_Card extends WC_Payment_Gateway {
     public $fields_list = array();
@@ -213,53 +215,16 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       if ( $payment_method !== $this->id )
         return;
 
-      $data = get_post_meta( $order->get_id(), '_integrai_transaction_data', true );
-      $payment_response = (array) get_post_meta( $order->get_id(), 'payment_response', true );
+      $payment_method_model = new Integrai_Payment_Method();
+      $admin_data = $payment_method_model->admin_order_meta($order->get_id());
 
-      if (
-        isset($data)
-        && isset($data['cc_card_brand'])
-        && isset($data['cc_doc_type'])
-        && isset($data['cc_doc_number'])
-        && isset($data['cc_installments'])
-      ) {
-
-        $meta_data = array(
-          __( 'Pagamento', 'integrai' )                  => 'Cartão de Crédito',
-          __( 'Documento', 'integrai' )                  => sanitize_text_field( strtoupper( $data['cc_doc_type'] ) ),
-          __( 'Número do Documento', 'integrai' )        => sanitize_text_field( $data['cc_doc_number'] )
-        );
-
-        if (isset($payment_response['module_name'])) {
-          $meta_data[__( 'Processado por', 'integrai' )] = sanitize_text_field($payment_response['module_name']);
-        }
-
-        if (isset($payment_response['transaction_id'])) {
-          $meta_data[__( 'Identificação da transação', 'integrai' )] = sanitize_text_field($payment_response['transaction_id']);
-        }
-
-        if (isset($payment_response['date_approved'])) {
-          $meta_data[__( 'Data de pagamento', 'integrai' )] = sanitize_text_field($payment_response['date_approved']);
-        }
-
-        if (isset($payment_response['card'])) {
-          $card = (array) $payment_response['card'];
-          $card_number = $card['last_four_digits'];
-          $card_installments = isset($payment_response['installments']) ? $payment_response['installments'] : $data['cc_installments'];
-          $card_brand = isset($card['brand']) ? $card['brand'] : $data['cc_card_brand'];
-          $card_holder = $card['holder'];
-
-          $meta_data[__( 'Número de Parcelas', 'integrai' )] = sanitize_text_field( $card_installments );
-          $meta_data[__( 'Número do cartão', 'integrai' )] = sanitize_text_field( "**** **** **** $card_number" );
-          $meta_data[__( 'Nome do titular', 'integrai' )] = sanitize_text_field( $card_holder );
-          $meta_data[__( 'Bandeira', 'integrai' )] = sanitize_text_field( strtoupper( $card_brand ) );
-        }
-
+      if (!empty($admin_data['marketplace_data']) || !empty($admin_data['payments'])) {
         $this->get_helper()->get_template(
-          'credit-card/admin-order-detail.php',
-          array(
-            'data' => $meta_data,
-          ),
+            'admin-order-detail.php',
+            array(
+                'marketplace_data' => $admin_data['marketplace_data'],
+                'payments' => $admin_data['payments'],
+            ),
         );
       }
     }

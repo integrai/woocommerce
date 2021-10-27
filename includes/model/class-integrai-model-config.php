@@ -130,7 +130,7 @@ class Integrai_Model_Config extends Integrai_Model_Helper {
   public function get_global_config( $name, $defaultValue = null ) {
     $configs = $this->get_global();
 
-    return isset($configs) && $configs[$name] ? $configs[$name] : $defaultValue;
+    return isset($configs) && isset($configs[$name]) ? $configs[$name] : $defaultValue;
   }
 
   public function get_minutes_abandoned_cart_lifetime() {
