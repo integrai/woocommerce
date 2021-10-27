@@ -200,10 +200,10 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $options      = $configHelper->get_payment_success();
 
       $this->get_helper()->get_template(
-        'boleto/payment-success.php',
+        'payment-success.php',
         array(
-          'options' => $options,
-          'order' => $order,
+          'pageSuccess' => json_encode($options),
+          'order' => json_encode($order),
         ),
       );
     }

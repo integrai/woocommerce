@@ -195,11 +195,11 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) :
       $options      = $configHelper->get_payment_success();
 
       $this->get_helper()->get_template(
-        'pix/payment-success.php',
-        array(
-          'options' => $options,
-          'order' => $order,
-        ),
+          'payment-success.php',
+          array(
+              'pageSuccess' => json_encode($options),
+              'order' => json_encode($order),
+          ),
       );
     }
 

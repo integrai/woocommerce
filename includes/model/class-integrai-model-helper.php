@@ -41,9 +41,9 @@ class Integrai_Model_Helper {
     if ( !isset($name) || !isset($data) ) return false;
 
     if ( is_null( $this->get_by_name($name, $parseJson) ) ) {
-      return $this->insert( $data );
+      return $this->insert( array_merge($data, $where, array('updatedAt' => date('Y-m-d H:i:s'), 'createdAt' => date('Y-m-d H:i:s'))) );
     } else {
-      return $this->update( $data, $where );
+      return $this->update( array_merge($data, array('updatedAt' => date('Y-m-d H:i:s'))), $where );
     }
   }
 
@@ -86,8 +86,8 @@ class Integrai_Model_Helper {
   }
 
   public function get_by_name($name, $parseJson = true) {
-    $lower_name = strtolower( $name );
-    $raw_data = $this->get("WHERE name = '$lower_name'");
+    $upper_name = strtoupper( $name );
+    $raw_data = $this->get("WHERE name = '$upper_name'");
 
     try {
       return $parseJson ? json_decode( $raw_data->values, 2 ) : $raw_data->values;
