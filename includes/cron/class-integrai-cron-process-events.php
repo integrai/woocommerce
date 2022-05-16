@@ -64,11 +64,6 @@ class Integrai_Cron_Process_Events {
 
         // Delete events
         if (count($success) > 0 || count($errors) > 0) {
-            $this->get_api_helper()->request('/store/event', 'DELETE', array(
-              'eventIds' => $success,
-              'errors' => $errors
-            ));
-
             $eventIdsRemove = implode(', ', $eventIds);
             $ProcessEventsModel->delete_query("id in ($eventIdsRemove)");
 

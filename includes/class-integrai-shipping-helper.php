@@ -11,6 +11,8 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
   class Integrai_Shipping_Helper {
 
+    const QUOTE = 'QUOTE';
+
     public function __construct() {
       $this->load_dependencies();
     }
@@ -64,7 +66,7 @@ if ( ! class_exists( 'Integrai_Shipping_Helper' ) ) :
 
           $quote_order = $this->transform_order($order);
 
-          $response = $this->get_api_helper()->request('/quote/shipping', 'POST', $quote_order);
+          $response = $this->get_api_helper()->send_event(self::QUOTE, $quote_order);
 
           return $this->transform_response($response);
 

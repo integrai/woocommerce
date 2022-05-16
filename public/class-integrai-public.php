@@ -19,13 +19,12 @@ class Integrai_Public {
 	private $config;
 	private $events;
 
-	const SAVE_CUSTOMER = 'SAVE_CUSTOMER';
+	const CREATE_CUSTOMER = 'CREATE_CUSTOMER';
 	const ADD_PRODUCT_CART = 'ADD_PRODUCT_CART';
-	const NEW_ORDER = 'NEW_ORDER';
-	const NEW_ORDER_ITEM = 'NEW_ORDER_ITEM';
-	const CANCEL_ORDER = 'CANCEL_ORDER';
+	const CREATE_ORDER = 'CREATE_ORDER';
+	const UPDATE_ORDER_ITEM = 'UPDATE_ORDER_ITEM';
+	const UPDATE_ORDER = 'UPDATE_ORDER';
 	const REFUND_INVOICE = 'REFUND_INVOICE';
-	const SAVE_ORDER = 'SAVE_ORDER';
 	const ABANDONED_CART = 'ABANDONED_CART';
 	const ABANDONED_CART_ITEM = 'ABANDONED_CART_ITEM';
 	const CREATE_PRODUCT = 'CREATE_PRODUCT';
@@ -429,13 +428,13 @@ class Integrai_Public {
 
 	/** EVENTS */
 
-	// SAVE_CUSTOMER
+	// CREATE_CUSTOMER
 	public function woocommerce_created_customer( $customer_id, $new_customer_data = null, $password_generated = null ) {
 
-		if ( isset($customer_id) && $this->get_config_helper()->event_is_enabled(self::SAVE_CUSTOMER) ) {
+		if ( isset($customer_id) && $this->get_config_helper()->event_is_enabled(self::CREATE_CUSTOMER) ) {
 			$customer = $this->get_customer( $customer_id );
 
-			return $this->get_api_helper()->send_event(self::SAVE_CUSTOMER, $customer);
+			return $this->get_api_helper()->send_event(self::CREATE_CUSTOMER, $customer);
 		}
 	}
 
@@ -480,10 +479,10 @@ class Integrai_Public {
 		}
 	}
 
-	// NEW_ORDER
+	// CREATE_ORDER
 	public function woocommerce_new_order( $order ) {
-	  $order_enabled = $this->get_config_helper()->event_is_enabled(self::NEW_ORDER);
-	  $order_item_enabled = $this->get_config_helper()->event_is_enabled(self::NEW_ORDER_ITEM);
+	  $order_enabled = $this->get_config_helper()->event_is_enabled(self::CREATE_ORDER);
+	  $order_item_enabled = $this->get_config_helper()->event_is_enabled(self::UPDATE_ORDER_ITEM);
 
     if ( isset($order) && $order_enabled ) {
       $full_order = $this->get_full_order( $order->get_id() );
@@ -499,23 +498,23 @@ class Integrai_Public {
             $item['payment'] = $full_order['payment'];
             $item['shipping_method'] = $full_order['shipping_method'];
 
-            $this->get_api_helper()->send_event(self::NEW_ORDER_ITEM, $item);
+            $this->get_api_helper()->send_event(self::UPDATE_ORDER_ITEM, $item);
           }
         }
       }
 
-      $this->get_api_helper()->send_event(self::NEW_ORDER, $full_order);
+      $this->get_api_helper()->send_event(self::CREATE_ORDER, $full_order);
     }
 	}
 
-	// SAVE_ORDER
+	// UPDATE_ORDER
 	public function woocommerce_update_order( $order_id ) {
     $order = $this->get_full_order( $order_id );
 
-		return $this->get_api_helper()->send_event(self::SAVE_ORDER, $order);
+		return $this->get_api_helper()->send_event(self::UPDATE_ORDER, $order);
 	}
 
-	// CANCEL_ORDER
+	// UPDATE_ORDER
 	public function woocommerce_order_status_cancelled( $order_id ) {
 		$order = new WC_Order($order_id);
 		$customer = $this->get_customer( $order->get_customer_id() );
@@ -523,10 +522,10 @@ class Integrai_Public {
 		$payload = $order->get_data();
 		$payload['customer'] = $customer;
 
-		return $this->get_api_helper()->send_event(self::CANCEL_ORDER, $payload);
+		return $this->get_api_helper()->send_event(self::UPDATE_ORDER, $payload);
 	}
 
-	// CANCEL_ORDER
+	// UPDATE_ORDER
 	public function woocommerce_order_refunded( $order_id, $refund_id = false ) {
 		$order = $this->get_order( $order_id );
 		$customer = $this->get_customer( $order['customer_id'] );

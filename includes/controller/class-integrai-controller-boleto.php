@@ -8,6 +8,8 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
   protected $namespace = 'integrai';
   protected $path = 'boleto';
 
+  const BOLETO = 'BOLETO';
+
   public function register_routes() {
     register_rest_route( $this->namespace, '/' . $this->path, [
       array(
@@ -26,10 +28,10 @@ class Integrai_Boleto_Controller extends WP_REST_Controller {
       Integrai_Helper::log($orderId, 'Buscando boleto url do pedido: ');
 
       $api = new Integrai_API();
-      $response = $api->request( '/store/boleto', 'GET', null, array(
+      $response = $api->send_event(self::BOLETO, array(
         'orderId'     => $orderId,
         'IsDuplicate' => $isDuplicate,
-      ));
+      ), false, true);
       $body = json_decode( $response['body'], true );
 
       return new WP_REST_Response(

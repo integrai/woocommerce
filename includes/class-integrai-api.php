@@ -36,7 +36,7 @@ class Integrai_API {
 		endif;
   }
 
-  public function request($endpoint, $method = 'GET', $body = array(), $params = array()) {
+  public function request($body = array(), $params = array()) {
     try {
       $body = is_null($body) ? array() : json_encode($body);
     } catch (Throwable $e) {
@@ -45,14 +45,14 @@ class Integrai_API {
       Integrai_Helper::log($e->getMessage(), 'Error ao transformar em JSON no request');
     }
 
-    $url = $this->api_url . $endpoint;
+    $url = $this->api_url;
 
     if (isset($params) && is_array($params) && count($params) > 0 && !is_string($params)) {
-      $url = $url . '?' . http_build_query($params);
+      $url = $url . '&' . http_build_query($params);
     }
 
     $options = array(
-      'method' => $method,
+      'method' => 'POST',
       'headers' => $this->get_headers(),
       'timeout' => $this->timeout,
       'body' => $body,
@@ -69,32 +69,21 @@ class Integrai_API {
     return $response;
   }
 
-  private function get_headers(): array {
-    global $wp_version, $woocommerce;
-
-    $wc_version = $woocommerce->version;
-    $plugin_version = INTEGRAI_VERSION;
-    $token = base64_encode("{$this->api_key}:{$this->secret_key}");
-
+  private function get_headers() {
     return array(
       "Content-Type" => "application/json; charset=utf-8",
       "Accept" => "application/json",
       "data_format" => "body",
-      "Authorization" => "Basic {$token}",
-      "x-integrai-plaform" => "woocommerce",
-      "x-integrai-plaform-version" => "{$wp_version}",
-      "x-integrai-plaform-framework" => "woocommerce {$wc_version}",
-      "x-integrai-module-version" => "{$plugin_version}",
     );
   }
 
-  public function send_event( $event_name, $payload, $resend = false ) {
+  public function send_event( $event_name, $payload, $resend = false, $isSync = false ) {
 
     try {
-      return $this->request('/store/event/woocommerce', 'POST', array(
-        'event' => $event_name,
+      return $this->request(array(
+        'partnerEvent' => $event_name,
         'payload' => $payload,
-      ));
+      ), array( 'isSync' => $isSync ));
     } catch (Throwable $e) {
       $this->error_handling($e, $resend, $event_name, $payload);
     } catch (Exception $e) {

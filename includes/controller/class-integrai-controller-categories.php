@@ -21,6 +21,14 @@ class Integrai_Categories_Controller extends WP_REST_Controller {
 
   public function get_items( $request ) {
     try {
+        if (!Integrai_Helper::checkAuthorization($request->get_header('Authorization'))) {
+            $response = new WP_REST_Response(array("error" => "Unauthorized"));
+            $response->header( 'Content-type', 'application/json' );
+            $response->set_status( 401 );
+
+            return $response;
+        }
+
         $categories = get_categories(array(
             'taxonomy' => 'product_cat',
             'hide_empty' => false,

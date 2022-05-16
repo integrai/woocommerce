@@ -12,7 +12,7 @@ class Integrai_Config_Controller extends WP_REST_Controller {
   public function register_routes() {
     register_rest_route( $this->namespace, '/' . $this->path, [
       array(
-        'methods'  => 'GET',
+        'methods'  => 'POST',
         'callback' => array( $this, 'get_items' ),
         'permission_callback' => '__return_true'
       ),
@@ -21,9 +21,15 @@ class Integrai_Config_Controller extends WP_REST_Controller {
 
   public function get_items( $request ) {
     try {
-      $api = new Integrai_API();
-      $response = $api->request('/store/config');
-      $configs = json_decode( $response['body'], true );
+        if (!Integrai_Helper::checkAuthorization($request->get_header('Authorization'))) {
+            $response = new WP_REST_Response(array("error" => "Unauthorized"));
+            $response->header( 'Content-type', 'application/json' );
+            $response->set_status( 401 );
+
+            return $response;
+        }
+
+      $configs = json_decode($request->get_body());;
 
       $integrai_config = new Integrai_Model_Config();
       $integrai_config->update_configs( $configs );

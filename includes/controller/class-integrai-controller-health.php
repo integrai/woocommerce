@@ -24,6 +24,14 @@ class Integrai_Health_Controller extends WP_REST_Controller {
 
   public function get_info( $request ) {
     try {
+        if (!Integrai_Helper::checkAuthorization($request->get_header('Authorization'))) {
+            $response = new WP_REST_Response(array("error" => "Unauthorized"));
+            $response->header( 'Content-type', 'application/json' );
+            $response->set_status( 401 );
+
+            return $response;
+        }
+
         $woocommerceVersion = WC_VERSION;
         $moduleVersion = INTEGRAI_VERSION;
 
@@ -47,17 +55,8 @@ class Integrai_Health_Controller extends WP_REST_Controller {
             'totalUnsentEvent' => $totalUnsentEvent
         );
 
-        $api = new Integrai_API();
-        $api->request(
-            '/store/health',
-            'POST',
-            $data,
-        );
-
       return new WP_REST_Response(
-        array(
-            "ok" => true
-        ),
+        $data,
         200,
         array('Content-type', 'application/json'),
       );
