@@ -8,7 +8,7 @@ class Integrai_Helper {
       ? print_r($log, true)
       : $log;
 
-    error_log($prefix . $error . " \n", 3, $file_path);
+    error_log($prefix . " " . $error . " \n", 3, $file_path);
   }
 
     public static function checkAuthorization($hash) {

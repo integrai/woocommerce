@@ -41,6 +41,8 @@ class Integrai_Events_Controller extends WP_REST_Controller {
             $processEvent = new Integrai_Process_Event();
             $response = $processEvent->process($payload);
 
+//            Integrai_Helper::log($response, 'Response');
+
             $response = new WP_REST_Response($response);
             $response->header( 'Content-type', 'application/json' );
             $response->set_status( 200 );
@@ -62,7 +64,7 @@ class Integrai_Events_Controller extends WP_REST_Controller {
       $response->set_status( 200 );
 
       return $response;
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         Integrai_Helper::log($e->getMessage(), 'Error ao solicitar eventos');
 
         $response = new WP_REST_Response( array(
