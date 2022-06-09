@@ -109,10 +109,6 @@ class Integrai_Public {
             include_once INTEGRAI__PLUGIN_DIR . '/includes/class-integrai-process-event.php';
         endif;
 
-        if ( ! class_exists( 'Integrai_Order' ) ) :
-            include_once INTEGRAI__PLUGIN_DIR . '/includes/class-integrai-order.php';
-        endif;
-
 		if ( ! class_exists( 'Integrai_Model_Config' ) ) :
 			include_once INTEGRAI__PLUGIN_DIR . '/includes/model/class-integrai-model-config.php';
 		endif;

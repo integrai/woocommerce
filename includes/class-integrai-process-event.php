@@ -27,12 +27,12 @@ class Integrai_Process_Event {
         foreach ($modelMethods as $methodValue) {
             $methodName = $methodValue->name;
             $methodRun = (bool)$methodValue->run;
+            $keepModel = (bool)$methodValue->keepModel;
             $methodCheckReturnType = isset($methodValue->checkReturnType) ? $methodValue->checkReturnType : null;
 
             if ($methodRun && $model) {
                 $methodArgs = $this->transform_args($methodValue);
                 $methodResponse = call_user_func_array(array($model, $methodName), $methodArgs);
-
                 if ($methodCheckReturnType) {
                     $types = (array) $methodCheckReturnType->types;
                     $errorMessage = $methodCheckReturnType->errorMessage;
@@ -41,7 +41,7 @@ class Integrai_Process_Event {
                     }
                 }
 
-                if (!next($modelMethods)) {
+                if (!next($modelMethods) && !$keepModel) {
                     $model = $methodResponse;
                 }
             }
@@ -66,7 +66,7 @@ class Integrai_Process_Event {
                 if (is_array($arg) && $arg['otherModelName']) {
                     $model = $this->get_other_model($arg['otherModelName']);
                     if (isset($arg['otherModelMethods'])) {
-                        array_push($newArgs, $this->run_methods($model, $arg['otherModelMethods']));
+                        array_push($newArgs, $this->run_methods($model, json_decode(json_encode($arg['otherModelMethods']))));
                     } else {
                         array_push($newArgs, $model);
                     }
@@ -76,6 +76,6 @@ class Integrai_Process_Event {
             }
         }
 
-        return json_decode(json_encode($newArgs), true);
+        return $newArgs;
     }
 }

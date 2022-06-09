@@ -9,9 +9,9 @@ class Integrai_Payment_Method  {
 
     if (isset($marketplace) && count($marketplace) > 0) {
       $name = !empty($marketplace['name']) ? sanitize_text_field($marketplace['name']) : '';
-      $order_id = !empty($marketplace['order_id']) ? sanitize_text_field($marketplace['order_id']) : '';
-      $created_at = !empty($marketplace['created_at']) ? date_format(date_create($marketplace['created_at']), 'd/m/Y H:i:s') : '';
-      $updated_at = !empty($marketplace['updated_at']) ? date_format(date_create($marketplace['updated_at']), 'd/m/Y H:i:s') : '';
+      $order_id = !empty($marketplace['orderId']) ? sanitize_text_field($marketplace['orderId']) : '';
+      $created_at = !empty($marketplace['createdAt']) ? date_format(date_create($marketplace['createdAt']), 'd/m/Y H:i:s') : '';
+      $updated_at = !empty($marketplace['updatedAt']) ? date_format(date_create($marketplace['updatedAt']), 'd/m/Y H:i:s') : '';
 
       $marketplace_data = array(
           __('Criado por', 'integrai' ) => $name,
@@ -24,10 +24,10 @@ class Integrai_Payment_Method  {
     if (isset($payments) && count($payments) > 0) {
       foreach ($payments as $payment) {
         $method = !empty($payment['method']) ? sanitize_text_field($payment['method']) : '';
-        $module_name = !empty($payment['module_name']) ? sanitize_text_field($payment['module_name']) : '';
+        $module_name = !empty($payment['moduleName']) ? sanitize_text_field($payment['moduleName']) : '';
         $value = !empty($payment['value']) ? 'R$' . number_format($payment['value'],2,",",".") : '';
-        $transaction_id = !empty($payment['transaction_id']) ? sanitize_text_field($payment['transaction_id']) : '';
-        $date_approved = !empty($payment['date_approved']) ? date_format(date_create($payment['date_approved']), 'd/m/Y H:i:s') : '';
+        $transaction_id = !empty($payment['transactionId']) ? sanitize_text_field($payment['transactionId']) : '';
+        $date_approved = !empty($payment['dateApproved']) ? date_format(date_create($payment['dateApproved']), 'd/m/Y H:i:s') : '';
         $installments = !empty($payment['installments']) ? sanitize_text_field($payment['installments']) . 'x' : '';
         $boleto = !empty($payment['boleto']) ? (array) $payment['boleto']: '';
         $card = !empty($payment['card']) ? (array) $payment['card']: '';
@@ -35,11 +35,11 @@ class Integrai_Payment_Method  {
 
         $card_data = '';
         if (isset($card) && is_array($card)) {
-          $card_number = !empty($card['last_four_digits']) ? $card['last_four_digits'] : '';
+          $card_number = !empty($card['lastFourDigits']) ? $card['lastFourDigits'] : '';
           $card_brand = !empty($card['brand']) ? $card['brand'] : '';
           $card_holder = !empty($card['holder']) ? $card['holder'] : '';
-          $expiration_month = !empty($card['expiration_month']) ? $card['expiration_month'] : '';
-          $expiration_year = !empty($card['expiration_year']) ? $card['expiration_year'] : '';
+          $expiration_month = !empty($card['expirationMonth']) ? $card['expirationMonth'] : '';
+          $expiration_year = !empty($card['expirationYear']) ? $card['expirationYear'] : '';
           $expiration = implode('/', array_filter(array($expiration_month, $expiration_year)));
 
           $card_data = array(
