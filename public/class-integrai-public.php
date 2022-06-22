@@ -387,7 +387,6 @@ class Integrai_Public {
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-events.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-health.php';
     require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-categories.php';
-    require_once INTEGRAI__PLUGIN_DIR . 'includes/controller/class-integrai-controller-send-event.php';
 
     // ATTRIBUTES
     $integrai_attributes_controller = new Integrai_Attributes_Controller();
@@ -416,10 +415,6 @@ class Integrai_Public {
     // CATEGORIES
     $integrai_categories_controller = new Integrai_Categories_Controller();
     $integrai_categories_controller->register_routes();
-
-    // SEND EVENT
-    $integrai_send_event_controller = new Integrai_Send_Event_Controller();
-    $integrai_send_event_controller->register_routes();
 	}
 
 	/** EVENTS */
