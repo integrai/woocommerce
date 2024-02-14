@@ -45,6 +45,12 @@ class Integrai_Health_Controller extends WP_REST_Controller {
         $events = $eventsModel->get(null, true);
         $totalUnsentEvent = count($events);
 
+        $lastLogs = array();
+        $file = file(INTEGRAI__PLUGIN_DIR . 'debug.log');
+        for ($i = max(0, count($file)-100); $i < count($file); $i++) {
+            $lastLogs[] = $file[$i];
+        }
+
         $data = array(
             'phpVersion' => phpversion(),
             'platform' => 'woocommerce',
@@ -52,7 +58,8 @@ class Integrai_Health_Controller extends WP_REST_Controller {
             'moduleVersion' => $moduleVersion,
             'isRunningEventProcess' => $isRunningEventProcess === 'RUNNING',
             'totalEventsToProcess' => $totalEventsToProcess,
-            'totalUnsentEvent' => $totalUnsentEvent
+            'totalUnsentEvent' => $totalUnsentEvent,
+            'lastLogs' => $lastLogs
         );
 
       return new WP_REST_Response(
