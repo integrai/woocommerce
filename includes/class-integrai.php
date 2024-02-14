@@ -28,7 +28,7 @@ class Integrai {
 		if ( defined( 'INTEGRAI_VERSION' ) ) {
 			$this->version = INTEGRAI_VERSION;
 		} else {
-			$this->version = '1.0.23';
+			$this->version = '1.0.24';
 		}
 		$this->Integrai = 'integrai';
 
